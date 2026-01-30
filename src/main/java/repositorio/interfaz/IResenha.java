@@ -4,7 +4,7 @@ import modelo.dto.ResenhaDto;
 
 import java.util.List;
 
-public interface IRsenha {
+public interface IResenha {
 
     ResenhaDto escribirResenha() ;
 
@@ -18,5 +18,5 @@ public interface IRsenha {
 
     List <ResenhaDto>  mostrarResenhaUsuario();
 
-    
+
 }
