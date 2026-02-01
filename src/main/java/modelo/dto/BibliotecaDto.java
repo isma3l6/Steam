@@ -1,13 +1,12 @@
 package modelo.dto;
 
+import modelo.entidad.JuegoEntidad;
+import modelo.entidad.UsuarioEntidad;
+
 import java.util.Date;
 
 public class BibliotecaDto {
     private int id;
-    private UsuarioDto idUsuario;
-    private JuegoDto idJuego;
-    private Date fechaAdquisicion;
-    private int horasJugadas;
-    private Date jugadoPorUltimavez;
-    private boolean noInstalado;
+    private UsuarioEntidad idUsuario;
+    private JuegoEntidad idJuego;
 }

@@ -1,11 +1,14 @@
 package modelo.dto;
 
+import modelo.entidad.JuegoEntidad;
+import modelo.entidad.UsuarioEntidad;
+
 import java.util.Date;
 
 public class ResenhaDto {
     private int id;
-    private UsuarioDto usuaro;
-    private JuegoDto nombreJuego;
+    private UsuarioEntidad usuaro;
+    private JuegoEntidad nombreJuego;
     private boolean recomendado;
     private String texto;
     private Date fechaPublicacion;
