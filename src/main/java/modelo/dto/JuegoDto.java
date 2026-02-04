@@ -12,5 +12,9 @@ public class JuegoDto {
     //descuento en porcentaje
     private double procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
+    private CategoriaType categoriaType;
 
+    private  ClasificacionType clasificacionType;
+
+    private  EstadoJuegoType estadoJuegoType;
 }

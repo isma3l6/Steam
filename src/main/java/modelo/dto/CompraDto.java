@@ -11,8 +11,10 @@ public class CompraDto {
     private JuegoEntidad idJuego;
     private Date fechaCompra;
     //Metodo de pago enum
+    private MetodoPagoType metodoPagoType;
     private double precio;
     //descuento es un porcentaje
+    private int descuento;
     private double descuentoAplicado;
-    private boolean estado;
+    private EstadoCompraType estado;
 }

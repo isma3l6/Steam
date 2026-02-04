@@ -9,4 +9,5 @@ public class BibliotecaDto {
     private int id;
     private UsuarioEntidad idUsuario;
     private JuegoEntidad idJuego;
+    private InstalacionType instalacionType;
 }
