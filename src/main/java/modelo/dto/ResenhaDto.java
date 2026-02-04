@@ -6,7 +6,8 @@ import modelo.entidad.UsuarioEntidad;
 import java.util.Date;
 
 public class ResenhaDto {
-    private int id;
+    private long id;
+    private long idUsuario;
     private UsuarioEntidad usuaro;
     private JuegoEntidad nombreJuego;
     private boolean recomendado;

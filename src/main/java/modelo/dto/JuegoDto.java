@@ -1,9 +1,13 @@
 package modelo.dto;
 
+import modelo.entidad.CategoriaType;
+import modelo.entidad.ClasificacionType;
+import modelo.entidad.EstadoJuegoType;
+
 import java.util.Date;
 
 public class JuegoDto {
-    private int id;
+    private long id;
     private String titulo;
 
     private String desarrollador;
@@ -12,9 +16,6 @@ public class JuegoDto {
     //descuento en porcentaje
     private double procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
-    private CategoriaType categoriaType;
+    private ClasificacionType categoria;
 
-    private  ClasificacionType clasificacionType;
-
-    private  EstadoJuegoType estadoJuegoType;
 }

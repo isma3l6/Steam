@@ -1,5 +1,5 @@
 package modelo.form;
 
-public class ErrorForm {
+public record ErrorDto(String campo, ErrorType mensaje) {
 
 }

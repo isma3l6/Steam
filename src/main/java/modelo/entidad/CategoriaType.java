@@ -1,4 +1,4 @@
-package modelo.dto;
+package modelo.entidad;
 
 public enum CategoriaType {
     ACCION,

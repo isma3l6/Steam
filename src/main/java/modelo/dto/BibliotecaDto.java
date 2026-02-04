@@ -1,13 +1,13 @@
 package modelo.dto;
 
+import modelo.entidad.InstalacionType;
 import modelo.entidad.JuegoEntidad;
 import modelo.entidad.UsuarioEntidad;
 
-import java.util.Date;
-
 public class BibliotecaDto {
-    private int id;
-    private UsuarioEntidad idUsuario;
-    private JuegoEntidad idJuego;
-    private InstalacionType instalacionType;
+    private long id;
+    private long idUsario;
+    private UsuarioEntidad Usuario;
+    private long idJuego;
+    private JuegoEntidad Juego;
 }

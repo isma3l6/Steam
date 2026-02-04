@@ -14,4 +14,6 @@ public class UsuarioEntidad {
     private String avatar;
     private double saldo;
     //Estado de cuanta
+    private EstadoUserType estadoType;
+
 }
