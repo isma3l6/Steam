@@ -27,8 +27,32 @@ public class UsuarioForm {
         if (nombreUsuario.length()>20){
             errores.add(new ErrorDto("nombre usuario", ErrorType.VALOR_DEMASIADO_ALTO));
         }
+        if (comrobarFormatoNombreUser()==true){
+            errores.add(new ErrorDto("nombre usuario", ErrorType.FORMATO_INVALIDO));
+        }
+        if (comprobarNoEmpiezaPorNumero()==true){
+            errores.add(new ErrorDto("nombre usuario", ErrorType.FORMATO_INVALIDO));
+        }
+
+
 //giones y guiones bajos
+        //email
+        if (email.isBlank()){
+            errores.add(new ErrorDto("Email", ErrorType.REQUERIDO));
+        }
 
-
+        return errores;
+    }
+    private boolean comrobarFormatoNombreUser(String nombreUsuario){
+      boolean  nombreUsuarioCorrecto = false;
+        for (int i = 0; i < nombreUsuario.length() ; i++) {
+            char c = nombreUsuario.charAt(i);
+            boolean alfanumerico =  Character.isLetterOrDigit(c);
+            if (c!='-'||c != '_'|| !alfanumerico ){
+            break;
+            }
+            nombreUsuarioCorrecto = true;
+        }
+        return nombreUsuarioCorrecto;
     }
 }
