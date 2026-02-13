@@ -5,10 +5,25 @@ import repositorio.interfaz.IBiblioteca;
 
 import java.util.List;
 
+
+
 public class BibliotecaControlador implements IBiblioteca {
+
+    public static void main(String[] args) {
+        String caracter="jefe";
+        for (int i = 0; i <5 ; i++) {
+            char c= caracter.charAt(i);
+            if(caracter.charAt(i)){}
+
+        }
+
+    }
+
     @Override
     public List<BibliotecaDto> mostrarBiblioteca() {
         return List.of();
+
+
     }
 
     @Override

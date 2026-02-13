@@ -10,4 +10,53 @@ public class BibliotecaDto {
     private UsuarioEntidad Usuario;
     private long idJuego;
     private JuegoEntidad Juego;
+
+    private InstalacionType instalacionType;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getIdUsario() {
+        return idUsario;
+    }
+
+    public void setIdUsario(long idUsario) {
+        this.idUsario = idUsario;
+    }
+
+    public UsuarioEntidad getUsuario() {
+        return Usuario;
+    }
+
+    public void setUsuario(UsuarioEntidad usuario) {
+        Usuario = usuario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public void setIdJuego(long idJuego) {
+        this.idJuego = idJuego;
+    }
+
+    public JuegoEntidad getJuego() {
+        return Juego;
+    }
+
+    public void setJuego(JuegoEntidad juego) {
+        Juego = juego;
+    }
+
+    public BibliotecaDto(UsuarioEntidad usuario, JuegoEntidad juego) {
+        this.id=id;
+        Usuario = usuario;
+        Juego = juego;
+        this.instalacionType=instalacionType;
+    }
 }
