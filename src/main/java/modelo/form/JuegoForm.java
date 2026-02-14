@@ -76,6 +76,7 @@ public class JuegoForm {
         if (clasificaionEdad==null){
             errores.add(new ErrorDto("clasificacion",ErrorType.REQUERIDO));
         }
+        //que sea de la lista
 
         //idioma
         if (!idiomas.isEmpty()&&idiomas.size()<1){
@@ -85,6 +86,7 @@ public class JuegoForm {
             errores.add(new ErrorDto("idioma", ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //estado
+
         return errores;
     }
 

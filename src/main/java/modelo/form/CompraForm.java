@@ -1,4 +1,4 @@
 package modelo.form;
 
-public class CompraForm {
+public class   CompraForm {
 }
