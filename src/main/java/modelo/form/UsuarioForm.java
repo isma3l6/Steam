@@ -11,6 +11,14 @@ public class UsuarioForm {
     private String apellido;
     private Date fechaNacimiento;
 
+    public UsuarioForm(String nombreUsuario, String email, String apellido, String nombre, Date fechaNacimiento) {
+        this.nombreUsuario = nombreUsuario;
+        this.email = email;
+        this.apellido = apellido;
+        this.nombre = nombre;
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
     public List<ErrorDto> validarUsuario(){
         List<ErrorDto>errores=new ArrayList<ErrorDto>();
         //nombre usuario

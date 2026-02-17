@@ -19,6 +19,8 @@ public class JuegoForm {
     private List<String>idiomas;
     private EstadoJuegoType estadoJuego;
 
+
+
     public List<ErrorDto> validarJuego() {
         var errores = new ArrayList<ErrorDto>();
         if (titulo.isBlank() || titulo == null) {
