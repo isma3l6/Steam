@@ -2,6 +2,7 @@ package modelo.form;
 
 import modelo.entidad.ClasificacionType;
 import modelo.entidad.EstadoJuegoType;
+import modelo.entidad.JuegoEntidad;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,32 +13,42 @@ public class BibliotecaForm {
     private long idUsario;
     private long idJuego;
     private Date fechaAdquisicion;
+    private double tiempoJugado;
 
     public List<ErrorDto> validarBiblioteca() {
         var errores = new ArrayList<ErrorDto>();
-        if (idUsario == 0){
+        if (idUsario == 0) {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (buscarUsuario() == "Lista vacia") {
+        if (buscarUsuario().isEmpty) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //Juego
-        if (idJuego == 0){
+        if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (buscarJuego() == "Lista bacia"){
+        if (buscarJuego().isEmpty) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
-        if (juegoUnico()== true){
+        if (!juegoUnico(idJuego)) {
             errores.add(new ErrorDto("Juego", ErrorType.DUPLICADO));
+        }
+        //Fecha Adquisicion No puede ser futura, No anterior fecha registro user
+        if (tiempoJugado < 0) {
+            errores.add(new ErrorDto("Juego", ErrorType.FORMATO_INVALIDO));
         }
         return errores;
     }
 
-    private boolean juegoUnico() {
+    private boolean juegoUnico(long idJuego) {
         // no se si hacerlo general, porque que el juego este dos veces en Steam no me tiene sentido
-        //
+        var listaJuegos = new ArrayList<Long>();
+        for (int i = 0; i < listaJuegos.size(); i++) {
+            if (idJuego == i) {
+                return false;
+            }
+        }
         return true;
     }
 

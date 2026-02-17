@@ -127,7 +127,7 @@ public class UsuarioForm {
         String parteLocal = partes[0];
         String parteDominio = partes[1];
 
-        boolean parteLocalCorrecto = false;
+
         for (int i = 0; i < parteLocal.length(); i++) {
             char e = parteLocal.charAt(i);
             char d = parteDominio.charAt(i);
