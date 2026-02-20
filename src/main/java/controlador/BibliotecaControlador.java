@@ -1,58 +1,70 @@
 package controlador;
 
 import modelo.dto.BibliotecaDto;
+import modelo.entidad.BibliotecaEntidad;
+import modelo.entidad.JuegoEntidad;
+import modelo.entidad.UsuarioEntidad;
+import modelo.form.BibliotecaForm;
+import repositorio.inmemory.BibiliotecaRepoInMemory;
+import repositorio.inmemory.JuegoRepoInMemory;
+import repositorio.inmemory.UsuarioRepoInMemory;
 import repositorio.interfaz.IBiblioteca;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
+public class BibliotecaControlador  {
+    private BibiliotecaRepoInMemory bibliotecaRepo;
+    private UsuarioRepoInMemory usuarioRepo;
+    private JuegoRepoInMemory juegoRepo;
 
-public class BibliotecaControlador implements IBiblioteca {
-
-    public static void main(String[] args) {
-        String caracter="jefe";
-        for (int i = 0; i <5 ; i++) {
-            char c= caracter.charAt(i);
-            if(caracter.charAt(i)){}
-
-        }
-
+    public BibliotecaController(BibiliotecaRepoInMemory bibliotecaRepo,
+                                UsuarioRepoInMemory usuarioRepo,
+                                JuegoRepoInMemory juegoRepo) {
+        this.bibliotecaRepo = bibliotecaRepo;
+        this.usuarioRepo = usuarioRepo;
+        this.juegoRepo = juegoRepo;
     }
 
-    @Override
-    public List<BibliotecaDto> mostrarBiblioteca() {
-        return List.of();
+    // 🔹 Añadir juego a biblioteca
+    public String añadirJuego(Long usuarioId, Long juegoId) {
 
+        UsuarioEntidad usuario = usuarioRepo.buscarPorId(usuarioId);
+        JuegoEntidad juego = juegoRepo.buscarPorId(juegoId);
 
+        if (usuario==null || juego==null)
+            return "Usuario o Juego no encontrado";
+
+        BibliotecaForm entrada = new BibliotecaForm(null, usuario.get(), juego.get());
+        bibliotecaRepo.adquirirJuego(entrada);
+
+        return "Juego añadido a biblioteca";
     }
 
-    @Override
-    public BibliotecaDto anhadirJuego() {
-        return null;
+    // 🔹 Ver biblioteca
+    public List<BibliotecaEntidad> verBiblioteca(Long usuarioId) {
+
+        return bibliotecaRepo.listarTodos().stream()
+                .filter(b -> b.getUsuario().getId().equals(usuarioId))
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public BibliotecaDto elliminarJuegp() {
-        return null;
-    }
+    // 🔹 Actualizar tiempo de juego
+    public String actualizarTiempo(Long usuarioId, Long juegoId, double horas) {
 
-    @Override
-    public List<BibliotecaDto> actualizarTiempoJuego() {
-        return List.of();
-    }
+        BibliotecaEntidad entrada = bibliotecaRepo.buscar(usuarioId, juegoId);
 
-    @Override
-    public BibliotecaDto consultarUltimaSesion() {
-        return null;
-    }
+        if (entrada==null)
+            return "Entrada no encontrada";
 
-    @Override
-    public List<BibliotecaDto> filtrarBiblioteca() {
-        return List.of();
-    }
+        if (horas <= 0)
+            return "Horas inválidas";
 
-    @Override
-    public List<BibliotecaDto> verestadisticas() {
-        return List.of();
+        entrada.setTiempoJuegoTotal(b.getTiempoJuegoTotal() + horas);
+        entrada.setUltimaFechaJuego(LocalDateTime.now());
+
+        return "Tiempo total: " + entrada.getTiempoJuegoTotal();
     }
 }
