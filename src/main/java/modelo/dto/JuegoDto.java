@@ -18,4 +18,12 @@ public class JuegoDto {
     //categoria, clasificacion y Estado ponerlo como enum
     private ClasificacionType categoria;
 
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, ClasificacionType categoria) {
+        this.titulo = titulo;
+        this.desarrollador = desarrollador;
+        this.fechaLanzamiento = fechaLanzamiento;
+        this.precioBase = precioBase;
+        this.procentajeDescuento = procentajeDescuento;
+        this.categoria = categoria;
+    }
 }
