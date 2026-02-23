@@ -55,7 +55,9 @@ public class BibliotecaDto {
 
     public BibliotecaDto(UsuarioEntidad usuario, JuegoEntidad juego) {
         this.id=id;
+        this.idUsario=usuario.getId();
         Usuario = usuario;
+        this.idJuego=getIdJuego();
         Juego = juego;
         this.instalacionType=instalacionType;
     }

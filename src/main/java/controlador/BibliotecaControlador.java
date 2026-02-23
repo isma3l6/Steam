@@ -1,70 +1,184 @@
 package controlador;
 
-import modelo.dto.BibliotecaDto;
 import modelo.entidad.BibliotecaEntidad;
-import modelo.entidad.JuegoEntidad;
-import modelo.entidad.UsuarioEntidad;
-import modelo.form.BibliotecaForm;
-import repositorio.inmemory.BibiliotecaRepoInMemory;
-import repositorio.inmemory.JuegoRepoInMemory;
-import repositorio.inmemory.UsuarioRepoInMemory;
-import repositorio.interfaz.IBiblioteca;
+import modelo.entidad.InstalacionType;
+import repositorio.interfaz.IBibliotecaRepo;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
+public class BibliotecaControlador {
 
-public class BibliotecaControlador  {
-    private BibiliotecaRepoInMemory bibliotecaRepo;
-    private UsuarioRepoInMemory usuarioRepo;
-    private JuegoRepoInMemory juegoRepo;
+    private final IBibliotecaRepo repo;
 
-    public BibliotecaController(BibiliotecaRepoInMemory bibliotecaRepo,
-                                UsuarioRepoInMemory usuarioRepo,
-                                JuegoRepoInMemory juegoRepo) {
-        this.bibliotecaRepo = bibliotecaRepo;
-        this.usuarioRepo = usuarioRepo;
-        this.juegoRepo = juegoRepo;
+    public BibliotecaControlador(IBibliotecaRepo repo) {
+        this.repo = repo;
     }
 
-    // 🔹 Añadir juego a biblioteca
-    public String añadirJuego(Long usuarioId, Long juegoId) {
 
-        UsuarioEntidad usuario = usuarioRepo.buscarPorId(usuarioId);
-        JuegoEntidad juego = juegoRepo.buscarPorId(juegoId);
+    // VER BIBLIOTECA PERSONAL
 
-        if (usuario==null || juego==null)
-            return "Usuario o Juego no encontrado";
+    public List<BibliotecaEntidad> verBiblioteca(Long usuarioId, String orden) {
 
-        BibliotecaForm entrada = new BibliotecaForm(null, usuario.get(), juego.get());
-        bibliotecaRepo.adquirirJuego(entrada);
-
-        return "Juego añadido a biblioteca";
-    }
-
-    // 🔹 Ver biblioteca
-    public List<BibliotecaEntidad> verBiblioteca(Long usuarioId) {
-
-        return bibliotecaRepo.listarTodos().stream()
-                .filter(b -> b.getUsuario().getId().equals(usuarioId))
+        var lista = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId)
                 .collect(Collectors.toList());
+
+        if (orden != null) {
+            switch (orden.toLowerCase()) {
+                case "alfabetico" ->
+                        lista.sort(Comparator.comparing(b -> b.getIdJuego()));
+
+                case "tiempo" ->
+                        lista.sort(Comparator.comparing(BibliotecaEntidad::getHorasJugadas).reversed());
+
+                case "ultima" ->
+                        lista.sort(Comparator.comparing(BibliotecaEntidad::getJugadoPorUltimavez,
+                                Comparator.nullsLast(Comparator.reverseOrder())));
+
+                case "fecha" ->
+                        lista.sort(Comparator.comparing(BibliotecaEntidad::getFechaAdquisicion));
+            }
+        }
+
+        return lista;
     }
 
-    // 🔹 Actualizar tiempo de juego
-    public String actualizarTiempo(Long usuarioId, Long juegoId, double horas) {
 
-        BibliotecaEntidad entrada = bibliotecaRepo.buscar(usuarioId, juegoId);
+       // AÑADIR JUEGO
 
-        if (entrada==null)
-            return "Entrada no encontrada";
+    public String agregarJuego(Long usuarioId, Long juegoId) {
 
-        if (horas <= 0)
-            return "Horas inválidas";
+        boolean duplicado = repo.obtenerTodos().stream()
+                .anyMatch(b -> b.getIdUsuario() == usuarioId &&
+                        b.getIdJuego() == juegoId);
 
-        entrada.setTiempoJuegoTotal(b.getTiempoJuegoTotal() + horas);
-        entrada.setUltimaFechaJuego(LocalDateTime.now());
+        if (duplicado) {
+            return "El juego ya existe en la biblioteca";
+        }
 
-        return "Tiempo total: " + entrada.getTiempoJuegoTotal();
+        var entidad = new BibliotecaEntidad(
+                new Random().nextLong(),
+                usuarioId,
+                juegoId,
+                new Date(),
+                0,
+                null,
+                InstalacionType.NO_INSTALADO
+        );
+
+        repo.obtenerTodos().add(entidad);
+
+        return "Juego añadido correctamente";
+    }
+
+
+     // ELIMINAR JUEGO
+
+    public String eliminarJuego(Long usuarioId, Long juegoId) {
+
+        var biblioteca = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId &&
+                        b.getIdJuego() == juegoId)
+                .findFirst();
+
+        if (biblioteca.isEmpty()) {
+            return "El juego no existe en la biblioteca";
+        }
+
+        repo.eliminar(biblioteca.get().getId());
+
+        return "Juego eliminado correctamente";
+    }
+
+
+       // ACTUALIZAR TIEMPO DE JUEGO
+
+    public String actualizarHoras(Long usuarioId, Long juegoId, int horas) {
+
+        if (horas <= 0) {
+            return "Las horas deben ser positivas";
+        }
+
+        var biblioteca = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId &&
+                        b.getIdJuego() == juegoId)
+                .findFirst();
+
+        if (biblioteca.isEmpty()) {
+            return "Juego no encontrado en biblioteca";
+        }
+
+        var entidad = biblioteca.get();
+        entidad.setHorasJugadas(entidad.getHorasJugadas() + horas);
+        entidad.setJugadoPorUltimavez(new Date());
+
+        return "Nuevo tiempo total: " + entidad.getHorasJugadas() + " horas";
+    }
+
+
+    // CONSULTAR ÚLTIMA SESIÓN
+
+    public String consultarUltimaSesion(Long usuarioId, Long juegoId) {
+
+        var biblioteca = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId &&
+                        b.getIdJuego() == juegoId)
+                .findFirst();
+
+        if (biblioteca.isEmpty()) {
+            return "Juego no encontrado";
+        }
+
+        var fecha = biblioteca.get().getJugadoPorUltimavez();
+
+        if (fecha == null) {
+            return "Nunca jugado";
+        }
+
+        long diferencia = System.currentTimeMillis() - fecha.getTime();
+        long dias = diferencia / (1000 * 60 * 60 * 24);
+
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+        return "Última sesión: hace " + dias +
+                " días (" + formato.format(fecha) + ")";
+    }
+
+
+       // ESTADÍSTICAS
+
+    public Map<String, Object> estadisticas(Long usuarioId) {
+
+        var lista = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId)
+                .collect(Collectors.toList());
+
+        int totalJuegos = lista.size();
+        int horasTotales = lista.stream()
+                .mapToInt(BibliotecaEntidad::getHorasJugadas)
+                .sum();
+
+        long instalados = lista.stream()
+                .filter(b -> b.getInstalacionType() == InstalacionType.INSTALADO)
+                .count();
+
+        var masJugado = lista.stream()
+                .max(Comparator.comparing(BibliotecaEntidad::getHorasJugadas))
+                .orElse(null);
+
+        long nuncaJugados = lista.stream()
+                .filter(b -> b.getHorasJugadas() == 0)
+                .count();
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("Total juegos", totalJuegos);
+        stats.put("Horas totales", horasTotales);
+        stats.put("Juegos instalados", instalados);
+        stats.put("Juego más jugado", masJugado);
+        stats.put("Nunca jugados", nuncaJugados);
+
+        return stats;
     }
 }

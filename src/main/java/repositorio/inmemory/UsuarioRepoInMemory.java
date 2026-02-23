@@ -1,77 +1,131 @@
 package repositorio.inmemory;
 
+import modelo.entidad.EstadoUserType;
 import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
+import repositorio.interfaz.IUsuarioRepo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-public class UsuarioRepoInMemory {
+public class UsuarioRepoInMemory implements IUsuarioRepo {
 
-    private List<UsuarioEntidad> usuarios = new ArrayList<>();
-    private Long contadorId = 1L;
+    private UsuarioEntidad[] usuarios = new UsuarioEntidad[100];
+    private int size = 0;
+    private long idCounter = 1;
 
-    // CREATE
-    public UsuarioEntidad crear(UsuarioForm usuario) {
+    /* =========================================
+       CREATE
+    ========================================= */
+    @Override
+    public UsuarioEntidad crear(UsuarioForm form) {
 
-        // Validar username único
-        boolean existe = usuarios.stream()
-                .anyMatch(u -> u.getUsername().equalsIgnoreCase(usuario.getUsername()));
-
-        if (existe) {
-            throw new RuntimeException("El nombre de usuario ya existe");
+        if (size >= usuarios.length) {
+            throw new RuntimeException("Capacidad máxima alcanzada");
         }
 
-        usuario = new Usuario(
-                contadorId++,
-                usuario.getUsername(),
-                usuario.getEmail(),
-                usuario.getPassword(),
-                usuario.getNombreReal(),
-                usuario.getPais(),
-                usuario.getFechaNacimiento(),
-                usuario.getAvatar(),
-                usuario.getSaldo(),
-                usuario.getEstado()
+        UsuarioEntidad nuevo = new UsuarioEntidad(
+                idCounter++,
+                form.getNombreUsuario(),
+                form.getEmail(),
+                form.getContrasena(),
+                form.getNombre(),
+                form.getApellido(),
+                form.getFechaNacimiento(),
+                new Date(),
+                form.getAvatr(),
+                0.0,
+                EstadoUserType.ACTIVA
         );
 
-        usuarios.add(usuario);
-        return usuario;
+        usuarios[size] = nuevo;
+        size++;
+
+        return nuevo;
     }
 
-    // READ BY ID
-    public UsuarioEntidad buscarPorId(Long id) {
-        return usuarios.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
+    /* =========================================
+       READ BY ID
+    ========================================= */
+    @Override
+    public UsuarioEntidad obtenerPorId(long id) {
 
-    // READ ALL
-    public List<UsuarioEntidad> listarTodos() {
-        return usuarios;
-    }
-
-    // UPDATE
-    public void actualizar(Long id, UsuarioForm datosActualizados) {
-        UsuarioEntidad usuario = buscarPorId(id);
-
-        if (usuario != null) {
-            usuario.setNombreUsuario(datosActualizados.getNombreUsuario());
-            usuario.setEmail(datosActualizados.getEmail());
-            usuario.setContraseña(datosActualizados.getContraseña());
-            usuario.setNombre(datosActualizados.getNombre());
-            usuario.setPais(datosActualizados.getPais());
-            usuario.setAvatar(datosActualizados.getAvatar());
-            usuario.setSaldo(datosActualizados.getSaldo());
-            usuario.setEstadoType(datosActualizados.getEstadoType());
-        } else {
-            throw new RuntimeException("Usuario no encontrado");
+        for (int i = 0; i < size; i++) {
+            if (usuarios[i].getId() == id) {
+                return usuarios[i];
+            }
         }
+        return null;
     }
 
-    // DELETE
-    public void eliminar(Long id) {
-        usuarios.removeIf(u -> u.getId().equals(id));
+    /* =========================================
+       READ ALL
+    ========================================= */
+    @Override
+    public UsuarioEntidad[] obtenerTodos() {
+
+        UsuarioEntidad[] copia = new UsuarioEntidad[size];
+
+        for (int i = 0; i < size; i++) {
+            copia[i] = usuarios[i];
+        }
+
+        return copia;
+    }
+
+    /* =========================================
+       UPDATE
+    ========================================= */
+    @Override
+    public UsuarioEntidad actualizar(long id, UsuarioForm form) {
+
+        for (int i = 0; i < size; i++) {
+
+            if (usuarios[i].getId() == id) {
+
+                UsuarioEntidad actualizado = new UsuarioEntidad(
+                        id,
+                        form.getNombreUsuario(),
+                        form.getEmail(),
+                        form.getContrasena(),
+                        form.getNombre(),
+                        form.getApellido(),
+                        form.getFechaNacimiento(),
+                        usuarios[i].getFechaRegistro(), // mantiene fecha registro
+                        form.getAvatr(),
+                        usuarios[i].getSaldo(), // mantiene saldo
+                        usuarios[i].getEstadoType()
+                );
+
+                usuarios[i] = actualizado;
+                return actualizado;
+            }
+        }
+
+        return null;
+    }
+
+    /* =========================================
+       DELETE
+    ========================================= */
+    @Override
+    public boolean eliminar(long id) {
+
+        for (int i = 0; i < size; i++) {
+
+            if (usuarios[i].getId() == id) {
+
+                // desplazamiento a la izquierda
+                for (int j = i; j < size - 1; j++) {
+                    usuarios[j] = usuarios[j + 1];
+                }
+
+                usuarios[size - 1] = null;
+                size--;
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -169,4 +169,35 @@ public class UsuarioForm {
         return nombreUsuarioCorrecto;
     }
 
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public Date getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public String getAvatr() {
+        return avatr;
+    }
 }

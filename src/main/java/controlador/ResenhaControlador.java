@@ -1,72 +1,127 @@
 package controlador;
 
-import modelo.dto.ResenhaDto;
 import modelo.entidad.EstadoResenhaType;
-import modelo.entidad.JuegoEntidad;
 import modelo.entidad.ResenhaEntidad;
-import modelo.entidad.UsuarioEntidad;
-import repositorio.inmemory.JuegoRepoInMemory;
+import modelo.form.ResenhaForm;
 import repositorio.inmemory.ResenhaRepoInMemory;
+import repositorio.inmemory.BibliotecaRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
-import repositorio.interfaz.IResenha;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ResenhaControlador {
 
-    private ResenhaRepoInMemory resenhaRepo;
-    private UsuarioRepoInMemory usuarioRepo;
-    private JuegoRepoInMemory juegoRepo;
+    private final ResenhaRepoInMemory resenhaRepo;
+    private final BibliotecaRepoInMemory bibliotecaRepo;
+    private final UsuarioRepoInMemory usuarioRepo;
 
-    public ReseñaControlador(ResenhaRepoInMemory reseñaRepo,
-                            UsuarioRepoInMemory usuarioRepo,
-                            JuegoRepoInMemory juegoRepo) {
+    public ResenhaControlador(ResenhaRepoInMemory resenhaRepo,
+                             BibliotecaRepoInMemory bibliotecaRepo,
+                             UsuarioRepoInMemory usuarioRepo) {
         this.resenhaRepo = resenhaRepo;
+        this.bibliotecaRepo = bibliotecaRepo;
         this.usuarioRepo = usuarioRepo;
-        this.juegoRepo = juegoRepo;
     }
 
-    // 🔹 Escribir reseña
-    public String escribirReseña(Long usuarioId, Long juegoId,
-                                 boolean recomendado,
-                                 String texto) {
 
-        UsuarioEntidad usuario = usuarioRepo.buscarPorId(usuarioId);
-        JuegoEntidad juego = juegoRepo.buscarPorId(juegoId);
+     //ESCRIBIR RESEÑA
 
-        if (usuario==null || juego==null)
-            return "Usuario o juego no encontrado";
+    public String escribirResenha(ResenhaForm form) {
 
-        ResenhaEntidad resenha = new ResenhaEntidad(null,
-                usuario, juego,
-                recomendado, texto, 0);
+        // 1. Validaciones de formato
+        var errores = form.validarResena();
+        if (!errores.isEmpty()) {
+            return "Errores de validación: " + errores.toString();
+        }
 
-        resenhaRepo.crearReseña(resenha);
+        // 2. Usuario existe
+        var usuario = usuarioRepo.obtenerPorId(form.getIdUsuario());
+        if (usuario == null) return "Error: Usuario no encontrado";
 
-        return "Reseña creada con ID: " + resenha.getId();
+        // 3. Juego en biblioteca
+        if (!bibliotecaRepo.tieneJuego(form.getIdUsuario(), form.getIdJuego())) {
+            return "Error: El usuario no posee este juego";
+        }
+
+        // 4. Reseña duplicada
+        if (resenhaRepo.existeResena(form.getIdUsuario(), form.getIdJuego())) {
+            return "Error: Ya existe una reseña para este juego";
+        }
+
+        // 5. Crear reseña
+        var resenha = resenhaRepo.crear(form);
+        return "Reseña creada exitosamente con ID: " + resenha.getId();
     }
 
-    // 🔹 Ver reseñas de juego
-    public List<ResenhaEntidad> verReseñasJuego(Long juegoId) {
 
-        return resenhaRepo.listarTodas().stream()
-                .filter(r -> r.getJuego().getId().equals(juegoId)
-                        && r.getEstado() == EstadoResenhaType.PUBLICADA)
-                .collect(Collectors.toList());
+       //ELIMINAR RESEÑA
+
+    public String eliminarResenha(long idResenha, long idUsuario) {
+        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
+        if (resenha == null) return "Error: Reseña no encontrada o no pertenece al usuario";
+
+        boolean eliminado = resenhaRepo.eliminar(resenha.getId());
+        return eliminado ? "Reseña eliminada correctamente" : "Error al eliminar reseña";
     }
 
-    // 🔹 Eliminar reseña
-    public String eliminarReseña(Long reseñaId) {
 
-        ResenhaEntidad resenha = resenhaRepo.buscarPorId(resenhaId);
+       //OCULTAR RESEÑA
 
-        if (resenha==null)
-            return "Reseña no encontrada";
+    public String ocultarResenha(long idResenha, long idUsuario) {
+        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
+        if (resenha == null) return "Error: Reseña no encontrada o no pertenece al usuario";
 
-        resenha.get().setEstado(EstadoResenhaType.ELIMINADA);
-
-        return "Reseña eliminada";
+        // Marcamos cuerpo como oculto (ejemplo simple)
+        resenha.setEstadoResenhaType(EstadoResenhaType.OCULTA);
+        return "Reseña ocultada correctamente";
     }
 
+    /* =========================================
+       4️⃣ VER RESEÑAS DE UN JUEGO
+    ========================================= */
+    public List<ResenhaEntidad> verResenasPorJuego(long idJuego, String filtro, String orden) {
+        List<ResenhaEntidad> resultado = new ArrayList<>();
+        for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
+            if (r.getNombreJuegoId() == idJuego) {
+
+                // Filtro: positivas o negativas
+                if ("positivas".equalsIgnoreCase(filtro) && !r.isRecomendado()) continue;
+                if ("negativas".equalsIgnoreCase(filtro) && r.isRecomendado()) continue;
+
+                resultado.add(r);
+            }
+        }
+
+        // Ordenar
+        if ("recientes".equalsIgnoreCase(orden)) {
+            resultado.sort(Comparator.comparing(ResenhaEntidad::getFechaPublicacion).reversed());
+        }
+        // Orden por "útiles" se podría agregar si existiera contador de votos
+
+        return resultado;
+    }
+
+    /* =========================================
+       5️⃣ VER RESEÑAS DE UN USUARIO
+    ========================================= */
+    public List<ResenhaEntidad> verResenasPorUsuario(long idUsuario, String filtroEstado) {
+        List<ResenhaEntidad> resultado = new ArrayList<>();
+        for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
+            if (r.getUsuaroId() == idUsuario) {
+                // Filtro de estado opcional: si quisiéramos oculto, eliminado, etc.
+                if (filtroEstado != null && filtroEstado.equalsIgnoreCase("oculto") &&
+                        !r.getEstadoResenhaType().equals(EstadoResenhaType.PUBLICADA)) continue;
+
+                resultado.add(r);
+            }
+        }
+
+        // Orden por fecha descendente
+        resultado.sort(Comparator.comparing(ResenhaEntidad::getFechaPublicacion).reversed());
+
+        return resultado;
+    }
 }

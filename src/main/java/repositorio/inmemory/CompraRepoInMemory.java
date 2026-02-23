@@ -1,71 +1,83 @@
 package repositorio.inmemory;
 
-import modelo.entidad.*;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class CompraRepoInMemory {
+import modelo.entidad.CompraEntidad;
+import modelo.form.CompraForm;
+import modelo.entidad.MetodoPagoType;
+import modelo.entidad.EstadoCompraType;
+import repositorio.interfaz.ICompraRepo;
 
+public class CompraRepoInMemory implements ICompraRepo {
+    private static final List<CompraEntidad> compras = new ArrayList<>();
+    private static Long idCounter = 1L;
 
-    private List<CompraEntidad> compras = new ArrayList<>();
-    private Long contadorId = 1L;
+    /* =========================================
+       CREAR COMPRA
+    ========================================= */
+    public Optional<CompraEntidad> crear(CompraForm form) {
+        var compra = new CompraEntidad(
+                new Date(),                          // fechaCompra
+                idCounter++,                          // id auto-incremental
+                form.getIdUsuario(),                  // idUsuario
+                form.getIdJuego(),                    // idJuego
+                MetodoPagoType.valueOf(form.getMetodoPago().toUpperCase()), // metodoPago
+                form.getPrecioFinal(),                // precio
+                EstadoCompraType.PENDIENTE,           // estado inicial
+                form.getDescuento()                   // descuento
+        );
+        compras.add(compra);
+        return Optional.of(compra);
+    }
 
-    // CREATE
-    public CompraEntidad realizarCompra(UsuarioEntidad usuario,
-                                        JuegoEntidad juego,
-                                        MetodoPagoType metodoPago,
-                                        BigDecimal precio,
-                                        double descuento) {
+    /* =========================================
+       OBTENER POR ID
+    ========================================= */
+    public Optional<CompraEntidad> obtenerPorId(Long id) {
+        return compras.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst();
+    }
 
-        CompraEntidad nueva = new CompraEntidad(
-                contadorId++,
-                usuario.getId(),
-                juego.getId(),
-                metodoPago,
-                precio,
-                descuento,
-                EstadoCompraType.COMPLETADA
+    /* =========================================
+       OBTENER TODAS LAS COMPRAS
+    ========================================= */
+    public List<CompraEntidad> obtenerTodos() {
+        return new ArrayList<>(compras);
+    }
+
+    /* =========================================
+       ACTUALIZAR COMPRA
+    ========================================= */
+    public Optional<CompraEntidad> actualizar(Long id, CompraForm form) {
+        var compraOpt = obtenerPorId(id);
+        if (compraOpt.isEmpty()) {
+            throw new IllegalArgumentException("Compra no encontrada");
+        }
+
+        var compraActualizada = new CompraEntidad(
+                compraOpt.get().getFechaCompra(),          // mantenemos la fecha original
+                id,
+                form.getIdUsuario(),
+                form.getIdJuego(),
+                MetodoPagoType.valueOf(form.getMetodoPago().toUpperCase()),
+                form.getPrecioFinal(),
+                compraOpt.get().getEstadoCompraType(),    // mantenemos el estado actual
+                form.getDescuento()
         );
 
-        compras.add(nueva);
-        return nueva;
+        compras.removeIf(c -> c.getId() == id);
+        compras.add(compraActualizada);
+        return Optional.of(compraActualizada);
     }
 
-    // READ BY ID
-    public CompraEntidad buscarPorId(Long id) {
-        return compras.stream()
-                .filter(c -> c.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    // READ ALL
-    public List<CompraEntidad> listarTodas() {
-        return compras;
-    }
-
-    // READ por usuario
-    public List<CompraEntidad> listarPorUsuario(UsuarioEntidad usuario) {
-        return compras.stream()
-                .filter(c -> c.getUsuario().getId().equals(usuario.getId()))
-                .collect(Collectors.toList());
-    }
-
-    // UPDATE estado (ej: reembolso)
-    public void cambiarEstado(Long id, EstadoCompraType estado) {
-        CompraEntidad compra = buscarPorId(id);
-        if (compra != null) {
-            compra.setEstadoCompraType(estado);
-        } else {
-            throw new RuntimeException("Compra no encontrada");
-        }
-    }
-
-    // DELETE
-    public void eliminar(Long id) {
-        compras.removeIf(c -> c.getId().equals(id));
+    /* =========================================
+       ELIMINAR COMPRA
+    ========================================= */
+    public boolean eliminar(Long id) {
+        return compras.removeIf(c -> c.getId() == id);
     }
 }

@@ -52,4 +52,19 @@ public class BibliotecaForm {
         return true;
     }
 
+    public long getIdUsario() {
+        return idUsario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public Date getFechaAdquisicion() {
+        return fechaAdquisicion;
+    }
+
+    public double getTiempoJugado() {
+        return tiempoJugado;
+    }
 }

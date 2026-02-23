@@ -3,9 +3,9 @@ package modelo.entidad;
 import java.util.Date;
 
 public class ResenhaEntidad {
-    private int id;
-    private String usuaro;
-    private String nombreJuego;
+    private long id;
+    private long usuaroId;
+    private long nombreJuegoId;
     private boolean recomendado;
     private String texto;
     private Date fechaPublicacion;
@@ -13,28 +13,28 @@ public class ResenhaEntidad {
     private EstadoResenhaType estadoResenhaType;
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getUsuaro() {
-        return usuaro;
+    public long getUsuaroId() {
+        return usuaroId;
     }
 
     public void setUsuaro(String usuaro) {
-        this.usuaro = usuaro;
+        this.usuaroId = usuaroId;
     }
 
-    public String getNombreJuego() {
-        return nombreJuego;
+    public long getNombreJuegoId() {
+        return nombreJuegoId;
     }
 
     public void setNombreJuego(String nombreJuego) {
-        this.nombreJuego = nombreJuego;
+        this.nombreJuegoId = nombreJuegoId;
     }
 
     public boolean isRecomendado() {
@@ -77,10 +77,10 @@ public class ResenhaEntidad {
         this.estadoResenhaType = estadoResenhaType;
     }
 
-    public ResenhaEntidad(int id, String usuaro, String nombreJuego, boolean recomendado, String texto, Date fechaPublicacion, Date fechaEdit, EstadoResenhaType estadoResenhaType) {
+    public ResenhaEntidad(long id, long usuaroId, long nombreJuegoId, boolean recomendado, String texto, Date fechaPublicacion, Date fechaEdit, EstadoResenhaType estadoResenhaType) {
         this.id = id;
-        this.usuaro = usuaro;
-        this.nombreJuego = nombreJuego;
+        this.usuaroId = usuaroId;
+        this.nombreJuegoId = nombreJuegoId;
         this.recomendado = recomendado;
         this.texto = texto;
         this.fechaPublicacion = fechaPublicacion;

@@ -8,6 +8,7 @@ public class ResenhaForm {
     private long idJuego;
     private boolean recomendado;
     private String cuerpoResena;
+private double horasJugadas;
 
     public List<ErrorDto> validarResena() {
         var errores = new ArrayList<ErrorDto>();
@@ -34,8 +35,31 @@ public class ResenhaForm {
             errores.add(new ErrorDto("reseña",ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //Horas jugadas
+        if (horasJugadas<0){
+            errores.add(new ErrorDto("horas jugadas",ErrorType.VALOR_DEMASIADO_BAJO));
+        }
         //Estado
         return errores;
 
+    }
+
+    public long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public String getCuerpoResena() {
+        return cuerpoResena;
+    }
+
+    public boolean isRecomendado() {
+        return recomendado;
+    }
+
+    public double getHorasJugadas() {
+        return horasJugadas;
     }
 }

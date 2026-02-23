@@ -44,5 +44,29 @@ public class CompraForm {
         //Estado pendiente
         return errores;
     }
+
+    public long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public String getMetodoPago() {
+        return metodoPago;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public double getPrecioFinal() {
+        return precioFinal;
+    }
+
+    public int getDescuento() {
+        return descuento;
+    }
 }
 

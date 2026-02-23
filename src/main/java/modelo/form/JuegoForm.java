@@ -92,4 +92,39 @@ public class JuegoForm {
         return errores;
     }
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDesarrollador() {
+        return desarrollador;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public Date getFechaLanzamiento() {
+        return fechaLanzamiento;
+    }
+
+    public double getPrecioBase() {
+        return precioBase;
+    }
+
+    public int getPorcentajeDescuento() {
+        return porcentajeDescuento;
+    }
+
+    public ClasificacionType getClasificaionEdad() {
+        return clasificaionEdad;
+    }
+
+    public List<String> getIdiomas() {
+        return idiomas;
+    }
+
+    public EstadoJuegoType getEstadoJuego() {
+        return estadoJuego;
+    }
 }

@@ -1,87 +1,120 @@
 package repositorio.inmemory;
 
 import modelo.entidad.EstadoResenhaType;
-import modelo.entidad.JuegoEntidad;
 import modelo.entidad.ResenhaEntidad;
-import modelo.entidad.UsuarioEntidad;
+import modelo.form.ResenhaForm;
+import repositorio.interfaz.IResenhaRepo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Date;
 
-public class ResenhaRepoInMemory {
+public class ResenhaRepoInMemory implements IResenhaRepo {
 
-    private List<ResenhaEntidad> reseñas = new ArrayList<>();
-    private Long contadorId = 1L;
+    private ResenhaEntidad[] resenas = new ResenhaEntidad[200];
+    private int size = 0;
+    private long idCounter = 1L;
 
-    // CREATE
-    public ResenhaEntidad crearReseña(UsuarioEntidad usuario,
-                                       JuegoEntidad juego,
-                                       boolean recomendado,
-                                       String texto,
-                                       double horasJugadas) {
+    /* =========================================
+       CREATE
+    ========================================= */
+    @Override
+    public ResenhaEntidad crear(ResenhaForm form) {
+
+        if (size >= resenas.length) {
+            throw new RuntimeException("Capacidad máxima alcanzada");
+        }
 
         ResenhaEntidad nueva = new ResenhaEntidad(
-                contadorId++,
-                usuario.getId(),
-                juego.getId(),
-                recomendado,
-                texto,
-                horasJugadas,
+                idCounter++,
+                form.getIdUsuario(),
+                form.getIdJuego(),
+                form.isRecomendado(),
+                form.getCuerpoResena(),
+                new Date() ,// fecha de creación
+                new Date(),
                 EstadoResenhaType.PUBLICADA
+
         );
 
-        reseñas.add(nueva);
+        resenas[size] = nueva;
+        size++;
+
         return nueva;
     }
 
-    // READ BY ID
-    public ResenhaEntidad buscarPorId(Long id) {
-        return reseñas.stream()
-                .filter(r -> r.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    // READ ALL
-    public List<ResenhaEntidad> listarTodas() {
-        return reseñas;
-    }
-
-    // READ por usuario
-    public List<ResenhaEntidad> listarPorUsuario(UsuarioEntidad usuario) {
-        return reseñas.stream()
-                .filter(r -> r.getUsuario().getId().equals(usuario.getId()))
-                .collect(Collectors.toList());
-    }
-
-    // READ por juego
-    public List<ResenhaEntidad> listarPorJuego(JuegoEntidad juego) {
-        return reseñas.stream()
-                .filter(r -> r.getJuego().getId().equals(juego.getId()))
-                .collect(Collectors.toList());
-    }
-
-    // UPDATE
-    public void editarResenha(Long id, String nuevoTexto, boolean recomendado, double horas) {
-        ResenhaEntidad reseña = buscarPorId(id);
-        if (resenha != null) {
-            resenha.editarResenha(nuevoTexto, recomendado, horas);
-        } else {
-            throw new RuntimeException("Reseña no encontrada");
+    /* =========================================
+       READ BY USUARIO + JUEGO
+    ========================================= */
+    @Override
+    public ResenhaEntidad obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
+        for (int i = 0; i < size; i++) {
+            if (resenas[i].getUsuaroId() == idUsuario &&
+                    resenas[i].getNombreJuegoId() == idJuego) {
+                return resenas[i];
+            }
         }
+        return null;
     }
 
-    // Cambiar estado (ocultar o eliminar)
-    public void cambiarEstado(Long id, EstadoResenhaType estado) {
-        ResenhaEntidad reseña = buscarPorId(id);
-        if (reseña != null) {
-            reseña.setEstadoResenhaType(estado);
+    /* =========================================
+       READ ALL
+    ========================================= */
+    @Override
+    public ResenhaEntidad[] obtenerTodas() {
+        ResenhaEntidad[] copia = new ResenhaEntidad[size];
+        for (int i = 0; i < size; i++) {
+            copia[i] = resenas[i];
         }
+        return copia;
     }
 
-    // DELETE físico
-    public void eliminar(Long id) {
-        reseñas.removeIf(r -> r.getId().equals(id));
+    /* =========================================
+       UPDATE
+    ========================================= */
+    @Override
+    public ResenhaEntidad actualizar(long id, ResenhaForm form) {
+        for (int i = 0; i < size; i++) {
+            if (resenas[i].getId() == id) {
+                ResenhaEntidad actualizada = new ResenhaEntidad(
+                        id,
+                        form.getIdUsuario(),
+                        form.getIdJuego(),
+                        form.isRecomendado(),
+                        form.getCuerpoResena(),
+                        resenas[i].getFechaPublicacion(), // mantener fecha original
+                        new Date(),
+                        EstadoResenhaType.PUBLICADA
+                );
+                resenas[i] = actualizada;
+                return actualizada;
+            }
+        }
+        return null;
+    }
+
+    /* =========================================
+       DELETE
+    ========================================= */
+    @Override
+    public boolean eliminar(long id) {
+        for (int i = 0; i < size; i++) {
+            if (resenas[i].getId() == id) {
+                // desplazamiento a la izquierda
+                for (int j = i; j < size - 1; j++) {
+                    resenas[j] = resenas[j + 1];
+                }
+                resenas[size - 1] = null;
+                size--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* =========================================
+       EXISTE RESEÑA
+    ========================================= */
+    @Override
+    public boolean existeResena(long idUsuario, long idJuego) {
+        return obtenerPorUsuarioYJuego(idUsuario, idJuego) != null;
     }
 }

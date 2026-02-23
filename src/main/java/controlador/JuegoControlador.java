@@ -1,76 +1,219 @@
 package controlador;
 
-import modelo.dto.JuegoDto;
-import modelo.entidad.ClasificacionType;
-import modelo.entidad.EstadoJuegoType;
-import modelo.entidad.JuegoEntidad;
+import modelo.entidad.*;
 import modelo.form.JuegoForm;
-import repositorio.inmemory.JuegoRepoInMemory;
-import repositorio.interfaz.IJuego;
+import repositorio.interfaz.IJuegoRepo;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.text.DecimalFormat;
+import java.util.*;
 
-public class JuegoControlador  {
-    private JuegoRepoInMemory juegoRepo;
+public class JuegoControlador {
 
-    public JuegoControlador(JuegoRepoInMemory juegoRepo) {
-        this.juegoRepo = juegoRepo;
+    private final IJuegoRepo repo;
+
+    public JuegoControlador(IJuegoRepo repo) {
+        this.repo = repo;
     }
 
-    // 🔹 Añadir juego
-    public String añadirJuego(String titulo, String descripcion,
-                              String desarrollador,
-                              LocalDate fechaLanzamiento,
-                              double precioBase) {
 
-        if (titulo == null || titulo.isEmpty())
-            return "Título obligatorio";
+      //AÑADIR JUEGO AL CATÁLOGO
 
-        if (precioBase <= 0)
-            return "Precio inválido";
+    public Object añadirJuego(JuegoForm form) {
 
-        JuegoForm juego = new JuegoForm(null, titulo, descripcion,
-                desarrollador, fechaLanzamiento,
-                precioBase, "General",
-                ClasificacionType.PEGI_12, List.of("Español"));
+        var errores = form.validarJuego();
 
-        juegoRepo.crear(juego);
-        return "Juego creado con ID: " + juego.getId();
+        if (!errores.isEmpty()) {
+            return errores;
+        }
+
+        JuegoEntidad juego = repo.crear(form);
+
+        return "Juego creado exitosamente con ID: " + juego.getId();
     }
 
-    // 🔹 Buscar juegos
-    public List<JuegoEntidad> buscarPorTexto(String texto) {
-        return juegoRepo.listarTodos().stream()
-                .filter(j -> j.getTitulo().toLowerCase().contains(texto.toLowerCase()))
-                .collect(Collectors.toList());
+
+       //BUSCAR JUEGOS
+
+    public List<Map<String, Object>> buscar(
+            String texto,
+            CategoriaType categoria,
+            Double precioMin,
+            Double precioMax,
+            ClasificacionType clasificacion,
+            EstadoJuegoType estado
+    ) {
+
+        JuegoEntidad[] juegos = repo.obtenerTodos();
+        List<Map<String, Object>> resultado = new ArrayList<>();
+
+        for (JuegoEntidad j : juegos) {
+
+            if (j == null) continue;
+
+            if (texto != null &&
+                    !j.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
+                continue;
+            }
+
+            if (categoria != null &&
+                    j.getCategoriaType() != categoria) {
+                continue;
+            }
+
+            if (precioMin != null &&
+                    j.getPrecioBase() < precioMin) {
+                continue;
+            }
+
+            if (precioMax != null &&
+                    j.getPrecioBase() > precioMax) {
+                continue;
+            }
+
+            if (clasificacion != null &&
+                    j.getClasificacionType() != clasificacion) {
+                continue;
+            }
+
+            if (estado != null &&
+                    j.getEstadoJuegoType() != estado) {
+                continue;
+            }
+
+            Map<String, Object> resumen = new HashMap<>();
+            resumen.put("ID", j.getId());
+            resumen.put("Título", j.getTitulo());
+            resumen.put("Desarrollador", j.getDesarrollador());
+            resumen.put("Precio Base", j.getPrecioBase());
+            resumen.put("Descuento", j.getProcentajeDescuento());
+            resumen.put("Clasificación", j.getClasificacionType());
+            resumen.put("Imagen", "imagen_placeholder.jpg");
+
+            resultado.add(resumen);
+        }
+
+        return resultado;
     }
 
-    // 🔹 Aplicar descuento
-    public String aplicarDescuento(Long id, double porcentaje) {
 
-       JuegoEntidad juegoOpt = juegoRepo.buscarPorId(id);
-        if (juegoOpt==null)
+       //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
+
+    public Map<String, Object> catalogoCompleto(String orden,
+                                                int pagina,
+                                                int tamañoPagina) {
+
+        JuegoEntidad[] juegosArray = repo.obtenerTodos();
+        List<JuegoEntidad> juegos = new ArrayList<>();
+
+        for (JuegoEntidad j : juegosArray) {
+            if (j != null) {
+                juegos.add(j);
+            }
+        }
+
+        // ORDEN
+        if (orden != null) {
+            switch (orden.toLowerCase()) {
+                case "alfabetico":
+                    juegos.sort(Comparator.comparing(JuegoEntidad::getTitulo));
+                    break;
+
+                case "precio":
+                    juegos.sort(Comparator.comparing(JuegoEntidad::getPrecioBase));
+                    break;
+
+                case "fecha":
+                    juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
+                    break;
+            }
+        }
+
+        int total = juegos.size();
+        int desde = pagina * tamañoPagina;
+        int hasta = Math.min(desde + tamañoPagina, total);
+
+        List<JuegoEntidad> paginaContenido =
+                (desde < total) ? juegos.subList(desde, hasta)
+                        : new ArrayList<>();
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("pagina", pagina);
+        resultado.put("tamañoPagina", tamañoPagina);
+        resultado.put("totalJuegos", total);
+        resultado.put("contenido", paginaContenido);
+
+        return resultado;
+    }
+
+
+      //CONSULTAR DETALLES DE JUEGO
+
+    public Object detallesJuego(int id) {
+
+        JuegoEntidad juego = repo.obtenerPorId(id);
+
+        if (juego == null) {
             return "Juego no encontrado";
+        }
 
-        if (porcentaje < 0 || porcentaje > 100)
-            return "Descuento inválido";
+        Map<String, Object> detalles = new HashMap<>();
+        detalles.put("ID", juego.getId());
+        detalles.put("Título", juego.getTitulo());
+        detalles.put("Descripción", juego.getDescripcion());
+        detalles.put("Desarrollador", juego.getDesarrollador());
+        detalles.put("Fecha Lanzamiento", juego.getFechaLanzamiento());
+        detalles.put("Precio Base", juego.getPrecioBase());
+        detalles.put("Descuento", juego.getProcentajeDescuento());
+        detalles.put("Categoría", juego.getCategoriaType());
+        detalles.put("Clasificación", juego.getClasificacionType());
+        detalles.put("Estado", juego.getEstadoJuegoType());
 
-        juegoOpt.setProcentajeDescuento(porcentaje);
+        // Simulación estadísticas
+        detalles.put("Ventas totales", new Random().nextInt(10000));
+        detalles.put("Valoración media", 4.5);
+        detalles.put("Reseñas destacadas", "Muy positivo");
 
-        return "Descuento aplicado correctamente";
+        return detalles;
     }
 
-    // 🔹 Cambiar estado
-    public String cambiarEstado(Long id, EstadoJuegoType nuevoEstado) {
 
-        JuegoEntidad juegoOpt = juegoRepo.buscarPorId(id);
-        if (juegoOpt==null)
+     //APLICAR DESCUENTO
+
+    public String aplicarDescuento(int id, double porcentaje) {
+
+        if (porcentaje < 0 || porcentaje > 100) {
+            return "El descuento debe estar entre 0 y 100";
+        }
+
+        JuegoEntidad juego = repo.obtenerPorId(id);
+
+        if (juego == null) {
             return "Juego no encontrado";
+        }
 
-        juegoOpt.setEstadoJuegoType(nuevoEstado);
+        juego.setProcentajeDescuento(porcentaje);
 
-        return "Estado actualizado a " + nuevoEstado;
+        double precioFinal =
+                juego.getPrecioBase() * (1 - porcentaje / 100);
+
+        DecimalFormat df = new DecimalFormat("#0.00");
+
+        return "Precio final actualizado: " + df.format(precioFinal) + " €";
+    }
+
+
+       //CAMBIAR ESTADO DEL JUEGO
+
+    public String cambiarEstado(int id, EstadoJuegoType nuevoEstado) {
+
+        JuegoEntidad juego = repo.obtenerPorId(id);
+
+        if (juego == null) {
+            return "Juego no encontrado";
+        }
+
+        juego.setEstadoJuegoType(nuevoEstado);
+
+        return "Estado actualizado a: " + nuevoEstado;
     }
 }
