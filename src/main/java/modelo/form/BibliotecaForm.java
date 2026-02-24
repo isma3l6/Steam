@@ -3,6 +3,8 @@ package modelo.form;
 import modelo.entidad.ClasificacionType;
 import modelo.entidad.EstadoJuegoType;
 import modelo.entidad.JuegoEntidad;
+import repositorio.inmemory.JuegoRepoInMemory;
+import repositorio.inmemory.UsuarioRepoInMemory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +16,9 @@ public class BibliotecaForm {
     private long idJuego;
     private Date fechaAdquisicion;
     private double tiempoJugado;
+    private UsuarioRepoInMemory usuarioRepoInMemory;
+    private JuegoRepoInMemory juegoRepoInMemory;
+
 
     public List<ErrorDto> validarBiblioteca() {
         var errores = new ArrayList<ErrorDto>();
@@ -21,14 +26,14 @@ public class BibliotecaForm {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (buscarUsuario().isEmpty) {
+        if (usuarioRepoInMemory.obtenerPorId(idUsario)==null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //Juego
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (buscarJuego().isEmpty) {
+        if (juegoRepoInMemory.obtenerPorId(idJuego)==null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         if (!juegoUnico(idJuego)) {

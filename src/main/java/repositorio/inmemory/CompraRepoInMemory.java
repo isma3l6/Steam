@@ -15,9 +15,9 @@ public class CompraRepoInMemory implements ICompraRepo {
     private static final List<CompraEntidad> compras = new ArrayList<>();
     private static Long idCounter = 1L;
 
-    /* =========================================
-       CREAR COMPRA
-    ========================================= */
+
+      // CREAR COMPRA
+
     public Optional<CompraEntidad> crear(CompraForm form) {
         var compra = new CompraEntidad(
                 new Date(),                          // fechaCompra
@@ -33,25 +33,24 @@ public class CompraRepoInMemory implements ICompraRepo {
         return Optional.of(compra);
     }
 
-    /* =========================================
-       OBTENER POR ID
-    ========================================= */
+
+      // OBTENER POR ID
+
     public Optional<CompraEntidad> obtenerPorId(Long id) {
         return compras.stream()
                 .filter(c -> c.getId() == id)
                 .findFirst();
     }
 
-    /* =========================================
-       OBTENER TODAS LAS COMPRAS
-    ========================================= */
+       //OBTENER TODAS LAS COMPRAS
+
     public List<CompraEntidad> obtenerTodos() {
         return new ArrayList<>(compras);
     }
 
-    /* =========================================
-       ACTUALIZAR COMPRA
-    ========================================= */
+
+       //ACTUALIZAR COMPRA
+
     public Optional<CompraEntidad> actualizar(Long id, CompraForm form) {
         var compraOpt = obtenerPorId(id);
         if (compraOpt.isEmpty()) {
@@ -74,9 +73,9 @@ public class CompraRepoInMemory implements ICompraRepo {
         return Optional.of(compraActualizada);
     }
 
-    /* =========================================
-       ELIMINAR COMPRA
-    ========================================= */
+
+      // ELIMINAR COMPRA
+
     public boolean eliminar(Long id) {
         return compras.removeIf(c -> c.getId() == id);
     }

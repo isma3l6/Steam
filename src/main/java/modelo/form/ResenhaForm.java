@@ -1,5 +1,9 @@
 package modelo.form;
 
+import repositorio.inmemory.JuegoRepoInMemory;
+import repositorio.inmemory.ResenhaRepoInMemory;
+import repositorio.inmemory.UsuarioRepoInMemory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,15 +12,16 @@ public class ResenhaForm {
     private long idJuego;
     private boolean recomendado;
     private String cuerpoResena;
-private double horasJugadas;
-
+    private double horasJugadas;
+private UsuarioRepoInMemory usuarioRepoInMemory;
+private JuegoRepoInMemory juegoRepoInMemory;
     public List<ErrorDto> validarResena() {
         var errores = new ArrayList<ErrorDto>();
-        if (idUsario == 0) {
+        if (idUsuario == 0) {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (buscarUsuario().isEmpty) {
+        if (usuarioRepoInMemory.obtenerPorId(idUsuario)==null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //juego en la biblioteca del user
@@ -24,19 +29,19 @@ private double horasJugadas;
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (buscarJuego().isEmpty) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+        if (juegoRepoInMemory.obtenerPorId(idJuego)==null) {
+            errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
         }
         // 1 resena por juego
-        if (cuerpoResena.length() < 50){
-            errores.add(new ErrorDto("reseña",ErrorType.VALOR_DEMASIADO_BAJO));
+        if (cuerpoResena.length() < 50) {
+            errores.add(new ErrorDto("reseña", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (cuerpoResena.length() > 8000 ){
-            errores.add(new ErrorDto("reseña",ErrorType.VALOR_DEMASIADO_ALTO));
+        if (cuerpoResena.length() > 8000) {
+            errores.add(new ErrorDto("reseña", ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //Horas jugadas
-        if (horasJugadas<0){
-            errores.add(new ErrorDto("horas jugadas",ErrorType.VALOR_DEMASIADO_BAJO));
+        if (horasJugadas < 0) {
+            errores.add(new ErrorDto("horas jugadas", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         //Estado
         return errores;

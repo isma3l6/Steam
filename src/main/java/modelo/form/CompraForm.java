@@ -1,5 +1,8 @@
 package modelo.form;
 
+import repositorio.inmemory.JuegoRepoInMemory;
+import repositorio.inmemory.UsuarioRepoInMemory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,8 @@ public class CompraForm {
     private double precio;
     private int descuento;
     private double precioFinal;
+    private UsuarioRepoInMemory usuarioRepoInMemory;
+    private JuegoRepoInMemory juegoRepoInMemory;
 
     public List<ErrorDto> validarCompra() {
         var errores = new ArrayList<ErrorDto>();
@@ -18,14 +23,14 @@ public class CompraForm {
         if (idUsuario == 0) {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
         }
-        if (buscarUsuario.isEmpty) {
+        if (usuarioRepoInMemory.obtenerPorId(idUsuario) == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //Activa
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (buscarJuego().isEmpty) {
+        if (juegoRepoInMemory.obtenerPorId(idJuego) == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //Estado juego
@@ -33,13 +38,13 @@ public class CompraForm {
             errores.add(new ErrorDto("Metodo pago", ErrorType.REQUERIDO));
         }
         if (precio < 0.00) {
-            errores.add(new ErrorDto("precio",ErrorType.REQUERIDO));
+            errores.add(new ErrorDto("precio", ErrorType.REQUERIDO));
         }
-        if (descuento<0){
-            errores.add(new ErrorDto("precio",ErrorType.VALOR_DEMASIADO_BAJO));
+        if (descuento < 0) {
+            errores.add(new ErrorDto("precio", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (descuento>100){
-            errores.add(new ErrorDto("precio",ErrorType.VALOR_DEMASIADO_ALTO));
+        if (descuento > 100) {
+            errores.add(new ErrorDto("precio", ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //Estado pendiente
         return errores;

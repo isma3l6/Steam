@@ -7,7 +7,7 @@ public interface IJuegoRepo {
 
     JuegoEntidad crear(JuegoForm form);
 
-    JuegoEntidad obtenerPorId(int id);
+    JuegoEntidad obtenerPorId(long id);
 
     JuegoEntidad[] obtenerTodos();
 

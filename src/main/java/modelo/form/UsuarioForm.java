@@ -1,5 +1,7 @@
 package modelo.form;
 
+import repositorio.inmemory.UsuarioRepoInMemory;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,7 @@ public class UsuarioForm {
     private String pais;
     private Date fechaNacimiento;
     private String avatr;
-
+private UsuarioRepoInMemory usuarioRepoInMemory;
     public List<ErrorDto> validarUsuario() {
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
         //nombre usuario
@@ -21,7 +23,7 @@ public class UsuarioForm {
             errores.add(new ErrorDto("nobre usuario", ErrorType.REQUERIDO));
         }
         //pendiente generar la funcion
-        if (buscarUsuario()) {
+        if (!usuarioRepoInMemory.buscarUsuarioPorNombre(nombreUsuario)) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.DUPLICADO));
         }
         if (nombreUsuario.length() < 3) {
@@ -42,7 +44,7 @@ public class UsuarioForm {
         if (email.isBlank()) {
             errores.add(new ErrorDto("Email", ErrorType.REQUERIDO));
         }
-        if (buscarUsuario()) {
+        if (usuarioRepoInMemory.buscarUsuarioPorCorreo(email)) {
             errores.add(new ErrorDto("Email duplicado", ErrorType.DUPLICADO));
         }
         if (comprobarFormatoEmail(email) == true) {

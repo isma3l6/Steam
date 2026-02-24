@@ -13,9 +13,9 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     private int size = 0;
     private long idCounter = 1L;
 
-    /* =========================================
-       CREATE
-    ========================================= */
+
+       //CREATE
+
     @Override
     public ResenhaEntidad crear(ResenhaForm form) {
 
@@ -41,9 +41,9 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         return nueva;
     }
 
-    /* =========================================
-       READ BY USUARIO + JUEGO
-    ========================================= */
+
+       //READ BY USUARIO + JUEGO
+
     @Override
     public ResenhaEntidad obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
         for (int i = 0; i < size; i++) {
@@ -55,9 +55,9 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         return null;
     }
 
-    /* =========================================
-       READ ALL
-    ========================================= */
+
+       //READ ALL
+
     @Override
     public ResenhaEntidad[] obtenerTodas() {
         ResenhaEntidad[] copia = new ResenhaEntidad[size];
@@ -67,9 +67,9 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         return copia;
     }
 
-    /* =========================================
-       UPDATE
-    ========================================= */
+
+       //UPDATE
+
     @Override
     public ResenhaEntidad actualizar(long id, ResenhaForm form) {
         for (int i = 0; i < size; i++) {
@@ -91,9 +91,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         return null;
     }
 
-    /* =========================================
-       DELETE
-    ========================================= */
+    //DELETE
     @Override
     public boolean eliminar(long id) {
         for (int i = 0; i < size; i++) {
@@ -110,9 +108,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         return false;
     }
 
-    /* =========================================
-       EXISTE RESEÑA
-    ========================================= */
+       //EXISTE RESEÑA
     @Override
     public boolean existeResena(long idUsuario, long idJuego) {
         return obtenerPorUsuarioYJuego(idUsuario, idJuego) != null;

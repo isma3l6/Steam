@@ -6,6 +6,7 @@ import modelo.form.UsuarioForm;
 import repositorio.interfaz.IUsuarioRepo;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
 
@@ -13,9 +14,8 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     private int size = 0;
     private long idCounter = 1;
 
-    /* =========================================
-       CREATE
-    ========================================= */
+       //CREATE
+
     @Override
     public UsuarioEntidad crear(UsuarioForm form) {
 
@@ -43,9 +43,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         return nuevo;
     }
 
-    /* =========================================
-       READ BY ID
-    ========================================= */
+      // READ BY ID
     @Override
     public UsuarioEntidad obtenerPorId(long id) {
 
@@ -57,9 +55,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         return null;
     }
 
-    /* =========================================
-       READ ALL
-    ========================================= */
+       //READ ALL
     @Override
     public UsuarioEntidad[] obtenerTodos() {
 
@@ -72,9 +68,9 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         return copia;
     }
 
-    /* =========================================
-       UPDATE
-    ========================================= */
+
+       //UPDATE
+
     @Override
     public UsuarioEntidad actualizar(long id, UsuarioForm form) {
 
@@ -104,9 +100,9 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         return null;
     }
 
-    /* =========================================
-       DELETE
-    ========================================= */
+
+       //DELETE
+
     @Override
     public boolean eliminar(long id) {
 
@@ -127,5 +123,25 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         }
 
         return false;
+    }
+//BUSCAR POR NOMBREUSUARIO
+    public boolean buscarUsuarioPorNombre(String nombreUsuario) {
+
+
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(usuarios[i].getNombreUsuario(), nombreUsuario)) {
+                return false;
+            }
+        }
+        return true;
+    }
+//BUSCAR POR EMAIL
+    public boolean buscarUsuarioPorCorreo(String email) {
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(usuarios[i].getEmail(), email)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

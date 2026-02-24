@@ -74,4 +74,12 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     public boolean eliminar(Long id) {
         return bibliotecas.removeIf(b -> b.getId() == id);
     }
+
+    public boolean tieneJuego(long idUsuario, long idJuego) {
+
+        return bibliotecas.stream()
+                .anyMatch(registro -> registro.getIdUsuario() == idUsuario && registro.getIdJuego() == idJuego
+                );
+    }
 }
+

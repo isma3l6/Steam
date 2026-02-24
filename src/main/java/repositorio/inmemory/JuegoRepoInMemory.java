@@ -12,9 +12,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     private int size = 0;
     private int idCounter = 1;
 
-    /* =========================================
-       CREATE
-    ========================================= */
+      // CREATE
     @Override
     public JuegoEntidad crear(JuegoForm form) {
 
@@ -41,11 +39,11 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return nuevo;
     }
 
-    /* =========================================
-       READ BY ID
-    ========================================= */
+
+       //READ BY ID
+
     @Override
-    public JuegoEntidad obtenerPorId(int id) {
+    public JuegoEntidad obtenerPorId(long id) {
 
         for (int i = 0; i < size; i++) {
             if (juegos[i].getId() == id) {
@@ -56,9 +54,9 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return null;
     }
 
-    /* =========================================
-       READ ALL
-    ========================================= */
+
+       //READ ALL
+
     @Override
     public JuegoEntidad[] obtenerTodos() {
 
@@ -71,9 +69,9 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return copia;
     }
 
-    /* =========================================
-       UPDATE
-    ========================================= */
+
+     //  UPDATE
+
     @Override
     public JuegoEntidad actualizar(int id, JuegoForm form) {
 
@@ -102,9 +100,9 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return null;
     }
 
-    /* =========================================
-       DELETE
-    ========================================= */
+
+    //   DELETE
+
     @Override
     public boolean eliminar(int id) {
 
