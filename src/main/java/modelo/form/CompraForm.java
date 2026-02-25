@@ -73,5 +73,14 @@ public class CompraForm {
     public int getDescuento() {
         return descuento;
     }
+
+    public CompraForm(long idUsuario, long idJuego, String metodoPago, double precio, int descuento, double precioFinal) {
+        this.idUsuario = idUsuario;
+        this.idJuego = idJuego;
+        this.metodoPago = metodoPago;
+        this.precio = precio;
+        this.descuento = descuento;
+        this.precioFinal = precioFinal;
+    }
 }
 

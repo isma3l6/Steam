@@ -16,13 +16,25 @@ public class UsuarioForm {
     private Date fechaNacimiento;
     private String avatr;
 private UsuarioRepoInMemory usuarioRepoInMemory;
+
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr) {
+        this.nombreUsuario = nombreUsuario;
+        this.email = email;
+        this.contrasena = contrasena;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.pais = pais;
+        this.fechaNacimiento = fechaNacimiento;
+        this.avatr = avatr;
+    }
+
     public List<ErrorDto> validarUsuario() {
         List<ErrorDto> errores = new ArrayList<ErrorDto>();
         //nombre usuario
         if (nombreUsuario.isBlank()) {
             errores.add(new ErrorDto("nobre usuario", ErrorType.REQUERIDO));
         }
-        //pendiente generar la funcion
+
         if (!usuarioRepoInMemory.buscarUsuarioPorNombre(nombreUsuario)) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.DUPLICADO));
         }

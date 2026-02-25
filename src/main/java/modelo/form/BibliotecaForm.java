@@ -72,4 +72,12 @@ public class BibliotecaForm {
     public double getTiempoJugado() {
         return tiempoJugado;
     }
+
+    public BibliotecaForm(long id, long idUsario, long idJuego, Date fechaAdquisicion, double tiempoJugado) {
+        this.id = id;
+        this.idUsario = idUsario;
+        this.idJuego = idJuego;
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.tiempoJugado = tiempoJugado;
+    }
 }
