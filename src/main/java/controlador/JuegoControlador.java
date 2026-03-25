@@ -1,6 +1,9 @@
 package controlador;
 
+import excepciones.ValidationException;
 import modelo.entidad.*;
+import modelo.form.ErrorDto;
+import modelo.form.ErrorType;
 import modelo.form.JuegoForm;
 import repositorio.interfaz.IJuegoRepo;
 
@@ -16,9 +19,9 @@ public class JuegoControlador {
     }
 
 
-      //AÑADIR JUEGO AL CATÁLOGO
+    //AÑADIR JUEGO AL CATÁLOGO
 
-    public Object añadirJuego(JuegoForm form) {
+    public Object anadirJuego(JuegoForm form) {
 
         var errores = form.validarJuego();
 
@@ -32,7 +35,7 @@ public class JuegoControlador {
     }
 
 
-       //BUSCAR JUEGOS
+    //BUSCAR JUEGOS
 
     public List<Map<String, Object>> buscar(
             String texto,
@@ -96,11 +99,11 @@ public class JuegoControlador {
     }
 
 
-       //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
+    //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
-    public Map<String, Object> catalogoCompleto(String orden,
+    public Map<String, Object> catalogoCompleto(int orden,
                                                 int pagina,
-                                                int tamañoPagina) {
+                                                int tamanoPagina) {
 
         JuegoEntidad[] juegosArray = repo.obtenerTodos();
         List<JuegoEntidad> juegos = new ArrayList<>();
@@ -112,25 +115,26 @@ public class JuegoControlador {
         }
 
         // ORDEN
-        if (orden != null) {
-            switch (orden.toLowerCase()) {
-                case "alfabetico":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getTitulo));
-                    break;
 
-                case "precio":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getPrecioBase));
-                    break;
-
-                case "fecha":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
-                    break;
-            }
+        switch (orden) {
+            //alfabeticamente
+            case 1:
+                juegos.sort(Comparator.comparing(JuegoEntidad::getTitulo));
+                break;
+            //precio
+            case 2:
+                juegos.sort(Comparator.comparing(JuegoEntidad::getPrecioBase));
+                break;
+            //fecha
+            case 3:
+                juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
+                break;
         }
 
+
         int total = juegos.size();
-        int desde = pagina * tamañoPagina;
-        int hasta = Math.min(desde + tamañoPagina, total);
+        int desde = pagina * tamanoPagina;
+        int hasta = Math.min(desde + tamanoPagina, total);
 
         List<JuegoEntidad> paginaContenido =
                 (desde < total) ? juegos.subList(desde, hasta)
@@ -138,7 +142,7 @@ public class JuegoControlador {
 
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("pagina", pagina);
-        resultado.put("tamañoPagina", tamañoPagina);
+        resultado.put("tamañoPagina", tamanoPagina);
         resultado.put("totalJuegos", total);
         resultado.put("contenido", paginaContenido);
 
@@ -146,7 +150,7 @@ public class JuegoControlador {
     }
 
 
-      //CONSULTAR DETALLES DE JUEGO
+    //CONSULTAR DETALLES DE JUEGO
 
     public Object detallesJuego(int id) {
 
@@ -177,18 +181,20 @@ public class JuegoControlador {
     }
 
 
-     //APLICAR DESCUENTO
+    //APLICAR DESCUENTO
 
-    public String aplicarDescuento(int id, double porcentaje) {
-
+    public String aplicarDescuento(int id, double porcentaje) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
         if (porcentaje < 0 || porcentaje > 100) {
-            return "El descuento debe estar entre 0 y 100";
+            errores.add(new ErrorDto("porcentaje", ErrorType.PORCENTAJE_INVALIDO));
+            throw new ValidationException(errores);
         }
 
         JuegoEntidad juego = repo.obtenerPorId(id);
 
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         juego.setProcentajeDescuento(porcentaje);
@@ -202,14 +208,15 @@ public class JuegoControlador {
     }
 
 
-       //CAMBIAR ESTADO DEL JUEGO
+    //CAMBIAR ESTADO DEL JUEGO
 
-    public String cambiarEstado(int id, EstadoJuegoType nuevoEstado) {
+    public String cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
         JuegoEntidad juego = repo.obtenerPorId(id);
-
+        List<ErrorDto> errores = new ArrayList<>();
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         juego.setEstadoJuegoType(nuevoEstado);
