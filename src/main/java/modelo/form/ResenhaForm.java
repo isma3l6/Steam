@@ -67,12 +67,4 @@ private JuegoRepoInMemory juegoRepoInMemory;
     public double getHorasJugadas() {
         return horasJugadas;
     }
-
-    public ResenhaForm(long idUsuario, long idJuego, boolean recomendado, String cuerpoResena, double horasJugadas) {
-        this.idUsuario = idUsuario;
-        this.idJuego = idJuego;
-        this.recomendado = recomendado;
-        this.cuerpoResena = cuerpoResena;
-        this.horasJugadas = horasJugadas;
-    }
 }

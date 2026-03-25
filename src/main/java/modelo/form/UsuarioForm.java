@@ -34,7 +34,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         if (nombreUsuario.isBlank()) {
             errores.add(new ErrorDto("nobre usuario", ErrorType.REQUERIDO));
         }
-
+        //pendiente generar la funcion
         if (!usuarioRepoInMemory.buscarUsuarioPorNombre(nombreUsuario)) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.DUPLICADO));
         }

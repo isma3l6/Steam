@@ -7,7 +7,9 @@ public enum ErrorType {
     VALOR_DEMASIADO_BAJO("El valor es demasiado bajo"),
     NO_ENCONTRADO("No se encontró el elemento"),
     DUPLICADO("El elemento está duplicado"),
-    PORCENTAJE_INVALIDO("El porcentaje se pasa del rango");
+    PORCENTAJE_INVALIDO("El porcentaje se pasa del rango"),
+    CUENTA_BLOQUEADA("La cuenta se haya bloqueada"),
+    NO_USUARIO("Usuario no encontrado");
 
     private final String mensaje;
 

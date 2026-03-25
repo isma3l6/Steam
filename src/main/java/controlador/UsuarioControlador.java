@@ -1,7 +1,12 @@
 package controlador;
 
+import excepciones.ValidationException;
+import mapper.UsuarioMapper;
+import modelo.dto.UsuarioDto;
 import modelo.entidad.EstadoUserType;
 import modelo.entidad.UsuarioEntidad;
+import modelo.form.ErrorDto;
+import modelo.form.ErrorType;
 import modelo.form.UsuarioForm;
 import repositorio.interfaz.IUsuarioRepo;
 
@@ -19,23 +24,24 @@ public class UsuarioControlador {
 
        //REGISTRAR NUEVO USUARIO
 
-    public Object registrar(UsuarioForm form) {
+    public UsuarioDto registrar(UsuarioForm form)throws ValidationException {
 
         var errores = form.validarUsuario();
 
         if (!errores.isEmpty()) {
-            return errores;
+             throw new ValidationException(errores);
         }
 
         UsuarioEntidad usuario = repo.crear(form);
 
-        return "Usuario creado exitosamente con ID: " + usuario.getId();
+        return UsuarioMapper.toDTO(usuario);
     }
 
     //CONSULTAR PERFIL//
-    public Object consultarPerfil(Long id, String nombreUsuario) {
+    public UsuarioDto consultarPerfil(Long id, String nombreUsuario) throws ValidationException {
 
         UsuarioEntidad usuario = null;
+        List <ErrorDto> errores=new ArrayList<>();
 
         if (id != null) {
             usuario = repo.obtenerPorId(id);
@@ -49,25 +55,18 @@ public class UsuarioControlador {
         }
 
         if (usuario == null) {
-            return "Usuario no encontrado";
+            errores.add(new ErrorDto("id",ErrorType.NO_USUARIO));
+            throw new ValidationException(errores);
         }
 
         if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
-            return "Acceso denegado. Cuenta no activa.";
+            errores.add(new ErrorDto("usuario",ErrorType.CUENTA_BLOQUEADA));
+           throw  new ValidationException(errores);
         }
 
-        Map<String, Object> perfil = new HashMap<>();
-        perfil.put("Nombre usuario", usuario.getNombreUsuario());
-        perfil.put("Avatar", usuario.getAvatar());
-        perfil.put("Fecha registro", usuario.getFechaRegistro());
-        perfil.put("Saldo", usuario.getSaldo());
-        perfil.put("Estado", usuario.getEstadoType());
 
-        // Biblioteca y estadísticas podrían venir de BibliotecaService
-        perfil.put("Biblioteca", "No implementada en este controlador");
-        perfil.put("Estadísticas", "No implementadas");
 
-        return perfil;
+        return UsuarioMapper.toDTO(usuario);
     }
 
 

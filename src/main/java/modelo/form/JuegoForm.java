@@ -19,7 +19,17 @@ public class JuegoForm {
     private List<String>idiomas;
     private EstadoJuegoType estadoJuego;
 
-
+    public JuegoForm(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.desarrollador = desarrollador;
+        this.fechaLanzamiento = fechaLanzamiento;
+        this.precioBase = precioBase;
+        this.porcentajeDescuento = porcentajeDescuento;
+        this.clasificaionEdad = clasificaionEdad;
+        this.idiomas = idiomas;
+        this.estadoJuego = estadoJuego;
+    }
 
     public List<ErrorDto> validarJuego() {
         var errores = new ArrayList<ErrorDto>();
@@ -126,17 +136,5 @@ public class JuegoForm {
 
     public EstadoJuegoType getEstadoJuego() {
         return estadoJuego;
-    }
-
-    public JuegoForm(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.desarrollador = desarrollador;
-        this.fechaLanzamiento = fechaLanzamiento;
-        this.precioBase = precioBase;
-        this.porcentajeDescuento = porcentajeDescuento;
-        this.clasificaionEdad = clasificaionEdad;
-        this.idiomas = idiomas;
-        this.estadoJuego = estadoJuego;
     }
 }
