@@ -5,11 +5,11 @@ public enum ErrorType {
     FORMATO_INVALIDO("El formato es inválido"),
     VALOR_DEMASIADO_ALTO("El valor es demasiado alto"),
     VALOR_DEMASIADO_BAJO("El valor es demasiado bajo"),
-    NO_ENCONTRADO("No se encontró el elemento"),
+    NO_ENCONTRADO("No se encontró "),
     DUPLICADO("El elemento está duplicado"),
     PORCENTAJE_INVALIDO("El porcentaje se pasa del rango"),
-    CUENTA_BLOQUEADA("La cuenta se haya bloqueada"),
-    NO_USUARIO("Usuario no encontrado");
+    CUENTA_BLOQUEADA("La cuenta se haya bloqueada")
+   ;
 
     private final String mensaje;
 

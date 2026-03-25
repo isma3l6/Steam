@@ -13,9 +13,17 @@ public class UsuarioEntidad {
     private Date fechaRegistro;
     private String avatar;
     private double saldo;
+    private String pais;
     //Estado de cuanta
     private EstadoUserType estadoType;
 
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
 
     public String getNombreUsuario() {
         return nombreUsuario;
@@ -105,13 +113,14 @@ public class UsuarioEntidad {
         this.estadoType = estadoType;
     }
 
-    public UsuarioEntidad(long id, String nombreUsuario, String email, String contraseña, String nombre, String apellido, Date fechaNacimiento, Date fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
+    public UsuarioEntidad(long id, String nombreUsuario, String email, String contraseña, String nombre, String apellido,String pais, Date fechaNacimiento, Date fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contraseña = contraseña;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.pais=pais;
         this.fechaNacimiento = fechaNacimiento;
         this.fechaRegistro = fechaRegistro;
         this.avatar = avatar;

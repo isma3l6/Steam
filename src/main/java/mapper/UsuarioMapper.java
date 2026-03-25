@@ -4,6 +4,8 @@ import modelo.dto.UsuarioDto;
 import modelo.entidad.UsuarioEntidad;
 
 public class UsuarioMapper {
+
+
     public static UsuarioDto toDTO(UsuarioEntidad usuario) {
 
         if (usuario == null) {
