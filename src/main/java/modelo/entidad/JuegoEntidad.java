@@ -8,7 +8,6 @@ public class JuegoEntidad {
     private String descripcion;
 
 
-
     private String desarrollador;
     private Date fechaLanzamiento;
     private double precioBase;

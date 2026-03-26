@@ -1,6 +1,8 @@
 package controlador;
 
 import excepciones.ValidationException;
+import mapper.JuegoMapper;
+import modelo.dto.JuegoDto;
 import modelo.entidad.*;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
@@ -37,7 +39,7 @@ public class JuegoControlador {
 
     //BUSCAR JUEGOS
 
-    public List<Map<String, Object>> buscar(
+    public List<JuegoDto> buscar(
             String texto,
             CategoriaType categoria,
             Double precioMin,
@@ -47,7 +49,7 @@ public class JuegoControlador {
     ) {
 
         JuegoEntidad[] juegos = repo.obtenerTodos();
-        List<Map<String, Object>> resultado = new ArrayList<>();
+        List<JuegoDto> resultado = new ArrayList<>();
 
         for (JuegoEntidad j : juegos) {
 
@@ -82,17 +84,7 @@ public class JuegoControlador {
                     j.getEstadoJuegoType() != estado) {
                 continue;
             }
-
-            Map<String, Object> resumen = new HashMap<>();
-            resumen.put("ID", j.getId());
-            resumen.put("Título", j.getTitulo());
-            resumen.put("Desarrollador", j.getDesarrollador());
-            resumen.put("Precio Base", j.getPrecioBase());
-            resumen.put("Descuento", j.getProcentajeDescuento());
-            resumen.put("Clasificación", j.getClasificacionType());
-            resumen.put("Imagen", "imagen_placeholder.jpg");
-
-            resultado.add(resumen);
+            resultado.add(JuegoMapper.toDTO(j));
         }
 
         return resultado;
@@ -101,7 +93,7 @@ public class JuegoControlador {
 
     //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
-    public Map<String, Object> catalogoCompleto(int orden,
+    public List<JuegoDto> catalogoCompleto(int orden,
                                                 int pagina,
                                                 int tamanoPagina) {
 
@@ -113,13 +105,22 @@ public class JuegoControlador {
                 juegos.add(j);
             }
         }
+        List<JuegoDto> resultado = new ArrayList<>();
+        for (JuegoEntidad j : juegosArray) {
+            if (j != null) {
+                resultado.add(JuegoMapper.toDTO(j));
+            }
+        }
+
 
         // ORDEN
-
+        /**
+         * Pelea futura ;)
         switch (orden) {
             //alfabeticamente
             case 1:
-                juegos.sort(Comparator.comparing(JuegoEntidad::getTitulo));
+              var resultadoOrdenado = resultado.sort(Comparator.comparing(JuegoDto::getTitulo)) ;
+
                 break;
             //precio
             case 2:
@@ -130,21 +131,13 @@ public class JuegoControlador {
                 juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
                 break;
         }
+*/
 
 
-        int total = juegos.size();
-        int desde = pagina * tamanoPagina;
-        int hasta = Math.min(desde + tamanoPagina, total);
 
-        List<JuegoEntidad> paginaContenido =
-                (desde < total) ? juegos.subList(desde, hasta)
-                        : new ArrayList<>();
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("pagina", pagina);
-        resultado.put("tamañoPagina", tamanoPagina);
-        resultado.put("totalJuegos", total);
-        resultado.put("contenido", paginaContenido);
+
+
 
         return resultado;
     }
