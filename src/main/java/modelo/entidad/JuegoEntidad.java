@@ -6,6 +6,9 @@ public class JuegoEntidad {
     private int id;
     private String titulo;
     private String descripcion;
+
+
+
     private String desarrollador;
     private Date fechaLanzamiento;
     private double precioBase;
@@ -108,6 +111,16 @@ public class JuegoEntidad {
         this.precioBase = precioBase;
         this.categoriaType = categoriaType;
         this.procentajeDescuento = procentajeDescuento;
+        this.clasificacionType = clasificacionType;
+        this.estadoJuegoType = estadoJuegoType;
+    }
+
+    public JuegoEntidad(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, CategoriaType categoriaType, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.desarrollador = desarrollador;
+        this.fechaLanzamiento = fechaLanzamiento;
+        this.categoriaType = categoriaType;
         this.clasificacionType = clasificacionType;
         this.estadoJuegoType = estadoJuegoType;
     }

@@ -2,7 +2,6 @@ package modelo.dto;
 
 import modelo.entidad.CategoriaType;
 import modelo.entidad.ClasificacionType;
-import modelo.entidad.EstadoJuegoType;
 
 import java.util.Date;
 
@@ -16,14 +15,22 @@ public class JuegoDto {
     //descuento en porcentaje
     private double procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
-    private ClasificacionType categoria;
+    private CategoriaType categoria;
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, ClasificacionType categoria) {
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.precioBase = precioBase;
         this.procentajeDescuento = procentajeDescuento;
         this.categoria = categoria;
+    }
+
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase) {
+        this.titulo = titulo;
+        this.desarrollador = desarrollador;
+        this.fechaLanzamiento = fechaLanzamiento;
+        this.categoria = categoria;
+        this.precioBase = precioBase;
     }
 }

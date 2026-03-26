@@ -1,6 +1,8 @@
 package mapper;
 
+import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
+import modelo.entidad.JuegoEntidad;
 import modelo.entidad.UsuarioEntidad;
 
 public class UsuarioMapper {
@@ -13,4 +15,5 @@ public class UsuarioMapper {
         }
         return new UsuarioDto(usuario.getNombreUsuario(), usuario.getEmail(), usuario.getNombre(), usuario.getApellido(), usuario.getFechaNacimiento());
     }
+
 }
