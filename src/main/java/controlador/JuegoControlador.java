@@ -12,6 +12,8 @@ import repositorio.interfaz.IJuegoRepo;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static java.util.Arrays.sort;
+
 public class JuegoControlador {
 
     private final IJuegoRepo repo;
@@ -38,6 +40,7 @@ public class JuegoControlador {
 
 
     //BUSCAR JUEGOS
+    //Añadir formBusquda
 
     public List<JuegoDto> buscar(
             String texto,
@@ -94,83 +97,61 @@ public class JuegoControlador {
     //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
     public List<JuegoDto> catalogoCompleto(int orden,
-                                                int pagina,
-                                                int tamanoPagina) {
+                                           int pagina,
+                                           int tamanoPagina) {
 
         JuegoEntidad[] juegosArray = repo.obtenerTodos();
-        List<JuegoEntidad> juegos = new ArrayList<>();
 
+
+        List<JuegoDto> resultados = new ArrayList<>();
         for (JuegoEntidad j : juegosArray) {
             if (j != null) {
-                juegos.add(j);
-            }
-        }
-        List<JuegoDto> resultado = new ArrayList<>();
-        for (JuegoEntidad j : juegosArray) {
-            if (j != null) {
-                resultado.add(JuegoMapper.toDTO(j));
+                resultados.add(JuegoMapper.toDTO(j));
             }
         }
 
 
         // ORDEN
-        /**
-         * Pelea futura ;)
+
+        // Pelea futura ;)
+
         switch (orden) {
+
             //alfabeticamente
             case 1:
-              var resultadoOrdenado = resultado.sort(Comparator.comparing(JuegoDto::getTitulo)) ;
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getTitulo)).toList();
 
-                break;
+
+
             //precio
             case 2:
-                juegos.sort(Comparator.comparing(JuegoEntidad::getPrecioBase));
-                break;
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getPrecioBase)).toList();
+
+
             //fecha
             case 3:
-                juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
-                break;
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getFechaLanzamiento)).toList();
+            default:
+                return resultados;
         }
-*/
 
 
-
-
-
-
-
-        return resultado;
     }
 
 
     //CONSULTAR DETALLES DE JUEGO
 
-    public Object detallesJuego(int id) {
+    public JuegoDto detallesJuego(int id) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
 
         JuegoEntidad juego = repo.obtenerPorId(id);
 
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
-        Map<String, Object> detalles = new HashMap<>();
-        detalles.put("ID", juego.getId());
-        detalles.put("Título", juego.getTitulo());
-        detalles.put("Descripción", juego.getDescripcion());
-        detalles.put("Desarrollador", juego.getDesarrollador());
-        detalles.put("Fecha Lanzamiento", juego.getFechaLanzamiento());
-        detalles.put("Precio Base", juego.getPrecioBase());
-        detalles.put("Descuento", juego.getProcentajeDescuento());
-        detalles.put("Categoría", juego.getCategoriaType());
-        detalles.put("Clasificación", juego.getClasificacionType());
-        detalles.put("Estado", juego.getEstadoJuegoType());
-
-        // Simulación estadísticas
-        detalles.put("Ventas totales", new Random().nextInt(10000));
-        detalles.put("Valoración media", 4.5);
-        detalles.put("Reseñas destacadas", "Muy positivo");
-
-        return detalles;
+        return JuegoMapper.toDTO(juego);
     }
 
 
