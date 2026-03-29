@@ -7,6 +7,7 @@ import modelo.entidad.*;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
 import modelo.form.JuegoForm;
+import modelo.form.UsuarioForm;
 import repositorio.interfaz.IJuegoRepo;
 
 import java.text.DecimalFormat;
@@ -25,17 +26,19 @@ public class JuegoControlador {
 
     //AÑADIR JUEGO AL CATÁLOGO
 
-    public Object anadirJuego(JuegoForm form) {
+    public JuegoDto anadirJuego(JuegoForm form) throws ValidationException {
 
         var errores = form.validarJuego();
 
         if (!errores.isEmpty()) {
-            return errores;
+            throw new ValidationException(errores);
         }
 
         JuegoEntidad juego = repo.crear(form);
+        JuegoEntidad juegoanadido = repo.obtenerPorId(juego.getId());
 
-        return "Juego creado exitosamente con ID: " + juego.getId();
+
+        return JuegoMapper.toDTO(juegoanadido);
     }
 
 
@@ -96,9 +99,7 @@ public class JuegoControlador {
 
     //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
-    public List<JuegoDto> catalogoCompleto(int orden,
-                                           int pagina,
-                                           int tamanoPagina) {
+    public List<JuegoDto> catalogoCompleto(int orden) {
 
         JuegoEntidad[] juegosArray = repo.obtenerTodos();
 
@@ -120,7 +121,6 @@ public class JuegoControlador {
             //alfabeticamente
             case 1:
                 return resultados.stream().sorted(Comparator.comparing(JuegoDto::getTitulo)).toList();
-
 
 
             //precio
@@ -157,7 +157,7 @@ public class JuegoControlador {
 
     //APLICAR DESCUENTO
 
-    public String aplicarDescuento(int id, double porcentaje) throws ValidationException {
+    public Double aplicarDescuento(int id, double porcentaje) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
         if (porcentaje < 0 || porcentaje > 100) {
             errores.add(new ErrorDto("porcentaje", ErrorType.PORCENTAJE_INVALIDO));
@@ -173,18 +173,15 @@ public class JuegoControlador {
 
         juego.setProcentajeDescuento(porcentaje);
 
-        double precioFinal =
-                juego.getPrecioBase() * (1 - porcentaje / 100);
+        double precioFinal = juego.getPrecioBase() * (1 - porcentaje / 100);
 
-        DecimalFormat df = new DecimalFormat("#0.00");
-
-        return "Precio final actualizado: " + df.format(precioFinal) + " €";
+        return precioFinal;
     }
 
 
     //CAMBIAR ESTADO DEL JUEGO
 
-    public String cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
+    public JuegoDto cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
         JuegoEntidad juego = repo.obtenerPorId(id);
         List<ErrorDto> errores = new ArrayList<>();
@@ -194,7 +191,8 @@ public class JuegoControlador {
         }
 
         juego.setEstadoJuegoType(nuevoEstado);
+        var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getEstadoJuegoType()));
 
-        return "Estado actualizado a: " + nuevoEstado;
+        return JuegoMapper.toDTO(actualizado);
     }
 }
