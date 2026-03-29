@@ -8,7 +8,8 @@ public enum ErrorType {
     NO_ENCONTRADO("No se encontró "),
     DUPLICADO("El elemento está duplicado"),
     PORCENTAJE_INVALIDO("El porcentaje se pasa del rango"),
-    CUENTA_BLOQUEADA("La cuenta se haya bloqueada")
+    CUENTA_BLOQUEADA("La cuenta se haya bloqueada"),
+    ERROR_EN_BASE("error al insertar en la base de datos")
    ;
 
     private final String mensaje;

@@ -19,6 +19,14 @@ public class BibliotecaForm {
     private UsuarioRepoInMemory usuarioRepoInMemory;
     private JuegoRepoInMemory juegoRepoInMemory;
 
+    public BibliotecaForm(long id, long idUsario, long idJuego, Date fechaAdquisicion, double tiempoJugado) {
+        this.id = id;
+        this.idUsario = idUsario;
+        this.idJuego = idJuego;
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.tiempoJugado = tiempoJugado;
+
+    }
 
     public List<ErrorDto> validarBiblioteca() {
         var errores = new ArrayList<ErrorDto>();

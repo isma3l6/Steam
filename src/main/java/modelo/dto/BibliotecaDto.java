@@ -4,13 +4,17 @@ import modelo.entidad.InstalacionType;
 import modelo.entidad.JuegoEntidad;
 import modelo.entidad.UsuarioEntidad;
 
+import java.util.Date;
+
 public class BibliotecaDto {
     private long id;
     private long idUsario;
     private UsuarioEntidad Usuario;
     private long idJuego;
     private JuegoEntidad Juego;
-
+    private Date fechaAdquisicion;
+    private int horasJugadas;
+    private Date jugadoPorUltimavez;
     private InstalacionType instalacionType;
 
     public long getId() {
@@ -53,12 +57,34 @@ public class BibliotecaDto {
         Juego = juego;
     }
 
-    public BibliotecaDto(UsuarioEntidad usuario, JuegoEntidad juego) {
-        this.id=id;
-        this.idUsario=usuario.getId();
+    public Date getFechaAdquisicion() {return fechaAdquisicion;}
+
+    public void setFechaAdquisicion(Date fechaAdquisicion) {this.fechaAdquisicion = fechaAdquisicion;}
+
+    public int getHorasJugadas() {return horasJugadas;}
+
+    public void setHorasJugadas(int horasJugadas) {this.horasJugadas = horasJugadas;}
+
+    public Date getJugadoPorUltimavez() {return jugadoPorUltimavez;}
+
+    public void setJugadoPorUltimavez(Date jugadoPorUltimavez) {
+        this.jugadoPorUltimavez = jugadoPorUltimavez;
+    }
+
+    public InstalacionType getInstalacionType() {
+        return instalacionType;
+    }
+
+    public void setInstalacionType(InstalacionType instalacionType) {
+        this.instalacionType = instalacionType;
+    }
+
+    public BibliotecaDto( UsuarioEntidad usuario, JuegoEntidad juego, Date fechaAdquisicion, int horasJugadas, Date jugadoPorUltimavez, InstalacionType instalacionType) {
         Usuario = usuario;
-        this.idJuego=getIdJuego();
         Juego = juego;
-        this.instalacionType=instalacionType;
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.horasJugadas = horasJugadas;
+        this.jugadoPorUltimavez = jugadoPorUltimavez;
+        this.instalacionType = instalacionType;
     }
 }
