@@ -11,7 +11,15 @@ public class ResenhaEntidad {
     private Date fechaPublicacion;
     private Date fechaEdit;
     private EstadoResenhaType estadoResenhaType;
+    private int horasJugadas;
 
+    public int getHorasJugadas() {
+        return horasJugadas;
+    }
+
+    public void setHorasJugadas(int horasJugadas) {
+        this.horasJugadas = horasJugadas;
+    }
 
     public long getId() {
         return id;
@@ -25,7 +33,7 @@ public class ResenhaEntidad {
         return usuaroId;
     }
 
-    public void setUsuaro(String usuaro) {
+    public void setUsuaroId(Long usuaroId) {
         this.usuaroId = usuaroId;
     }
 
@@ -33,7 +41,7 @@ public class ResenhaEntidad {
         return nombreJuegoId;
     }
 
-    public void setNombreJuego(String nombreJuego) {
+    public void setNombreJuegoId(Long nombreJuegoId) {
         this.nombreJuegoId = nombreJuegoId;
     }
 

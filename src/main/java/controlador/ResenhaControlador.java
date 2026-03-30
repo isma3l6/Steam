@@ -1,7 +1,12 @@
 package controlador;
 
+import excepciones.ValidationException;
+import mapper.ResenhaMapper;
+import modelo.dto.ResenhaDto;
 import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.ResenhaEntidad;
+import modelo.form.ErrorDto;
+import modelo.form.ErrorType;
 import modelo.form.ResenhaForm;
 import repositorio.inmemory.ResenhaRepoInMemory;
 import repositorio.inmemory.BibliotecaRepoInMemory;
@@ -19,71 +24,87 @@ public class ResenhaControlador {
     private final UsuarioRepoInMemory usuarioRepo;
 
     public ResenhaControlador(ResenhaRepoInMemory resenhaRepo,
-                             BibliotecaRepoInMemory bibliotecaRepo,
-                             UsuarioRepoInMemory usuarioRepo) {
+                              BibliotecaRepoInMemory bibliotecaRepo,
+                              UsuarioRepoInMemory usuarioRepo) {
         this.resenhaRepo = resenhaRepo;
         this.bibliotecaRepo = bibliotecaRepo;
         this.usuarioRepo = usuarioRepo;
     }
 
 
-     //ESCRIBIR RESEÑA
+    //ESCRIBIR RESEÑA
 
-    public String escribirResenha(ResenhaForm form) {
+    public ResenhaDto escribirResenha(ResenhaForm form) throws ValidationException {
 
         // 1. Validaciones de formato
         var errores = form.validarResena();
         if (!errores.isEmpty()) {
-            return "Errores de validación: " + errores.toString();
+            throw new ValidationException(errores);
         }
 
         // 2. Usuario existe
         var usuario = usuarioRepo.obtenerPorId(form.getIdUsuario());
-        if (usuario == null) return "Error: Usuario no encontrado";
+        if (usuario == null) {
+            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
 
         // 3. Juego en biblioteca
         if (!bibliotecaRepo.tieneJuego(form.getIdUsuario(), form.getIdJuego())) {
-            return "Error: El usuario no posee este juego";
+            errores.add(new ErrorDto("Biblioteca", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         // 4. Reseña duplicada
         if (resenhaRepo.existeResena(form.getIdUsuario(), form.getIdJuego())) {
-            return "Error: Ya existe una reseña para este juego";
+            errores.add(new ErrorDto("Reseña", ErrorType.DUPLICADO));
+            throw new ValidationException(errores);
         }
 
         // 5. Crear reseña
         var resenha = resenhaRepo.crear(form);
-        return "Reseña creada exitosamente con ID: " + resenha.getId();
+        return ResenhaMapper.toDTO(resenha);
     }
 
 
-       //ELIMINAR RESEÑA
+    //ELIMINAR RESEÑA
 
-    public String eliminarResenha(long idResenha, long idUsuario) {
+    public boolean eliminarResenha(long idResenha, long idUsuario) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
         var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
-        if (resenha == null) return "Error: Reseña no encontrada o no pertenece al usuario";
+        if (resenha == null) {
+            errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
 
         boolean eliminado = resenhaRepo.eliminar(resenha.getId());
-        return eliminado ? "Reseña eliminada correctamente" : "Error al eliminar reseña";
+        return eliminado;
     }
 
 
-       //OCULTAR RESEÑA
+    //OCULTAR RESEÑA
 
-    public String ocultarResenha(long idResenha, long idUsuario) {
+    public ResenhaDto ocultarResenha(long idResenha, long idUsuario) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
         var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
-        if (resenha == null) return "Error: Reseña no encontrada o no pertenece al usuario";
+        if (resenha == null) {
 
+            errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
         // Marcamos cuerpo como oculto (ejemplo simple)
         resenha.setEstadoResenhaType(EstadoResenhaType.OCULTA);
-        return "Reseña ocultada correctamente";
+        var resenhaForm = new ResenhaForm(idResenha, idUsuario, resenha.isRecomendado(), resenha.getTexto(), resenha.getHorasJugadas());
+
+        resenhaRepo.actualizar(idResenha, resenhaForm);
+        return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm));
     }
 
     /* =========================================
        4️⃣ VER RESEÑAS DE UN JUEGO
     ========================================= */
-    public List<ResenhaEntidad> verResenasPorJuego(long idJuego, String filtro, String orden) {
-        List<ResenhaEntidad> resultado = new ArrayList<>();
+    public List<ResenhaDto> verResenasPorJuego(long idJuego, String filtro, String orden) {
+        List<ResenhaDto> resultado = new ArrayList<>();
         for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
             if (r.getNombreJuegoId() == idJuego) {
 
@@ -91,13 +112,13 @@ public class ResenhaControlador {
                 if ("positivas".equalsIgnoreCase(filtro) && !r.isRecomendado()) continue;
                 if ("negativas".equalsIgnoreCase(filtro) && r.isRecomendado()) continue;
 
-                resultado.add(r);
+                resultado.add(ResenhaMapper.toDTO(r));
             }
         }
 
         // Ordenar
         if ("recientes".equalsIgnoreCase(orden)) {
-            resultado.sort(Comparator.comparing(ResenhaEntidad::getFechaPublicacion).reversed());
+            return resultado.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
         }
         // Orden por "útiles" se podría agregar si existiera contador de votos
 
@@ -107,21 +128,21 @@ public class ResenhaControlador {
     /* =========================================
        5️⃣ VER RESEÑAS DE UN USUARIO
     ========================================= */
-    public List<ResenhaEntidad> verResenasPorUsuario(long idUsuario, String filtroEstado) {
-        List<ResenhaEntidad> resultado = new ArrayList<>();
+    public List<ResenhaDto> verResenasPorUsuario(long idUsuario, String filtroEstado) {
+        List<ResenhaDto> resultado = new ArrayList<>();
         for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
             if (r.getUsuaroId() == idUsuario) {
                 // Filtro de estado opcional: si quisiéramos oculto, eliminado, etc.
                 if (filtroEstado != null && filtroEstado.equalsIgnoreCase("oculto") &&
                         !r.getEstadoResenhaType().equals(EstadoResenhaType.PUBLICADA)) continue;
 
-                resultado.add(r);
+                resultado.add(ResenhaMapper.toDTO(r));
             }
         }
 
         // Orden por fecha descendente
-        resultado.sort(Comparator.comparing(ResenhaEntidad::getFechaPublicacion).reversed());
+        return resultado.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
 
-        return resultado;
+
     }
 }

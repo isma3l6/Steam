@@ -15,9 +15,10 @@ public class UsuarioForm {
     private String pais;
     private Date fechaNacimiento;
     private String avatr;
+    private double saldo;
 private UsuarioRepoInMemory usuarioRepoInMemory;
 
-    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr) {
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr,double saldo) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
@@ -26,6 +27,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         this.pais = pais;
         this.fechaNacimiento = fechaNacimiento;
         this.avatr = avatr;
+        this.saldo=saldo;
     }
 
     public List<ErrorDto> validarUsuario() {

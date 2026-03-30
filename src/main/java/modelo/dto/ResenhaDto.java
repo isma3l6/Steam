@@ -16,8 +16,16 @@ public class ResenhaDto {
     private Date fechaPublicacion;
     private Date fechaEdit;
     //Estado enum
+    private int horasJugadas;
     private EstadoResenhaType estadoResenhaType;
 
+    public int getHorasJugadas() {
+        return horasJugadas;
+    }
+
+    public void setHorasJugadas(int horasJugadas) {
+        this.horasJugadas = horasJugadas;
+    }
 
     public long getId() {
         return id;
@@ -91,7 +99,7 @@ public class ResenhaDto {
         this.estadoResenhaType = estadoResenhaType;
     }
 
-    public ResenhaDto(UsuarioEntidad usuaro, JuegoEntidad nombreJuego, String texto, boolean recomendado, Date fechaPublicacion,Date fechaEdit) {
+    public ResenhaDto(UsuarioEntidad usuaro, JuegoEntidad nombreJuego, String texto, boolean recomendado, Date fechaPublicacion,Date fechaEdit,int horasJugadas) {
         this.id=id;
         this.usuaro = usuaro;
         this.nombreJuego = nombreJuego;
@@ -100,5 +108,6 @@ public class ResenhaDto {
         this.fechaPublicacion = fechaPublicacion;
         this.fechaEdit=fechaEdit;
         this.estadoResenhaType=EstadoResenhaType.PUBLICADA;
+        this.horasJugadas=horasJugadas;
     }
 }

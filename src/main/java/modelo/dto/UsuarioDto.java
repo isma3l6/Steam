@@ -11,8 +11,17 @@ public class UsuarioDto {
     private String nombre;
     private String apellido;
     private Date fechaNacimiento;
+    private double saldo;
     //Estado de cuanta
     private EstadoUserType estadoUserType;
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
 
     public long getId() {
         return id;
@@ -70,13 +79,14 @@ public class UsuarioDto {
         this.estadoUserType = estadoUserType;
     }
 
-    public UsuarioDto(String nombreUsuario, String email, String nombre, String apellido, Date fechaNacimiento) {
+    public UsuarioDto(String nombreUsuario, String email, String nombre, String apellido, Date fechaNacimiento,double saldo) {
         this.id=id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
+        this.saldo=saldo;
         this.estadoUserType=EstadoUserType.ACTIVA;
     }
 }

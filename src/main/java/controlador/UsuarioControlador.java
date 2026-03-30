@@ -91,7 +91,7 @@ public class UsuarioControlador {
         }
 
         var actualizado=repo.actualizar(usuario.getId(),new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
-                usuario.getContraseña(), usuario.getNombre(), usuario.getApellido(), usuario.getPais(),usuario.getFechaNacimiento(),usuario.getAvatar()));
+                usuario.getContraseña(), usuario.getNombre(), usuario.getApellido(), usuario.getPais(),usuario.getFechaNacimiento(),usuario.getAvatar(),usuario.getSaldo()));
         return UsuarioMapper.toDTO(actualizado);
     }
 
