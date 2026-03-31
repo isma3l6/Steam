@@ -1,11 +1,19 @@
 package controlador;
 
+import excepciones.ValidationException;
+import mapper.JuegoMapper;
+import modelo.dto.JuegoDto;
 import modelo.entidad.*;
+import modelo.form.ErrorDto;
+import modelo.form.ErrorType;
 import modelo.form.JuegoForm;
+import modelo.form.UsuarioForm;
 import repositorio.interfaz.IJuegoRepo;
 
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static java.util.Arrays.sort;
 
 public class JuegoControlador {
 
@@ -16,25 +24,28 @@ public class JuegoControlador {
     }
 
 
-      //AÑADIR JUEGO AL CATÁLOGO
+    //AÑADIR JUEGO AL CATÁLOGO
 
-    public Object añadirJuego(JuegoForm form) {
+    public JuegoDto anadirJuego(JuegoForm form) throws ValidationException {
 
         var errores = form.validarJuego();
 
         if (!errores.isEmpty()) {
-            return errores;
+            throw new ValidationException(errores);
         }
 
         JuegoEntidad juego = repo.crear(form);
+        JuegoEntidad juegoanadido = repo.obtenerPorId(juego.getId());
 
-        return "Juego creado exitosamente con ID: " + juego.getId();
+
+        return JuegoMapper.toDTO(juegoanadido);
     }
 
 
-       //BUSCAR JUEGOS
+    //BUSCAR JUEGOS
+    //Añadir formBusquda
 
-    public List<Map<String, Object>> buscar(
+    public List<JuegoDto> buscar(
             String texto,
             CategoriaType categoria,
             Double precioMin,
@@ -44,7 +55,7 @@ public class JuegoControlador {
     ) {
 
         JuegoEntidad[] juegos = repo.obtenerTodos();
-        List<Map<String, Object>> resultado = new ArrayList<>();
+        List<JuegoDto> resultado = new ArrayList<>();
 
         for (JuegoEntidad j : juegos) {
 
@@ -79,141 +90,109 @@ public class JuegoControlador {
                     j.getEstadoJuegoType() != estado) {
                 continue;
             }
-
-            Map<String, Object> resumen = new HashMap<>();
-            resumen.put("ID", j.getId());
-            resumen.put("Título", j.getTitulo());
-            resumen.put("Desarrollador", j.getDesarrollador());
-            resumen.put("Precio Base", j.getPrecioBase());
-            resumen.put("Descuento", j.getProcentajeDescuento());
-            resumen.put("Clasificación", j.getClasificacionType());
-            resumen.put("Imagen", "imagen_placeholder.jpg");
-
-            resultado.add(resumen);
+            resultado.add(JuegoMapper.toDTO(j));
         }
 
         return resultado;
     }
 
 
-       //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
+    //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
-    public Map<String, Object> catalogoCompleto(String orden,
-                                                int pagina,
-                                                int tamañoPagina) {
+    public List<JuegoDto> catalogoCompleto(int orden) {
 
         JuegoEntidad[] juegosArray = repo.obtenerTodos();
-        List<JuegoEntidad> juegos = new ArrayList<>();
 
+
+        List<JuegoDto> resultados = new ArrayList<>();
         for (JuegoEntidad j : juegosArray) {
             if (j != null) {
-                juegos.add(j);
+                resultados.add(JuegoMapper.toDTO(j));
             }
         }
+
 
         // ORDEN
-        if (orden != null) {
-            switch (orden.toLowerCase()) {
-                case "alfabetico":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getTitulo));
-                    break;
 
-                case "precio":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getPrecioBase));
-                    break;
+        // Pelea futura ;)
 
-                case "fecha":
-                    juegos.sort(Comparator.comparing(JuegoEntidad::getFechaLanzamiento));
-                    break;
-            }
+        switch (orden) {
+
+            //alfabeticamente
+            case 1:
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getTitulo)).toList();
+
+
+            //precio
+            case 2:
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getPrecioBase)).toList();
+
+
+            //fecha
+            case 3:
+                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getFechaLanzamiento)).toList();
+            default:
+                return resultados;
         }
 
-        int total = juegos.size();
-        int desde = pagina * tamañoPagina;
-        int hasta = Math.min(desde + tamañoPagina, total);
 
-        List<JuegoEntidad> paginaContenido =
-                (desde < total) ? juegos.subList(desde, hasta)
-                        : new ArrayList<>();
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("pagina", pagina);
-        resultado.put("tamañoPagina", tamañoPagina);
-        resultado.put("totalJuegos", total);
-        resultado.put("contenido", paginaContenido);
-
-        return resultado;
     }
 
 
-      //CONSULTAR DETALLES DE JUEGO
+    //CONSULTAR DETALLES DE JUEGO
 
-    public Object detallesJuego(int id) {
+    public JuegoDto detallesJuego(int id) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
 
         JuegoEntidad juego = repo.obtenerPorId(id);
 
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
-        Map<String, Object> detalles = new HashMap<>();
-        detalles.put("ID", juego.getId());
-        detalles.put("Título", juego.getTitulo());
-        detalles.put("Descripción", juego.getDescripcion());
-        detalles.put("Desarrollador", juego.getDesarrollador());
-        detalles.put("Fecha Lanzamiento", juego.getFechaLanzamiento());
-        detalles.put("Precio Base", juego.getPrecioBase());
-        detalles.put("Descuento", juego.getProcentajeDescuento());
-        detalles.put("Categoría", juego.getCategoriaType());
-        detalles.put("Clasificación", juego.getClasificacionType());
-        detalles.put("Estado", juego.getEstadoJuegoType());
-
-        // Simulación estadísticas
-        detalles.put("Ventas totales", new Random().nextInt(10000));
-        detalles.put("Valoración media", 4.5);
-        detalles.put("Reseñas destacadas", "Muy positivo");
-
-        return detalles;
+        return JuegoMapper.toDTO(juego);
     }
 
 
-     //APLICAR DESCUENTO
+    //APLICAR DESCUENTO
 
-    public String aplicarDescuento(int id, double porcentaje) {
-
+    public Double aplicarDescuento(int id, double porcentaje) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
         if (porcentaje < 0 || porcentaje > 100) {
-            return "El descuento debe estar entre 0 y 100";
+            errores.add(new ErrorDto("porcentaje", ErrorType.PORCENTAJE_INVALIDO));
+            throw new ValidationException(errores);
         }
 
         JuegoEntidad juego = repo.obtenerPorId(id);
 
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         juego.setProcentajeDescuento(porcentaje);
 
-        double precioFinal =
-                juego.getPrecioBase() * (1 - porcentaje / 100);
+        double precioFinal = juego.getPrecioBase() * (1 - porcentaje / 100);
 
-        DecimalFormat df = new DecimalFormat("#0.00");
-
-        return "Precio final actualizado: " + df.format(precioFinal) + " €";
+        return precioFinal;
     }
 
 
-       //CAMBIAR ESTADO DEL JUEGO
+    //CAMBIAR ESTADO DEL JUEGO
 
-    public String cambiarEstado(int id, EstadoJuegoType nuevoEstado) {
+    public JuegoDto cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
         JuegoEntidad juego = repo.obtenerPorId(id);
-
+        List<ErrorDto> errores = new ArrayList<>();
         if (juego == null) {
-            return "Juego no encontrado";
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         juego.setEstadoJuegoType(nuevoEstado);
+        var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getEstadoJuegoType()));
 
-        return "Estado actualizado a: " + nuevoEstado;
+        return JuegoMapper.toDTO(actualizado);
     }
 }

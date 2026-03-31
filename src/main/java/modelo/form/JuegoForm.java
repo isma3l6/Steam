@@ -17,7 +17,14 @@ public class JuegoForm {
     private int porcentajeDescuento;
     private ClasificacionType clasificaionEdad;
     private List<String>idiomas;
+
+    public JuegoForm(String titulo, EstadoJuegoType estadoJuego) {
+        this.titulo = titulo;
+        this.estadoJuego = estadoJuego;
+    }
+
     private EstadoJuegoType estadoJuego;
+
 
     public JuegoForm(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
