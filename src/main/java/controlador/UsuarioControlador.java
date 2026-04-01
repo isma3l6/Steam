@@ -38,7 +38,7 @@ public class UsuarioControlador {
     }
 
     //CONSULTAR PERFIL//
-    public UsuarioDto consultarPerfil(Long id, String nombreUsuario) throws ValidationException {
+    public UsuarioDto consultarPerfilPorId(Long id, String nombreUsuario) throws ValidationException {
 
         UsuarioEntidad usuario = null;
         List<ErrorDto> errores = new ArrayList<>();
@@ -69,6 +69,30 @@ public class UsuarioControlador {
     }
 
 
+    public UsuarioDto consultarPerfilPorId(String nombreUsuario) throws ValidationException {
+        UsuarioEntidad usuario = null;
+        List<ErrorDto> errores = new ArrayList<>();
+
+
+        if (nombreUsuario != null) {
+             usuario= Arrays.stream(repo.obtenerTodos()).filter(u-> Objects.equals(u.getNombreUsuario(), nombreUsuario)).findFirst().get();
+            
+        }
+
+        if (usuario == null) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+        if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
+            errores.add(new ErrorDto("usuario", ErrorType.CUENTA_BLOQUEADA));
+            throw new ValidationException(errores);
+        }
+
+
+        return UsuarioMapper.toDTO(usuario);
+    }
+
     //AÑADIR SALDO A CARTERA
     public UsuarioDto añadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
 
@@ -90,8 +114,8 @@ public class UsuarioControlador {
             throw new ValidationException(errores);
         }
 
-        var actualizado=repo.actualizar(usuario.getId(),new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
-                usuario.getContraseña(), usuario.getNombre(), usuario.getApellido(), usuario.getPais(),usuario.getFechaNacimiento(),usuario.getAvatar(),usuario.getSaldo()));
+        var actualizado = repo.actualizar(usuario.getId(), new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
+                usuario.getContraseña(), usuario.getNombre(), usuario.getApellido(), usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo()));
         return UsuarioMapper.toDTO(actualizado);
     }
 
@@ -101,11 +125,11 @@ public class UsuarioControlador {
     public UsuarioDto consultarSaldo(Long usuarioId) throws ValidationException {
 
         UsuarioEntidad usuario = repo.obtenerPorId(usuarioId);
-        List<ErrorDto>errores=new ArrayList<>();
+        List<ErrorDto> errores = new ArrayList<>();
 
         if (usuario == null) {
-            errores.add(new ErrorDto("usuario",ErrorType.NO_ENCONTRADO));
-            throw  new ValidationException(errores);
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         return UsuarioMapper.toDTO(usuario);
