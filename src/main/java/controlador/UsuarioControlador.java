@@ -38,21 +38,15 @@ public class UsuarioControlador {
     }
 
     //CONSULTAR PERFIL//
-    public UsuarioDto consultarPerfilPorId(Long id, String nombreUsuario) throws ValidationException {
+    public UsuarioDto consultarPerfilPorId(Long id) throws ValidationException {
 
         UsuarioEntidad usuario = null;
         List<ErrorDto> errores = new ArrayList<>();
 
         if (id != null) {
             usuario = repo.obtenerPorId(id);
-        } else if (nombreUsuario != null) {
-            for (UsuarioEntidad u : repo.obtenerTodos()) {
-                if (u != null && u.getNombreUsuario().equalsIgnoreCase(nombreUsuario)) {
-                    usuario = u;
-                    break;
-                }
-            }
         }
+
 
         if (usuario == null) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
@@ -69,7 +63,7 @@ public class UsuarioControlador {
     }
 
 
-    public UsuarioDto consultarPerfilPorId(String nombreUsuario) throws ValidationException {
+    public UsuarioDto consultarPerfilPorNombre(String nombreUsuario) throws ValidationException {
         UsuarioEntidad usuario = null;
         List<ErrorDto> errores = new ArrayList<>();
 
