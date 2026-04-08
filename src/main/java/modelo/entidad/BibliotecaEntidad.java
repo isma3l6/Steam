@@ -1,17 +1,28 @@
 package modelo.entidad;
 
+import jakarta.persistence.*;
 import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
 
 import java.util.Date;
+@Table(name = "biblioteca")
+@Entity
 
 public class BibliotecaEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "id_usuario")
     private long idUsuario;
+    @Column(name = "id_juego")
     private long idJuego;
+    @Column(name = "fecha_adquisicion")
     private Date fechaAdquisicion;
+    @Column(name = "horas_jugadas")
     private int horasJugadas;
+    @Column(name = "jugado_por_ultima_vez")
     private Date jugadoPorUltimavez;
+    @Column(name = "instalacion")
     private InstalacionType instalacionType;
 
     public long getId() {
@@ -82,5 +93,18 @@ public class BibliotecaEntidad {
         this.jugadoPorUltimavez = jugadoPorUltimavez;
         this.instalacionType = instalacionType;
 
+    }
+
+    @Override
+    public String toString() {
+        return "BibliotecaEntidad{" +
+                "id=" + id +
+                ", idUsuario=" + idUsuario +
+                ", idJuego=" + idJuego +
+                ", fechaAdquisicion=" + fechaAdquisicion +
+                ", horasJugadas=" + horasJugadas +
+                ", jugadoPorUltimavez=" + jugadoPorUltimavez +
+                ", instalacionType=" + instalacionType +
+                '}';
     }
 }

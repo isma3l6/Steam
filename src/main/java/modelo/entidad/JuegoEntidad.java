@@ -1,23 +1,33 @@
 package modelo.entidad;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
-
+@Table(name = "juegos")
+@Entity
 public class JuegoEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "titulo")
     private String titulo;
+    @Column(name = "descripcion")
     private String descripcion;
-
-
+    @Column(name = "desarrollador")
     private String desarrollador;
+    @Column(name = "fecha_lanzamiento")
     private Date fechaLanzamiento;
+    @Column(name = "precio_base")
     private double precioBase;
     //descuento en porcentaje
+    @Column(name = "porcentaje_descuento")
     private double procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
+    @Column(name = "categoria")
     private CategoriaType categoriaType;
-
+    @Column(name = "clasificacion")
     private ClasificacionType clasificacionType;
-
+    @Column(name = "estado")
     private EstadoJuegoType estadoJuegoType;
 
 
@@ -122,5 +132,21 @@ public class JuegoEntidad {
         this.categoriaType = categoriaType;
         this.clasificacionType = clasificacionType;
         this.estadoJuegoType = estadoJuegoType;
+    }
+
+    @Override
+    public String toString() {
+        return "JuegoEntidad{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", desarrollador='" + desarrollador + '\'' +
+                ", fechaLanzamiento=" + fechaLanzamiento +
+                ", precioBase=" + precioBase +
+                ", procentajeDescuento=" + procentajeDescuento +
+                ", categoriaType=" + categoriaType +
+                ", clasificacionType=" + clasificacionType +
+                ", estadoJuegoType=" + estadoJuegoType +
+                '}';
     }
 }
