@@ -5,25 +5,18 @@ import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
 import repositorio.interfaz.IUsuarioRepo;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
-
-    private UsuarioEntidad[] usuarios = new UsuarioEntidad[100];
+    private List<UsuarioEntidad> usuarios = new ArrayList<>()
     private int size = 0;
     private long idCounter = 1;
 
 
-
-       //CREATE
+    //CREATE
 
     @Override
-    public UsuarioEntidad crear(UsuarioForm form) {
-
-        if (size >= usuarios.length) {
-            throw new RuntimeException("Capacidad máxima alcanzada");
-        }
+    public Optional<UsuarioEntidad> crear(UsuarioForm form) {
 
         UsuarioEntidad nuevo = new UsuarioEntidad(
                 idCounter++,
@@ -40,46 +33,39 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                 EstadoUserType.ACTIVA
         );
 
-        usuarios[size] = nuevo;
-        size++;
+        usuarios.add(nuevo);
 
-        return nuevo;
+        return Optional.of(nuevo);
     }
 
-      // READ BY ID
+    // READ BY ID
     @Override
-    public UsuarioEntidad obtenerPorId(long id) {
+    public Optional<UsuarioEntidad> obtenerPorId(long id) {
 
         for (int i = 0; i < size; i++) {
-            if (usuarios[i].getId() == id) {
-                return usuarios[i];
+            if (usuarios.get(i).getId() == id) {
+                return Optional.of(usuarios.get(i));
             }
         }
         return null;
     }
 
-       //READ ALL
+    //READ ALL
     @Override
-    public UsuarioEntidad[] obtenerTodos() {
+    public List<UsuarioEntidad> obtenerTodos() {
 
-        UsuarioEntidad[] copia = new UsuarioEntidad[size];
-
-        for (int i = 0; i < size; i++) {
-            copia[i] = usuarios[i];
-        }
-
-        return copia;
+        return usuarios.stream().toList();
     }
 
 
-       //UPDATE
+    //UPDATE
 
     @Override
-    public UsuarioEntidad actualizar(long id, UsuarioForm form) {
+    public Optional<UsuarioEntidad> actualizar(long id, UsuarioForm form) {
 
         for (int i = 0; i < size; i++) {
 
-            if (usuarios[i].getId() == id) {
+            if (usuarios.get(i).getId() == id) {
 
                 UsuarioEntidad actualizado = new UsuarioEntidad(
                         id,
@@ -90,14 +76,14 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                         form.getApellido(),
                         form.getPais(),
                         form.getFechaNacimiento(),
-                        usuarios[i].getFechaRegistro(), // mantiene fecha registro
+                        usuarios.get(i).getFechaRegistro(), // mantiene fecha registro
                         form.getAvatr(),
-                        usuarios[i].getSaldo(), // mantiene saldo
-                        usuarios[i].getEstadoType()
+                        usuarios.get(i).getSaldo(), // mantiene saldo
+                        usuarios.get(i).getEstadoType()
                 );
 
                 usuarios[i] = actualizado;
-                return actualizado;
+                return Optional.of(actualizado);
             }
         }
 
@@ -105,44 +91,24 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
 
-       //DELETE
+    //DELETE
 
     @Override
     public boolean eliminar(long id) {
 
-        for (int i = 0; i < size; i++) {
+        return usuarios.remove(usuarios.stream().filter(u -> u.getId() == id).findFirst());
 
-            if (usuarios[i].getId() == id) {
-
-                // desplazamiento a la izquierda
-                for (int j = i; j < size - 1; j++) {
-                    usuarios[j] = usuarios[j + 1];
-                }
-
-                usuarios[size - 1] = null;
-                size--;
-
-                return true;
-            }
-        }
-
-        return false;
     }
-//BUSCAR POR NOMBREUSUARIO
+
+    //BUSCAR POR NOMBREUSUARIO
     public boolean buscarUsuarioPorNombre(String nombreUsuario) {
-
-
-        for (int i = 0; i < size; i++) {
-            if (Objects.equals(usuarios[i].getNombreUsuario(), nombreUsuario)) {
-                return false;
-            }
-        }
-        return true;
+        return  usuarios.stream().filter(u -> u.getNombreUsuario() == nombreUsuario).findFirst().isPresent();
     }
-//BUSCAR POR EMAIL
+
+    //BUSCAR POR EMAIL
     public boolean buscarUsuarioPorCorreo(String email) {
         for (int i = 0; i < size; i++) {
-            if (Objects.equals(usuarios[i].getEmail(), email)) {
+            if (Objects.equals(usuarios.get(i).getEmail(), email)) {
                 return false;
             }
         }

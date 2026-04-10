@@ -3,15 +3,18 @@ package repositorio.interfaz;
 import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface IUsuarioRepo {
 
-    UsuarioEntidad crear(UsuarioForm form);
+    Optional<UsuarioEntidad> crear(UsuarioForm form);
 
-    UsuarioEntidad obtenerPorId(long id);
+    Optional<UsuarioEntidad> obtenerPorId(long id);
 
-    UsuarioEntidad[] obtenerTodos();
+    List<UsuarioEntidad> obtenerTodos();
 
-    UsuarioEntidad actualizar(long id, UsuarioForm form);
+    Optional<UsuarioEntidad> actualizar(long id, UsuarioForm form);
 
     boolean eliminar(long id);
 }
