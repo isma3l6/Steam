@@ -34,11 +34,11 @@ public class JuegoControlador {
             throw new ValidationException(errores);
         }
 
-        JuegoEntidad juego = repo.crear(form);
-        JuegoEntidad juegoanadido = repo.obtenerPorId(juego.getId());
+        JuegoEntidad juego = repo.crear(form).get();
+        JuegoEntidad juegoAnadido = repo.obtenerPorId(juego.getId()).get();
 
 
-        return JuegoMapper.toDTO(juegoanadido);
+        return JuegoMapper.toDTO(juegoAnadido);
     }
 
 
@@ -54,7 +54,7 @@ public class JuegoControlador {
             EstadoJuegoType estado
     ) {
 
-        JuegoEntidad[] juegos = repo.obtenerTodos();
+        List<JuegoEntidad> juegos = repo.obtenerTodos();
         List<JuegoDto> resultado = new ArrayList<>();
 
         for (JuegoEntidad j : juegos) {
@@ -101,7 +101,7 @@ public class JuegoControlador {
 
     public List<JuegoDto> catalogoCompleto(int orden) {
 
-        JuegoEntidad[] juegosArray = repo.obtenerTodos();
+       List<JuegoEntidad> juegosArray = repo.obtenerTodos();
 
 
         List<JuegoDto> resultados = new ArrayList<>();
@@ -144,9 +144,9 @@ public class JuegoControlador {
     public JuegoDto detallesJuego(int id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        JuegoEntidad juego = repo.obtenerPorId(id);
+        JuegoEntidad juego = repo.obtenerPorId(id).get();
 
-        if (juego == null) {
+        if (juego ==null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
@@ -164,7 +164,7 @@ public class JuegoControlador {
             throw new ValidationException(errores);
         }
 
-        JuegoEntidad juego = repo.obtenerPorId(id);
+        JuegoEntidad juego = repo.obtenerPorId(id).get();
 
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
@@ -183,7 +183,7 @@ public class JuegoControlador {
 
     public JuegoDto cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
-        JuegoEntidad juego = repo.obtenerPorId(id);
+        JuegoEntidad juego = repo.obtenerPorId(id).get();
         List<ErrorDto> errores = new ArrayList<>();
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
@@ -191,7 +191,7 @@ public class JuegoControlador {
         }
 
         juego.setEstadoJuegoType(nuevoEstado);
-        var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getEstadoJuegoType()));
+        var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getEstadoJuegoType())).get();
 
         return JuegoMapper.toDTO(actualizado);
     }

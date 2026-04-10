@@ -17,4 +17,5 @@ public interface IUsuarioRepo {
     Optional<UsuarioEntidad> actualizar(long id, UsuarioForm form);
 
     boolean eliminar(long id);
+    Optional<UsuarioEntidad>buscarUsuarioPorNombre(String nombreUsuario);
 }

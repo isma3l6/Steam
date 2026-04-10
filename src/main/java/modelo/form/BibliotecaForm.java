@@ -34,14 +34,14 @@ public class BibliotecaForm {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (usuarioRepoInMemory.obtenerPorId(idUsario)==null) {
+        if (usuarioRepoInMemory.obtenerPorId(idUsario).isEmpty()) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //Juego
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (juegoRepoInMemory.obtenerPorId(idJuego)==null) {
+        if (juegoRepoInMemory.obtenerPorId(idJuego).isEmpty()) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         if (!juegoUnico(idJuego)) {

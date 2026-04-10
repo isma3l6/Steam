@@ -8,7 +8,7 @@ import repositorio.interfaz.IUsuarioRepo;
 import java.util.*;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
-    private List<UsuarioEntidad> usuarios = new ArrayList<>()
+    private List<UsuarioEntidad> usuarios = new ArrayList<>();
     private int size = 0;
     private long idCounter = 1;
 
@@ -42,12 +42,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     @Override
     public Optional<UsuarioEntidad> obtenerPorId(long id) {
 
-        for (int i = 0; i < size; i++) {
-            if (usuarios.get(i).getId() == id) {
-                return Optional.of(usuarios.get(i));
-            }
-        }
-        return null;
+        return usuarios.stream().filter(u->u.getId()==id).findFirst();
     }
 
     //READ ALL
@@ -63,12 +58,14 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     @Override
     public Optional<UsuarioEntidad> actualizar(long id, UsuarioForm form) {
 
-        for (int i = 0; i < size; i++) {
 
-            if (usuarios.get(i).getId() == id) {
+
+        for (UsuarioEntidad u:usuarios) {
+
+            if (u.getId() == id) {
 
                 UsuarioEntidad actualizado = new UsuarioEntidad(
-                        id,
+                        u.getId(),
                         form.getNombreUsuario(),
                         form.getEmail(),
                         form.getContrasena(),
@@ -76,18 +73,19 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                         form.getApellido(),
                         form.getPais(),
                         form.getFechaNacimiento(),
-                        usuarios.get(i).getFechaRegistro(), // mantiene fecha registro
+                        u.getFechaRegistro(), // mantiene fecha registro
                         form.getAvatr(),
-                        usuarios.get(i).getSaldo(), // mantiene saldo
-                        usuarios.get(i).getEstadoType()
+                        u.getSaldo(), // mantiene saldo
+                        u.getEstadoType()
                 );
+                usuarios.remove(u);
 
-                usuarios[i] = actualizado;
+                usuarios.add(actualizado);
                 return Optional.of(actualizado);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
@@ -96,22 +94,19 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     @Override
     public boolean eliminar(long id) {
 
-        return usuarios.remove(usuarios.stream().filter(u -> u.getId() == id).findFirst());
+        return usuarios.remove(usuarios.stream().filter(u -> u.getId() == id).findFirst().get());
 
     }
 
     //BUSCAR POR NOMBREUSUARIO
-    public boolean buscarUsuarioPorNombre(String nombreUsuario) {
-        return  usuarios.stream().filter(u -> u.getNombreUsuario() == nombreUsuario).findFirst().isPresent();
+    @Override
+    public Optional<UsuarioEntidad> buscarUsuarioPorNombre(String nombreUsuario) {
+        return  usuarios.stream().filter(u -> Objects.equals(u.getNombreUsuario(), nombreUsuario)).findFirst();
     }
 
     //BUSCAR POR EMAIL
     public boolean buscarUsuarioPorCorreo(String email) {
-        for (int i = 0; i < size; i++) {
-            if (Objects.equals(usuarios.get(i).getEmail(), email)) {
-                return false;
-            }
-        }
-        return true;
+        return  usuarios.stream().filter(u -> Objects.equals(u.getEmail(), email)).findFirst().isPresent();
+
     }
 }

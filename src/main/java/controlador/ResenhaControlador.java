@@ -5,6 +5,7 @@ import mapper.ResenhaMapper;
 import modelo.dto.ResenhaDto;
 import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.ResenhaEntidad;
+import modelo.entidad.UsuarioEntidad;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
 import modelo.form.ResenhaForm;
@@ -43,7 +44,7 @@ public class ResenhaControlador {
         }
 
         // 2. Usuario existe
-        var usuario = usuarioRepo.obtenerPorId(form.getIdUsuario());
+        UsuarioEntidad usuario = usuarioRepo.obtenerPorId(form.getIdUsuario()).get();
         if (usuario == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
@@ -62,8 +63,8 @@ public class ResenhaControlador {
         }
 
         // 5. Crear reseña
-        var resenha = resenhaRepo.crear(form);
-        return ResenhaMapper.toDTO(resenha);
+
+        return ResenhaMapper.toDTO(resenhaRepo.crear(form).get());
     }
 
 
@@ -71,14 +72,14 @@ public class ResenhaControlador {
 
     public boolean eliminarResenha(long idResenha, long idUsuario) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
+        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).get();
         if (resenha == null) {
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 
-        boolean eliminado = resenhaRepo.eliminar(resenha.getId());
-        return eliminado;
+        return resenhaRepo.eliminar(resenha.getId());
+
     }
 
 
@@ -86,7 +87,7 @@ public class ResenhaControlador {
 
     public ResenhaDto ocultarResenha(long idResenha, long idUsuario) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha);
+        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).get();
         if (resenha == null) {
 
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
@@ -96,7 +97,7 @@ public class ResenhaControlador {
         var resenhaForm = new ResenhaForm(idResenha, idUsuario, resenha.isRecomendado(), resenha.getTexto(), resenha.getHorasJugadas());
 
 
-        return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm));
+        return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm).get());
     }
 
     /* =========================================

@@ -11,8 +11,7 @@ import java.util.Optional;
 
 public class JuegoRepoInMemory implements IJuegoRepo {
 
-    private List<JuegoEntidad> juegos = new ArrayList<>();
-    private int size = 0;
+    private final List<JuegoEntidad> juegos = new ArrayList<>();
     private int idCounter = 1;
 
     // CREATE
@@ -61,30 +60,31 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public Optional<JuegoEntidad> actualizar(int id, JuegoForm form) {
+        JuegoEntidad actualizado=null;
 
-        for (int i = 0; i < size; i++) {
+        for (JuegoEntidad j:juegos) {
 
-            if (juegos.get(i).getId() == id) {
+            if (j.getId() == id) {
 
-                JuegoEntidad actualizado = new JuegoEntidad(
+                 actualizado = new JuegoEntidad(
                         id,
                         form.getTitulo(),
                         form.getDesarrollador(),
                         form.getDescripcion(),
                         form.getFechaLanzamiento(),
                         form.getPrecioBase(),
-                        juegos.get(i).getCategoriaType(), // mantiene categoría actual
+                        j.getCategoriaType(), // mantiene categoría actual
                         form.getPorcentajeDescuento(),
                         form.getClasificaionEdad(),
                         form.getEstadoJuego()
                 );
+                juegos.remove(j);
 
-                juegos.set(i, actualizado);
+               juegos.add(actualizado);
                 return Optional.of(actualizado);
             }
         }
-
-        return null;
+        return Optional.empty();
     }
 
 
@@ -92,7 +92,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public boolean eliminar(int id) {
-        return juegos.remove(juegos.stream().filter(j -> j.getId() == id).findFirst());
+        return juegos.remove(juegos.stream().filter(j -> j.getId() == id).findFirst().get());
 
     }
 }

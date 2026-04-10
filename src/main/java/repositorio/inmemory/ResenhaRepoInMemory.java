@@ -2,6 +2,7 @@ package repositorio.inmemory;
 
 import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.ResenhaEntidad;
+import modelo.entidad.UsuarioEntidad;
 import modelo.form.ResenhaForm;
 import repositorio.interfaz.IResenhaRepo;
 
@@ -15,10 +16,10 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     private long idCounter = 1L;
 
 
-       //CREATE
+    //CREATE
 
     @Override
-    public Optional <ResenhaEntidad> crear(ResenhaForm form) {
+    public Optional<ResenhaEntidad> crear(ResenhaForm form) {
 
         if (size >= resenas.length) {
             throw new RuntimeException("Capacidad máxima alcanzada");
@@ -30,7 +31,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
                 form.getIdJuego(),
                 form.isRecomendado(),
                 form.getCuerpoResena(),
-                new Date() ,// fecha de creación
+                new Date(),// fecha de creación
                 new Date(),
                 EstadoResenhaType.PUBLICADA
 
@@ -41,29 +42,31 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
 
         return Optional.of(nueva);
     }
-public Optional<ResenhaEntidad> obtenerPorId(long id){
-    for (int i = 0; i < size; i++) {
-        if (resenas[i].getId() == id) {
-            return Optional.of(resenas[i]);
-        }
-    }
-    return null;}
 
-       //READ BY USUARIO + JUEGO
-
-    @Override
-    public Optional<ResenhaEntidad> obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
+    public Optional<ResenhaEntidad> obtenerPorId(long id) {
         for (int i = 0; i < size; i++) {
-            if (resenas[i].getUsuaroId() == idUsuario &&
-                    resenas[i].getNombreJuegoId() == idJuego) {
+            if (resenas[i].getId() == id) {
                 return Optional.of(resenas[i]);
             }
         }
         return null;
     }
 
+    //READ BY USUARIO + JUEGO
 
-       //READ ALL
+    @Override
+    public Optional<ResenhaEntidad> obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
+        for (ResenhaEntidad r : resenas) {
+            if (r.getUsuaroId() == idUsuario &&
+                    r.getNombreJuegoId() == idJuego) {
+                return Optional.of(r);
+            }
+        }
+        return null;
+    }
+
+
+    //READ ALL
 
     @Override
     public ResenhaEntidad[] obtenerTodas() {
@@ -75,7 +78,7 @@ public Optional<ResenhaEntidad> obtenerPorId(long id){
     }
 
 
-       //UPDATE
+    //UPDATE
 
     @Override
     public Optional<ResenhaEntidad> actualizar(long id, ResenhaForm form) {
@@ -115,7 +118,7 @@ public Optional<ResenhaEntidad> obtenerPorId(long id){
         return false;
     }
 
-       //EXISTE RESEÑA
+    //EXISTE RESEÑA
     @Override
     public boolean existeResena(long idUsuario, long idJuego) {
         return obtenerPorUsuarioYJuego(idUsuario, idJuego) != null;

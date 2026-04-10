@@ -21,7 +21,7 @@ private JuegoRepoInMemory juegoRepoInMemory;
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (usuarioRepoInMemory.obtenerPorId(idUsuario)==null) {
+        if (usuarioRepoInMemory.obtenerPorId(idUsuario).isEmpty()) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
         //juego en la biblioteca del user
@@ -29,7 +29,7 @@ private JuegoRepoInMemory juegoRepoInMemory;
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (juegoRepoInMemory.obtenerPorId(idJuego)==null) {
+        if (juegoRepoInMemory.obtenerPorId(idJuego).isEmpty()) {
             errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
         }
         // 1 resena por juego

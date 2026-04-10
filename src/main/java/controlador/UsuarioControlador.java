@@ -12,6 +12,7 @@ import repositorio.interfaz.IUsuarioRepo;
 
 import java.util.*;
 
+
 public class UsuarioControlador {
 
     private final IUsuarioRepo repo;
@@ -31,7 +32,7 @@ public class UsuarioControlador {
             throw new ValidationException(errores);
         }
 
-        UsuarioEntidad usuario = repo.crear(form);
+        UsuarioEntidad usuario = repo.crear(form).get();
 
         return UsuarioMapper.toDTO(usuario);
     }
@@ -43,7 +44,7 @@ public class UsuarioControlador {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (id != null) {
-            usuario = repo.obtenerPorId(id);
+            usuario = repo.obtenerPorId(id).get();
         }
 
 
@@ -68,8 +69,8 @@ public class UsuarioControlador {
 
 
         if (nombreUsuario != null) {
-             usuario= Arrays.stream(repo.obtenerTodos()).filter(u-> Objects.equals(u.getNombreUsuario(), nombreUsuario)).findFirst().get();
-            
+            usuario = repo.buscarUsuarioPorNombre(nombreUsuario).get();
+
         }
 
         if (usuario == null) {
@@ -89,10 +90,10 @@ public class UsuarioControlador {
     //AÑADIR SALDO A CARTERA
     public UsuarioDto anadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
 
-        UsuarioEntidad usuario = repo.obtenerPorId(usuarioId);
+        UsuarioEntidad usuario = repo.obtenerPorId(usuarioId).get();
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (usuario == null) {
+        if (usuarioId < 0) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
@@ -109,8 +110,8 @@ public class UsuarioControlador {
 
         var actualizado = repo.actualizar(usuario.getId(),
                 new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
-                usuario.getContrasena(), usuario.getNombre(), usuario.getApellido(),
-                        usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo() +cantidad));
+                        usuario.getContrasena(), usuario.getNombre(), usuario.getApellido(),
+                        usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo() + cantidad)).get();
         return UsuarioMapper.toDTO(actualizado);
     }
 
@@ -119,8 +120,15 @@ public class UsuarioControlador {
 
     public UsuarioDto consultarSaldo(Long usuarioId) throws ValidationException {
 
-        UsuarioEntidad usuario = repo.obtenerPorId(usuarioId);
+        UsuarioEntidad usuario = null;
         List<ErrorDto> errores = new ArrayList<>();
+
+        if (usuarioId == null) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+        usuario = repo.obtenerPorId(usuarioId).get();
+
 
         if (usuario == null) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
