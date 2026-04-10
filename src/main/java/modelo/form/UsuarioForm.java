@@ -216,4 +216,6 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
     public String getAvatr() {
         return avatr;
     }
+
+
 }

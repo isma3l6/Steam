@@ -32,6 +32,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                 form.getContrasena(),
                 form.getNombre(),
                 form.getApellido(),
+                form.getPais(),
                 form.getFechaNacimiento(),
                 new Date(),
                 form.getAvatr(),
@@ -87,6 +88,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                         form.getContrasena(),
                         form.getNombre(),
                         form.getApellido(),
+                        form.getPais(),
                         form.getFechaNacimiento(),
                         usuarios[i].getFechaRegistro(), // mantiene fecha registro
                         form.getAvatr(),

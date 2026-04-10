@@ -6,7 +6,7 @@ public class UsuarioEntidad {
     private long id;
     private String nombreUsuario;
     private String email;
-    private String contraseña;
+    private String contrasena;
     private String nombre;
     private String apellido;
     private Date fechaNacimiento;
@@ -41,12 +41,12 @@ public class UsuarioEntidad {
         this.id = id;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public String getEmail() {
@@ -113,11 +113,11 @@ public class UsuarioEntidad {
         this.estadoType = estadoType;
     }
 
-    public UsuarioEntidad(long id, String nombreUsuario, String email, String contraseña, String nombre, String apellido,String pais, Date fechaNacimiento, Date fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
+    public UsuarioEntidad(long id, String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, Date fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
-        this.contraseña = contraseña;
+        this.contrasena = contrasena;
         this.nombre = nombre;
         this.apellido = apellido;
         this.pais=pais;

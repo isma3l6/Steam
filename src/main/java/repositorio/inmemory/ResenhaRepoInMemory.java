@@ -5,9 +5,10 @@ import modelo.entidad.ResenhaEntidad;
 import modelo.form.ResenhaForm;
 import repositorio.interfaz.IResenhaRepo;
 
-import java.util.Date;
+import java.util.*;
 
 public class ResenhaRepoInMemory implements IResenhaRepo {
+
 
     private ResenhaEntidad[] resenas = new ResenhaEntidad[200];
     private int size = 0;
@@ -17,7 +18,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
        //CREATE
 
     @Override
-    public ResenhaEntidad crear(ResenhaForm form) {
+    public Optional <ResenhaEntidad> crear(ResenhaForm form) {
 
         if (size >= resenas.length) {
             throw new RuntimeException("Capacidad máxima alcanzada");
@@ -38,18 +39,24 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         resenas[size] = nueva;
         size++;
 
-        return nueva;
+        return Optional.of(nueva);
     }
-
+public Optional<ResenhaEntidad> obtenerPorId(long id){
+    for (int i = 0; i < size; i++) {
+        if (resenas[i].getId() == id) {
+            return Optional.of(resenas[i]);
+        }
+    }
+    return null;}
 
        //READ BY USUARIO + JUEGO
 
     @Override
-    public ResenhaEntidad obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
+    public Optional<ResenhaEntidad> obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
         for (int i = 0; i < size; i++) {
             if (resenas[i].getUsuaroId() == idUsuario &&
                     resenas[i].getNombreJuegoId() == idJuego) {
-                return resenas[i];
+                return Optional.of(resenas[i]);
             }
         }
         return null;
@@ -71,7 +78,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
        //UPDATE
 
     @Override
-    public ResenhaEntidad actualizar(long id, ResenhaForm form) {
+    public Optional<ResenhaEntidad> actualizar(long id, ResenhaForm form) {
         for (int i = 0; i < size; i++) {
             if (resenas[i].getId() == id) {
                 ResenhaEntidad actualizada = new ResenhaEntidad(
@@ -85,7 +92,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
                         EstadoResenhaType.PUBLICADA
                 );
                 resenas[i] = actualizada;
-                return actualizada;
+                return Optional.of(actualizada);
             }
         }
         return null;

@@ -10,7 +10,6 @@ import modelo.form.ErrorType;
 import modelo.form.UsuarioForm;
 import repositorio.interfaz.IUsuarioRepo;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class UsuarioControlador {
@@ -88,7 +87,7 @@ public class UsuarioControlador {
     }
 
     //AÑADIR SALDO A CARTERA
-    public UsuarioDto añadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
+    public UsuarioDto anadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
 
         UsuarioEntidad usuario = repo.obtenerPorId(usuarioId);
         List<ErrorDto> errores = new ArrayList<>();
@@ -108,8 +107,10 @@ public class UsuarioControlador {
             throw new ValidationException(errores);
         }
 
-        var actualizado = repo.actualizar(usuario.getId(), new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
-                usuario.getContraseña(), usuario.getNombre(), usuario.getApellido(), usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo()));
+        var actualizado = repo.actualizar(usuario.getId(),
+                new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
+                usuario.getContrasena(), usuario.getNombre(), usuario.getApellido(),
+                        usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo() +cantidad));
         return UsuarioMapper.toDTO(actualizado);
     }
 

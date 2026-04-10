@@ -4,21 +4,21 @@ import modelo.entidad.*;
 import modelo.form.JuegoForm;
 import repositorio.interfaz.IJuegoRepo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class JuegoRepoInMemory implements IJuegoRepo {
 
-    private JuegoEntidad[] juegos = new JuegoEntidad[100];
+    private List<JuegoEntidad> juegos = new ArrayList<>();
     private int size = 0;
     private int idCounter = 1;
 
-      // CREATE
+    // CREATE
     @Override
-    public JuegoEntidad crear(JuegoForm form) {
+    public Optional<JuegoEntidad> crear(JuegoForm form) {
 
-        if (size >= juegos.length) {
-            throw new RuntimeException("Capacidad máxima alcanzada");
-        }
 
         JuegoEntidad nuevo = new JuegoEntidad(
                 idCounter++,
@@ -33,51 +33,38 @@ public class JuegoRepoInMemory implements IJuegoRepo {
                 form.getEstadoJuego()
         );
 
-        juegos[size] = nuevo;
-        size++;
-
-        return nuevo;
+        juegos.add(nuevo);
+        return Optional.of(nuevo);
     }
 
 
-       //READ BY ID
+    //READ BY ID
 
     @Override
-    public JuegoEntidad obtenerPorId(long id) {
+    public Optional<JuegoEntidad> obtenerPorId(long id) {
 
-        for (int i = 0; i < size; i++) {
-            if (juegos[i].getId() == id) {
-                return juegos[i];
-            }
-        }
-
-        return null;
+        return juegos.stream().filter(j -> j.getId() == id).findFirst();
     }
 
 
-       //READ ALL
+    //READ ALL
 
     @Override
-    public JuegoEntidad[] obtenerTodos() {
+    public List<JuegoEntidad> obtenerTodos() {
 
-        JuegoEntidad[] copia = new JuegoEntidad[size];
 
-        for (int i = 0; i < size; i++) {
-            copia[i] = juegos[i];
-        }
-
-        return copia;
+        return juegos.stream().toList();
     }
 
 
-     //  UPDATE
+    //  UPDATE
 
     @Override
-    public JuegoEntidad actualizar(int id, JuegoForm form) {
+    public Optional<JuegoEntidad> actualizar(int id, JuegoForm form) {
 
         for (int i = 0; i < size; i++) {
 
-            if (juegos[i].getId() == id) {
+            if (juegos.get(i).getId() == id) {
 
                 JuegoEntidad actualizado = new JuegoEntidad(
                         id,
@@ -86,14 +73,14 @@ public class JuegoRepoInMemory implements IJuegoRepo {
                         form.getDescripcion(),
                         form.getFechaLanzamiento(),
                         form.getPrecioBase(),
-                        juegos[i].getCategoriaType(), // mantiene categoría actual
+                        juegos.get(i).getCategoriaType(), // mantiene categoría actual
                         form.getPorcentajeDescuento(),
                         form.getClasificaionEdad(),
                         form.getEstadoJuego()
                 );
 
-                juegos[i] = actualizado;
-                return actualizado;
+                juegos.set(i, actualizado);
+                return Optional.of(actualizado);
             }
         }
 
@@ -105,23 +92,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public boolean eliminar(int id) {
+        return juegos.remove(juegos.stream().filter(j -> j.getId() == id).findFirst());
 
-        for (int i = 0; i < size; i++) {
-
-            if (juegos[i].getId() == id) {
-
-                // desplazamiento a la izquierda
-                for (int j = i; j < size - 1; j++) {
-                    juegos[j] = juegos[j + 1];
-                }
-
-                juegos[size - 1] = null;
-                size--;
-
-                return true;
-            }
-        }
-
-        return false;
     }
 }

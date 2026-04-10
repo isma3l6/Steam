@@ -9,7 +9,8 @@ public enum ErrorType {
     DUPLICADO("El elemento está duplicado"),
     PORCENTAJE_INVALIDO("El porcentaje se pasa del rango"),
     CUENTA_BLOQUEADA("La cuenta se haya bloqueada"),
-    ERROR_EN_BASE("error al insertar en la base de datos")
+    ERROR_EN_BASE("error al insertar en la base de datos"),
+    INVALIDO("invalido")
    ;
 
     private final String mensaje;

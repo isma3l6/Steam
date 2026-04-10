@@ -3,15 +3,18 @@ package repositorio.interfaz;
 import modelo.entidad.JuegoEntidad;
 import modelo.form.JuegoForm;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface IJuegoRepo {
 
-    JuegoEntidad crear(JuegoForm form);
+    Optional<JuegoEntidad> crear(JuegoForm form);
 
-    JuegoEntidad obtenerPorId(long id);
+    Optional<JuegoEntidad> obtenerPorId(long id);
 
-    JuegoEntidad[] obtenerTodos();
+    List<JuegoEntidad> obtenerTodos();
 
-    JuegoEntidad actualizar(int id, JuegoForm form);
+    Optional<JuegoEntidad> actualizar(int id, JuegoForm form);
 
     boolean eliminar(int id);
 }

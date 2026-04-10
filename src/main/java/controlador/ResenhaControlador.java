@@ -92,16 +92,15 @@ public class ResenhaControlador {
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-        // Marcamos cuerpo como oculto (ejemplo simple)
         resenha.setEstadoResenhaType(EstadoResenhaType.OCULTA);
         var resenhaForm = new ResenhaForm(idResenha, idUsuario, resenha.isRecomendado(), resenha.getTexto(), resenha.getHorasJugadas());
 
-        resenhaRepo.actualizar(idResenha, resenhaForm);
+
         return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm));
     }
 
     /* =========================================
-       4️⃣ VER RESEÑAS DE UN JUEGO
+        VER RESEÑAS DE UN JUEGO
     ========================================= */
     public List<ResenhaDto> verResenasPorJuego(long idJuego, String filtro, String orden) {
         List<ResenhaDto> resultado = new ArrayList<>();
@@ -126,7 +125,7 @@ public class ResenhaControlador {
     }
 
     /* =========================================
-       5️⃣ VER RESEÑAS DE UN USUARIO
+       5️ VER RESEÑAS DE UN USUARIO
     ========================================= */
     public List<ResenhaDto> verResenasPorUsuario(long idUsuario, String filtroEstado) {
         List<ResenhaDto> resultado = new ArrayList<>();
