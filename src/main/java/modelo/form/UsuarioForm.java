@@ -72,7 +72,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         if (contrasena.length() < 8 ){
             errores.add(new ErrorDto("Contraseña ", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (!comprobarFormatoContraseña(contrasena)){
+        if (!comprobarFormatoContrasena(contrasena)){
             errores.add(new ErrorDto("Contraseña", ErrorType.FORMATO_INVALIDO));
         }
         //Nombre real
@@ -118,7 +118,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         return true;
     }
 
-    private boolean comprobarFormatoContraseña(String contrasena) {
+    private boolean comprobarFormatoContrasena(String contrasena) {
         boolean contrasenaBien = false;
         for (int i = 0; i < contrasena.length(); i++) {
             char a = contrasena.charAt(i);
