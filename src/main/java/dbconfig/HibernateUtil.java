@@ -1,13 +1,10 @@
+package dbconfig;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
-   package dbconfig;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-    public final class HibernateUtil {
 
         private static final SessionFactory SESSION_FACTORY = new Configuration()
                 .configure("hibernate-h2.cfg.xml")
@@ -23,5 +20,5 @@ import org.hibernate.cfg.Configuration;
         public static void shutdown() {
             SESSION_FACTORY.close();
         }
-    }
+
 }

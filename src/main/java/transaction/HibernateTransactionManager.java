@@ -8,18 +8,17 @@ import org.hibernate.Transaction;
 import java.util.Optional;
 
 /**
- * Implementación Hibernate de {@link org.alexyivan.transaction.ITransactionManager}.
  * Gestiona el ciclo de vida de la sesión y la transacción.
  * Expone {@link #getSession()} para que {@code HibernateAlumnoRepository}
  * pueda acceder a la sesión activa durante el bloque de trabajo.
  */
-public class HibernateTransactionManager implements org.alexyivan.transaction.ITransactionManager, ISesionManager {
+public class HibernateTransactionManager implements transaction.ITransactionManager, ISesionManager {
 
     private Session session;
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T inTransaction(ExceptionSupplier<T> work) throws ValidacionException {
+    public <T> T inTransaction(ExceptionSupplier<T> work) throws ValidationException {
         Transaction tx = null;
         try (Session s = HibernateUtil.getSessionFactory().openSession()) {
             session = s;
@@ -33,7 +32,7 @@ public class HibernateTransactionManager implements org.alexyivan.transaction.IT
                     tx.rollback();
                 throw e;
             }
-        } catch (ValidacionException ve) {
+        } catch (ValidationException ve) {
             throw ve;
         } catch (Exception e) {
             try {

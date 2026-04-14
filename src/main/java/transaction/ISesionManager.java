@@ -1,4 +1,4 @@
-package org.alexyivan.transaction;
+package transaction;
 
 import org.hibernate.Session;
 

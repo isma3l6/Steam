@@ -1,22 +1,22 @@
-package org.alexyivan.transaction;
+package transaction;
 
 import java.util.Optional;
 
-import org.alexyivan.exception.ValidacionException;
+import excepciones.ValidationException;
 
 /**
- * Implementación no-op de {@link ITransactionManager}.
+ * Implementaciï¿½n no-op de {@link ITransactionManager}.
  * Se usa con repositorios en memoria donde no existe el concepto de
- * transacción.
+ * transacciï¿½n.
  */
 public class NoOpTransactionManager implements ITransactionManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T inTransaction(ExceptionSupplier<T> work) throws ValidacionException {
+    public <T> T inTransaction(ExceptionSupplier<T> work) throws ValidationException {
         try {
             return work.get();
-        }catch(ValidacionException e){
+        }catch(ValidationException e){
             throw e;
         } 
         catch (Exception e) {

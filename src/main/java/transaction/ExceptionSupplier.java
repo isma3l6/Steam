@@ -1,8 +1,8 @@
-package org.alexyivan.transaction;
+package transaction;
 
-import org.alexyivan.exception.ValidacionException;
+import excepciones.ValidationException;
 
 public interface ExceptionSupplier<T> {
 
-    T get() throws ValidacionException;
+    T get() throws ValidationException;
 }

@@ -1,9 +1,9 @@
-package org.alexyivan.transaction;
+package transaction;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.alexyivan.exception.ValidacionException;
+import excepciones.ValidationException;
 
 /**
  * Abstracción de unidad de trabajo atómica.
@@ -16,6 +16,6 @@ public interface ITransactionManager {
      * Si ocurre cualquier excepción, la unidad se deshace (rollback)
      * y retorna {@link Optional#empty()}.
      */
-    <T> T inTransaction(ExceptionSupplier<T> work) throws ValidacionException;
+    <T> T inTransaction(ExceptionSupplier<T> work) throws ValidationException;
 
 }
