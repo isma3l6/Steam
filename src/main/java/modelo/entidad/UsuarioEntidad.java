@@ -1,20 +1,37 @@
 package modelo.entidad;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
+@Table(name = "compra")
+@Entity
 
 public class UsuarioEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name="nombre_usuario")
     private String nombreUsuario;
+    @Column(name="email")
     private String email;
+    @Column(name="contrasena")
     private String contrasena;
+    @Column(name="nombre")
     private String nombre;
+    @Column(name="apellido")
     private String apellido;
+    @Column(name = "fecha_nacimiento")
     private Date fechaNacimiento;
+    @Column(name = "fecha_registro")
     private Date fechaRegistro;
+    @Column(name ="avatar")
     private String avatar;
+    @Column(name="saldo")
     private double saldo;
+    @Column(name = "pais")
     private String pais;
     //Estado de cuanta
+    @Column(name="estado_type")
     private EstadoUserType estadoType;
 
     public String getPais() {

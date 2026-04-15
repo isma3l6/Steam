@@ -1,20 +1,33 @@
 package modelo.entidad;
 
+import jakarta.persistence.*;
 import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
 
 import java.util.Date;
 
+@Table(name = "compra")
+@Entity
+
 public class CompraEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "id_usuario")
     private long idUsuario;
+    @Column(name = "id_juego")
     private long idJuego;
+    @Column(name = "fecha_compra")
     private Date fechaCompra;
     //Metodo de pago enum
+    @Column(name = "matodo_pago_type")
     private MetodoPagoType metodoPagoType;
+    @Column(name = "precio")
     private double precio;
     //descuento es un porcentaje
+    @Column(name = "descuento")
     private int descuento;
+    @Column(name = "estado_compra_type")
     private EstadoCompraType estadoCompraType;
 
     public long getId() {
