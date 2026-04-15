@@ -9,9 +9,9 @@ import java.util.Date;
 public class BibliotecaDto {
     private long id;
     private long idUsario;
-    private UsuarioEntidad Usuario;
+    private UsuarioDto Usuario;
     private long idJuego;
-    private JuegoEntidad Juego;
+    private JuegoDto Juego;
     private Date fechaAdquisicion;
     private int horasJugadas;
     private Date jugadoPorUltimavez;
@@ -33,11 +33,11 @@ public class BibliotecaDto {
         this.idUsario = idUsario;
     }
 
-    public UsuarioEntidad getUsuario() {
+    public UsuarioDto getUsuario() {
         return Usuario;
     }
 
-    public void setUsuario(UsuarioEntidad usuario) {
+    public void setUsuario(UsuarioDto usuario) {
         Usuario = usuario;
     }
 
@@ -49,11 +49,11 @@ public class BibliotecaDto {
         this.idJuego = idJuego;
     }
 
-    public JuegoEntidad getJuego() {
+    public JuegoDto getJuego() {
         return Juego;
     }
 
-    public void setJuego(JuegoEntidad juego) {
+    public void setJuego(JuegoDto juego) {
         Juego = juego;
     }
 
@@ -79,7 +79,7 @@ public class BibliotecaDto {
         this.instalacionType = instalacionType;
     }
 
-    public BibliotecaDto( UsuarioEntidad usuario, JuegoEntidad juego, Date fechaAdquisicion, int horasJugadas, Date jugadoPorUltimavez, InstalacionType instalacionType) {
+    public BibliotecaDto( UsuarioDto usuario, JuegoDto juego, Date fechaAdquisicion, int horasJugadas, Date jugadoPorUltimavez, InstalacionType instalacionType) {
         Usuario = usuario;
         Juego = juego;
         this.fechaAdquisicion = fechaAdquisicion;

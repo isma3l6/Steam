@@ -2,6 +2,8 @@ package controlador;
 
 import excepciones.ValidationException;
 import mapper.BibliotecaMapper;
+import mapper.JuegoMapper;
+import mapper.UsuarioMapper;
 import modelo.dto.BibliotecaDto;
 import modelo.entidad.BibliotecaEntidad;
 import modelo.entidad.InstalacionType;
@@ -9,17 +11,25 @@ import modelo.form.BibliotecaForm;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
 import repositorio.interfaz.IBibliotecaRepo;
+import repositorio.interfaz.IJuegoRepo;
+import repositorio.interfaz.IUsuarioRepo;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BibliotecaControlador {
 
     private final IBibliotecaRepo repo;
+    private final IJuegoRepo juegoRepo;
 
-    public BibliotecaControlador(IBibliotecaRepo repo) {
+    private final IUsuarioRepo usuarioRepo;
+
+
+    public BibliotecaControlador(IBibliotecaRepo repo, IJuegoRepo juegoRepo, IUsuarioRepo usuarioRepo) {
         this.repo = repo;
+        this.juegoRepo =
+                juegoRepo;
+        this.usuarioRepo=usuarioRepo;
+
     }
 
 
@@ -31,6 +41,7 @@ public class BibliotecaControlador {
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
+        var u = usuarioRepo.obtenerPorId(usuarioId).get();
 
         if (lista.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
@@ -38,7 +49,7 @@ public class BibliotecaControlador {
 
         }
         for (BibliotecaEntidad b : lista) {
-            resultado.add(BibliotecaMapper.toDTO(b));
+            resultado.add(BibliotecaMapper.toDTO(b, UsuarioMapper.toDTO(u), JuegoMapper.toDTO(juegoRepo.obtenerPorId(b.getIdJuego()).get())));
         }
 
 
@@ -84,10 +95,14 @@ public class BibliotecaControlador {
                 null,
                 InstalacionType.NO_INSTALADO
         );
+        var usuario=usuarioRepo.obtenerPorId(usuarioId).get();
+        var juego=juegoRepo.obtenerPorId(juegoId).get();
+
+
 
         boolean resultado = repo.obtenerTodos().add(entidad);
         if (resultado) {
-            return BibliotecaMapper.toDTO(entidad);
+            return BibliotecaMapper.toDTO(entidad,usuario,juego);
         } else {
             errores.add(new ErrorDto("Servidor", ErrorType.ERROR_EN_BASE));
             throw new ValidationException(errores);
@@ -140,7 +155,7 @@ public class BibliotecaControlador {
         var e = biblioteca.get();
         e.setHorasJugadas(e.getHorasJugadas() + horas);
         e.setJugadoPorUltimavez(new Date());
-       var resultado =repo.actualizar(e.getId(), new BibliotecaForm(e.getId(), e.getIdUsuario(), e.getIdJuego(), e.getFechaAdquisicion(), e.getHorasJugadas()));
+        var resultado = repo.actualizar(e.getId(), new BibliotecaForm(e.getId(), e.getIdUsuario(), e.getIdJuego(), e.getFechaAdquisicion(), e.getHorasJugadas()));
 
         return BibliotecaMapper.toDTO(resultado.get());
     }
@@ -148,22 +163,23 @@ public class BibliotecaControlador {
 
     // CONSULTAR ÚLTIMA SESIÓN
 
-    public BibliotecaDto consultarUltimaSesion(Long usuarioId, Long juegoId) throws ValidationException{
-List<ErrorDto>errores=new ArrayList<>();
+    public BibliotecaDto consultarUltimaSesion(Long usuarioId, Long juegoId) throws ValidationException {
+        List<ErrorDto> errores = new ArrayList<>();
         var biblioteca = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId &&
                         b.getIdJuego() == juegoId)
                 .findFirst();
 
         if (biblioteca.isEmpty()) {
-            errores.add(new ErrorDto("Biblioteca",ErrorType.NO_ENCONTRADO));
-throw new ValidationException(errores);       }
+            errores.add(new ErrorDto("Biblioteca", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
 
         var fecha = biblioteca.get().getJugadoPorUltimavez();
 
         if (fecha == null) {
-            errores.add(new ErrorDto("fecha",ErrorType.NO_ENCONTRADO));
-          throw new ValidationException(errores);
+            errores.add(new ErrorDto("fecha", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
 
         return BibliotecaMapper.toDTO(biblioteca.get());
@@ -173,12 +189,12 @@ throw new ValidationException(errores);       }
     // ESTADÍSTICAS
 
     public List<BibliotecaDto> estadisticas(Long usuarioId) {
-List<BibliotecaDto>bibliotecaDtos=new ArrayList<>();
+        List<BibliotecaDto> bibliotecaDtos = new ArrayList<>();
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
-        for (BibliotecaEntidad b: lista){
-            if (b!=null){
+        for (BibliotecaEntidad b : lista) {
+            if (b != null) {
                 bibliotecaDtos.add(BibliotecaMapper.toDTO(b));
             }
         }
