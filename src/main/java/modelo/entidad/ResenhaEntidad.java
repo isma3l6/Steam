@@ -1,16 +1,30 @@
 package modelo.entidad;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
+@Table(name = "resena")
+@Entity
 public class ResenhaEntidad {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "usuario_id")
     private long usuaroId;
+    @Column(name = "nombre_juego_id")
     private long nombreJuegoId;
+    @Column(name = "recomendado")
     private boolean recomendado;
+    @Column(name = "texto")
     private String texto;
+    @Column(name = "fecha_publicacion")
     private Date fechaPublicacion;
+    @Column(name = "fecha_edit")
     private Date fechaEdit;
+    @Column(name = "estado_resenha_type")
     private EstadoResenhaType estadoResenhaType;
+    @Column(name = "horas_jugadas")
     private int horasJugadas;
 
     public int getHorasJugadas() {
