@@ -95,8 +95,8 @@ public class BibliotecaControlador {
                 null,
                 InstalacionType.NO_INSTALADO
         );
-        var usuario=usuarioRepo.obtenerPorId(usuarioId).get();
-        var juego=juegoRepo.obtenerPorId(juegoId).get();
+        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
 
 
 
@@ -156,8 +156,9 @@ public class BibliotecaControlador {
         e.setHorasJugadas(e.getHorasJugadas() + horas);
         e.setJugadoPorUltimavez(new Date());
         var resultado = repo.actualizar(e.getId(), new BibliotecaForm(e.getId(), e.getIdUsuario(), e.getIdJuego(), e.getFechaAdquisicion(), e.getHorasJugadas()));
-
-        return BibliotecaMapper.toDTO(resultado.get());
+        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
+        return BibliotecaMapper.toDTO(resultado.get(),usuario,juego);
     }
 
 
@@ -181,8 +182,9 @@ public class BibliotecaControlador {
             errores.add(new ErrorDto("fecha", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-
-        return BibliotecaMapper.toDTO(biblioteca.get());
+        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
+        return BibliotecaMapper.toDTO(biblioteca.get(),usuario,juego);
     }
 
 
@@ -193,9 +195,13 @@ public class BibliotecaControlador {
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
+        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+
+
         for (BibliotecaEntidad b : lista) {
             if (b != null) {
-                bibliotecaDtos.add(BibliotecaMapper.toDTO(b));
+                var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(b.getIdJuego()).get());
+                bibliotecaDtos.add(BibliotecaMapper.toDTO(b,usuario,juego));
             }
         }
 

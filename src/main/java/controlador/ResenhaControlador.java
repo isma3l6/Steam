@@ -1,14 +1,18 @@
 package controlador;
 
 import excepciones.ValidationException;
+import mapper.JuegoMapper;
 import mapper.ResenhaMapper;
+import mapper.UsuarioMapper;
 import modelo.dto.ResenhaDto;
+import modelo.dto.UsuarioDto;
 import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.ResenhaEntidad;
 import modelo.entidad.UsuarioEntidad;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
 import modelo.form.ResenhaForm;
+import repositorio.inmemory.JuegoRepoInMemory;
 import repositorio.inmemory.ResenhaRepoInMemory;
 import repositorio.inmemory.BibliotecaRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
@@ -23,13 +27,15 @@ public class ResenhaControlador {
     private final ResenhaRepoInMemory resenhaRepo;
     private final BibliotecaRepoInMemory bibliotecaRepo;
     private final UsuarioRepoInMemory usuarioRepo;
+    private final JuegoRepoInMemory juegoRepo;
 
     public ResenhaControlador(ResenhaRepoInMemory resenhaRepo,
                               BibliotecaRepoInMemory bibliotecaRepo,
-                              UsuarioRepoInMemory usuarioRepo) {
+                              UsuarioRepoInMemory usuarioRepo, JuegoRepoInMemory juegoRepo) {
         this.resenhaRepo = resenhaRepo;
         this.bibliotecaRepo = bibliotecaRepo;
         this.usuarioRepo = usuarioRepo;
+        this.juegoRepo=juegoRepo;
     }
 
 
@@ -44,7 +50,8 @@ public class ResenhaControlador {
         }
 
         // 2. Usuario existe
-        UsuarioEntidad usuario = usuarioRepo.obtenerPorId(form.getIdUsuario()).get();
+        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(form.getIdUsuario()).get());
+        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(form.getIdJuego()).get());
         if (usuario == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
@@ -64,7 +71,7 @@ public class ResenhaControlador {
 
         // 5. Crear reseña
 
-        return ResenhaMapper.toDTO(resenhaRepo.crear(form).get());
+        return ResenhaMapper.toDTO(resenhaRepo.crear(form).get(),usuario,juego);
     }
 
 
@@ -88,6 +95,8 @@ public class ResenhaControlador {
     public ResenhaDto ocultarResenha(long idResenha, long idUsuario) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
         var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).get();
+        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(idUsuario).get());
+        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(resenha.getNombreJuegoId()).get());
         if (resenha == null) {
 
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
@@ -97,7 +106,7 @@ public class ResenhaControlador {
         var resenhaForm = new ResenhaForm(idResenha, idUsuario, resenha.isRecomendado(), resenha.getTexto(), resenha.getHorasJugadas());
 
 
-        return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm).get());
+        return ResenhaMapper.toDTO(resenhaRepo.actualizar(idResenha, resenhaForm).get(),usuario,juego);
     }
 
     /* =========================================
@@ -112,7 +121,10 @@ public class ResenhaControlador {
                 if ("positivas".equalsIgnoreCase(filtro) && !r.isRecomendado()) continue;
                 if ("negativas".equalsIgnoreCase(filtro) && r.isRecomendado()) continue;
 
-                resultado.add(ResenhaMapper.toDTO(r));
+                resultado.add(ResenhaMapper.toDTO(r,
+                        UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(r.getUsuaroId()).get()),
+                        JuegoMapper.toDTO(juegoRepo.obtenerPorId(r.getNombreJuegoId()).get())
+                ));
             }
         }
 
@@ -136,7 +148,9 @@ public class ResenhaControlador {
                 if (filtroEstado != null && filtroEstado.equalsIgnoreCase("oculto") &&
                         !r.getEstadoResenhaType().equals(EstadoResenhaType.PUBLICADA)) continue;
 
-                resultado.add(ResenhaMapper.toDTO(r));
+                resultado.add(ResenhaMapper.toDTO(r,
+                        UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(r.getUsuaroId()).get()),
+                        JuegoMapper.toDTO(juegoRepo.obtenerPorId(r.getNombreJuegoId()).get())));
             }
         }
 
