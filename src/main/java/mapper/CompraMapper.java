@@ -10,8 +10,6 @@ import repositorio.inmemory.UsuarioRepoInMemory;
 
 public class CompraMapper {
 
-    private static UsuarioRepoInMemory usuarioInMemory;
-    private static JuegoRepoInMemory juegoRepoInMemory;
 
     public static CompraDto toDTO(CompraEntidad b, UsuarioDto u, JuegoDto j) {
 
@@ -20,6 +18,6 @@ public class CompraMapper {
         }
 
 
-        return new CompraDto(u, j,b.getPrecio(),b.getDescuento(),b.getDescuento()/100* b.getPrecio(),b.getMetodoPagoType());
+        return new CompraDto(u,j,b.getPrecio(),b.getDescuento(),b.getDescuento()/100* b.getPrecio(),b.getMetodoPagoType());
     }
 }

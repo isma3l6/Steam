@@ -10,9 +10,9 @@ import java.util.Date;
 public class CompraDto {
     private long id;
     private long idUsuario;
-    private UsuarioEntidad Usuario;
+    private UsuarioDto Usuario;
     private long idJuego;
-    private JuegoEntidad Juego;
+    private JuegoDto Juego;
     private Date fechaCompra;
     //Metodo de pago enum
 private MetodoPagoType metodoPagoType;
@@ -22,19 +22,19 @@ private MetodoPagoType metodoPagoType;
     private double descuentoAplicado;
     private EstadoCompraType estadoCompraType;
 
-    public UsuarioEntidad getUsuario() {
+    public UsuarioDto getUsuario() {
         return Usuario;
     }
 
-    public void setUsuario(UsuarioEntidad usuario) {
+    public void setUsuario(UsuarioDto usuario) {
         Usuario = usuario;
     }
 
-    public JuegoEntidad getJuego() {
+    public JuegoDto getJuego() {
         return Juego;
     }
 
-    public void setJuego(JuegoEntidad juego) {
+    public void setJuego(JuegoDto juego) {
         Juego = juego;
     }
 
@@ -110,7 +110,7 @@ private MetodoPagoType metodoPagoType;
         this.id = id;
     }
 
-    public CompraDto(UsuarioEntidad usuario, JuegoEntidad juego, double precio, int descuento, double descuentoAplicado, MetodoPagoType metodoPagoType) {
+    public CompraDto(UsuarioDto usuario, JuegoDto juego, double precio, int descuento, double descuentoAplicado, MetodoPagoType metodoPagoType) {
 
         this.id=id;
         Usuario = usuario;

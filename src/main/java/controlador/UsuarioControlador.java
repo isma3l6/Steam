@@ -8,6 +8,7 @@ import modelo.entidad.UsuarioEntidad;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
 import modelo.form.UsuarioForm;
+import repositorio.inmemory.UsuarioRepoInMemory;
 import repositorio.interfaz.IUsuarioRepo;
 
 import java.util.*;
@@ -15,10 +16,10 @@ import java.util.*;
 
 public class UsuarioControlador {
 
-    private final IUsuarioRepo repo;
+    private UsuarioRepoInMemory repo=new UsuarioRepoInMemory();
 
-    public UsuarioControlador(IUsuarioRepo repo) {
-        this.repo = repo;
+    public UsuarioControlador(UsuarioRepoInMemory repo) {
+      this.repo = repo;
     }
 
 
@@ -28,13 +29,29 @@ public class UsuarioControlador {
 
         var errores = form.validarUsuario();
 
+
         if (!errores.isEmpty()) {
+
             throw new ValidationException(errores);
         }
+        verificarExistencia(form, errores);
 
         UsuarioEntidad usuario = repo.crear(form).get();
 
         return UsuarioMapper.toDTO(usuario);
+    }
+
+    private void verificarExistencia(UsuarioForm form, List<ErrorDto> errores) throws ValidationException {
+
+        if (!repo.buscarUsuarioPorNombre(form.getNombreUsuario()).isEmpty()) {
+            errores.add(new ErrorDto("usuario",ErrorType.DUPLICADO));
+            throw new ValidationException(errores);
+        }
+        if (!repo.buscarUsuarioPorCorreo(form.getEmail())) {
+            errores.add(new ErrorDto("Email duplicado", ErrorType.DUPLICADO));
+            throw new ValidationException(errores);
+
+        }
     }
 
     //CONSULTAR PERFIL//

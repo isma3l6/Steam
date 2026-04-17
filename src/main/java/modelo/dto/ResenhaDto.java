@@ -9,8 +9,8 @@ import java.util.Date;
 public class ResenhaDto {
     private long id;
     private long idUsuario;
-    private UsuarioEntidad usuaro;
-    private JuegoEntidad nombreJuego;
+    private UsuarioDto usuaro;
+    private JuegoDto nombreJuego;
     private boolean recomendado;
     private String texto;
     private Date fechaPublicacion;
@@ -43,19 +43,19 @@ public class ResenhaDto {
         this.idUsuario = idUsuario;
     }
 
-    public UsuarioEntidad getUsuaro() {
+    public UsuarioDto getUsuaro() {
         return usuaro;
     }
 
-    public void setUsuaro(UsuarioEntidad usuaro) {
+    public void setUsuaro(UsuarioDto usuaro) {
         this.usuaro = usuaro;
     }
 
-    public JuegoEntidad getNombreJuego() {
+    public JuegoDto getNombreJuego() {
         return nombreJuego;
     }
 
-    public void setNombreJuego(JuegoEntidad nombreJuego) {
+    public void setNombreJuego(JuegoDto nombreJuego) {
         this.nombreJuego = nombreJuego;
     }
 
@@ -99,7 +99,7 @@ public class ResenhaDto {
         this.estadoResenhaType = estadoResenhaType;
     }
 
-    public ResenhaDto(UsuarioEntidad usuaro, JuegoEntidad nombreJuego, String texto, boolean recomendado, Date fechaPublicacion,Date fechaEdit,int horasJugadas) {
+    public ResenhaDto(UsuarioDto usuaro, JuegoDto nombreJuego, String texto, boolean recomendado, Date fechaPublicacion,Date fechaEdit,int horasJugadas) {
         this.id=id;
         this.usuaro = usuaro;
         this.nombreJuego = nombreJuego;

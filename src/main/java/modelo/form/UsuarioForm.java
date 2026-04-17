@@ -16,9 +16,8 @@ public class UsuarioForm {
     private Date fechaNacimiento;
     private String avatr;
     private double saldo;
-private UsuarioRepoInMemory usuarioRepoInMemory;
 
-    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr,double saldo) {
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr, double saldo) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
@@ -27,7 +26,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         this.pais = pais;
         this.fechaNacimiento = fechaNacimiento;
         this.avatr = avatr;
-        this.saldo=saldo;
+        this.saldo = saldo;
     }
 
     public List<ErrorDto> validarUsuario() {
@@ -37,9 +36,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
             errores.add(new ErrorDto("nobre usuario", ErrorType.REQUERIDO));
         }
         //pendiente generar la funcion
-        if (usuarioRepoInMemory.buscarUsuarioPorNombre(nombreUsuario).isEmpty()) {
-            errores.add(new ErrorDto("nombre usuario", ErrorType.DUPLICADO));
-        }
+
         if (nombreUsuario.length() < 3) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.VALOR_DEMASIADO_BAJO));
         }
@@ -49,7 +46,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         if (comrobarFormatoNombreUser(nombreUsuario) == false) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.FORMATO_INVALIDO));
         }
-        if (comprobarEmpiezaPorNumero(nombreUsuario) == true) {
+        if (!comprobarEmpiezaPorNumero(nombreUsuario)) {
             errores.add(new ErrorDto("nombre usuario", ErrorType.FORMATO_INVALIDO));
         }
 
@@ -58,53 +55,59 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         if (email.isBlank()) {
             errores.add(new ErrorDto("Email", ErrorType.REQUERIDO));
         }
-        if (usuarioRepoInMemory.buscarUsuarioPorCorreo(email)) {
-            errores.add(new ErrorDto("Email duplicado", ErrorType.DUPLICADO));
-        }
+
         if (comprobarFormatoEmail(email) == true) {
 
         }
 
         //Contraseña
-        if (contrasena.isBlank()){
+        if (contrasena.isBlank()) {
             errores.add(new ErrorDto("Contraseña ", ErrorType.REQUERIDO));
         }
-        if (contrasena.length() < 8 ){
+        if (contrasena.length() < 8) {
             errores.add(new ErrorDto("Contraseña ", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (!comprobarFormatoContrasena(contrasena)){
+        if (!noContieneMayuscula(contrasena)) {
             errores.add(new ErrorDto("Contraseña", ErrorType.FORMATO_INVALIDO));
         }
+        if (!noContieneMinuscula(contrasena)){
+            errores.add(new ErrorDto("Contraseña", ErrorType.FORMATO_INVALIDO));
+        }
+        if (!noContieneDigito(contrasena)){
+            errores.add(new ErrorDto("Contraseña", ErrorType.FORMATO_INVALIDO));
+        }
+
         //Nombre real
-        if (nombre.isBlank()||apellido.isBlank()){
+        if (nombre.isBlank() || apellido.isBlank()) {
             errores.add(new ErrorDto("nombre y apellido", ErrorType.REQUERIDO));
-        }if (nombre.length() < 2){
+        }
+        if (nombre.length() < 2) {
             errores.add(new ErrorDto("Nombre ", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         //Existen apellidos con un solo caracter como el apellido "O" en China
-        if (apellido.length()< 1){
+        if (apellido.length() < 1) {
             errores.add(new ErrorDto("Apellido ", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (apellido.length()>50 || nombre.length()>50){
+        if (apellido.length() > 50 || nombre.length() > 50) {
             errores.add(new ErrorDto("nombre ", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         //Pais
-        if (pais.isBlank()){
+        if (pais.isBlank()) {
             errores.add(new ErrorDto("pais", ErrorType.REQUERIDO));
         }
-        if (paisAutorizado(pais) ){
+        if (!paisAutorizado(pais)) {
             errores.add(new ErrorDto("pais", ErrorType.FORMATO_INVALIDO));
         }
 
         //Fecha nacimiento
-        if (fechaNacimiento == null){
+        if (fechaNacimiento == null) {
             errores.add(new ErrorDto("fecha nacimiento", ErrorType.REQUERIDO));
         }
         //Mallorde 13 y no puede ser futura
 
         //avatar
-        if (avatr.length()>100){
+        if (avatr.length() > 100) {
             errores.add(new ErrorDto("pais", ErrorType.FORMATO_INVALIDO));
         }
 
@@ -114,29 +117,45 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
         return errores;
     }
 
+    private boolean noContieneMayuscula(String contrasena) {
+        for (int i = 0; i < contrasena.length(); i++) {
+            char a = contrasena.charAt(i);
+            boolean isMayuscula = Character.isUpperCase(a);
+
+            if (isMayuscula) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean noContieneMinuscula(String contrasena) {
+        for (int i = 0; i < contrasena.length(); i++) {
+            char a = contrasena.charAt(i);
+            boolean isMinuscula = Character.isLowerCase(a);
+
+            if (isMinuscula) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean noContieneDigito(String contrasena) {
+        for (int i = 0; i < contrasena.length(); i++) {
+            char a = contrasena.charAt(i);
+            boolean isDigit = Character.isDigit(a);
+
+            if (isDigit) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private boolean paisAutorizado(String pais) {
         return true;
     }
 
-    private boolean comprobarFormatoContrasena(String contrasena) {
-        boolean contrasenaBien = false;
-        for (int i = 0; i < contrasena.length(); i++) {
-            char a = contrasena.charAt(i);
-            boolean isDigito = Character.isDigit(a);
-            boolean isMayuscula = Character.isUpperCase(a);
-            boolean isMinuscula = Character.isLowerCase(a);
-
-            if (!isDigito||!isMayuscula||!isMinuscula){
-                contrasenaBien = false;
-            }
-            else {
-                contrasenaBien = true;
-            }
-
-
-        }
-        return contrasenaBien;
-    }
 
     private boolean comprobarFormatoEmail(String email) {
         String[] partes = toString().split("@");
@@ -148,12 +167,12 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
             char e = parteLocal.charAt(i);
             char d = parteDominio.charAt(i);
             boolean alfanumerico = Character.isLetterOrDigit(e);
-            boolean alfanumericoDominio =Character.isLetterOrDigit(d);
+            boolean alfanumericoDominio = Character.isLetterOrDigit(d);
             if (!alfanumerico || e != '!' || e != '#' || e != '$' || e != '%' || e != '&' || e != '‘' || e != '*' || e != '+') {
                 return false;
 
             }
-            if (!alfanumericoDominio || d !='.'){
+            if (!alfanumericoDominio || d != '.') {
                 return false;
             }
 
@@ -173,6 +192,7 @@ private UsuarioRepoInMemory usuarioRepoInMemory;
 
     private boolean comrobarFormatoNombreUser(String nombreUsuario) {
         boolean nombreUsuarioCorrecto = false;
+
         for (int i = 0; i < nombreUsuario.length(); i++) {
             char c = nombreUsuario.charAt(i);
             boolean alfanumerico = Character.isLetterOrDigit(c);
