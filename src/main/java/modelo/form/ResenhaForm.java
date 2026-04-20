@@ -13,25 +13,20 @@ public class ResenhaForm {
     private boolean recomendado;
     private String cuerpoResena;
     private double horasJugadas;
-private UsuarioRepoInMemory usuarioRepoInMemory;
-private JuegoRepoInMemory juegoRepoInMemory;
+
     public List<ErrorDto> validarResena() {
         var errores = new ArrayList<ErrorDto>();
         if (idUsuario == 0) {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (usuarioRepoInMemory.obtenerPorId(idUsuario).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
-        }
+
         //juego en la biblioteca del user
         //Juego
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (juegoRepoInMemory.obtenerPorId(idJuego).isEmpty()) {
-            errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
-        }
+
         // 1 resena por juego
         if (cuerpoResena.length() < 50) {
             errores.add(new ErrorDto("reseña", ErrorType.VALOR_DEMASIADO_BAJO));

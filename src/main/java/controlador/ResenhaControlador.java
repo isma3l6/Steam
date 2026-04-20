@@ -51,9 +51,15 @@ public class ResenhaControlador {
 
         // 2. Usuario existe
         var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(form.getIdUsuario()).get());
+
         var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(form.getIdJuego()).get());
+
         if (usuario == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+        if (usuario == null) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 

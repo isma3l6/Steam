@@ -16,8 +16,7 @@ public class BibliotecaForm {
     private long idJuego;
     private Date fechaAdquisicion;
     private double tiempoJugado;
-    private UsuarioRepoInMemory usuarioRepoInMemory;
-    private JuegoRepoInMemory juegoRepoInMemory;
+
 
     public BibliotecaForm(long id, long idUsario, long idJuego, Date fechaAdquisicion, double tiempoJugado) {
         this.id = id;
@@ -34,16 +33,12 @@ public class BibliotecaForm {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
 
         }
-        if (usuarioRepoInMemory.obtenerPorId(idUsario).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
-        }
+
         //Juego
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (juegoRepoInMemory.obtenerPorId(idJuego).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
-        }
+
         if (!juegoUnico(idJuego)) {
             errores.add(new ErrorDto("Juego", ErrorType.DUPLICADO));
         }

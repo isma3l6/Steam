@@ -33,18 +33,23 @@ public class CompraControlador {
 
     //REALIZAR COMPRA
 
-    public CompraDto realizarCompra(CompraForm form, UsuarioEntidad usuario, JuegoEntidad juego) throws ValidationException {
+    public CompraDto realizarCompra(CompraForm form) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
+        var usuario=usuarioRepo.obtenerPorId(form.getIdUsuario()).get();
+
+        var juego=juegoRepo.obtenerPorId(form.getIdJuego()).get();
         // Validaciones básicas
-        if (usuario == null) {
-            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            throw new ValidationException(errores);
+        if (usuarioRepo.obtenerPorId(form.getIdUsuario()).isEmpty()) {
+            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
         }
+
         if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
             errores.add(new ErrorDto("usuario", ErrorType.CUENTA_BLOQUEADA));
             throw new ValidationException(errores);
 
         }
+
+
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
@@ -104,10 +109,13 @@ public class CompraControlador {
 
     public CompraDto consultarCompra(Long idCompra, Long idUsuario) throws ValidationException {
         Optional<CompraEntidad> compraOpt = compraRepo.obtenerPorId(idCompra);
+
         var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.get().getIdUsuario()).get());
+
         var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.get().getIdJuego()).get());
+
         List<ErrorDto>errores=new ArrayList<>();
-        if (compraOpt.isEmpty()) {
+        if (compraOpt.isPresent()) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);        }
 

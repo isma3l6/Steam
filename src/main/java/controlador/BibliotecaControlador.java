@@ -28,7 +28,7 @@ public class BibliotecaControlador {
         this.repo = repo;
         this.juegoRepo =
                 juegoRepo;
-        this.usuarioRepo=usuarioRepo;
+        this.usuarioRepo = usuarioRepo;
 
     }
 
@@ -38,10 +38,18 @@ public class BibliotecaControlador {
     public List<BibliotecaDto> verBiblioteca(Long usuarioId, String orden) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
         List<BibliotecaDto> resultado = new ArrayList<>();
+
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
+
         var u = usuarioRepo.obtenerPorId(usuarioId).get();
+
+        if (usuarioRepo.obtenerPorId(usuarioId).isEmpty()) {
+            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+        }
+
+
 
         if (lista.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
@@ -95,14 +103,13 @@ public class BibliotecaControlador {
                 null,
                 InstalacionType.NO_INSTALADO
         );
-        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
-
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
 
 
         boolean resultado = repo.obtenerTodos().add(entidad);
         if (resultado) {
-            return BibliotecaMapper.toDTO(entidad,usuario,juego);
+            return BibliotecaMapper.toDTO(entidad, usuario, juego);
         } else {
             errores.add(new ErrorDto("Servidor", ErrorType.ERROR_EN_BASE));
             throw new ValidationException(errores);
@@ -156,9 +163,9 @@ public class BibliotecaControlador {
         e.setHorasJugadas(e.getHorasJugadas() + horas);
         e.setJugadoPorUltimavez(new Date());
         var resultado = repo.actualizar(e.getId(), new BibliotecaForm(e.getId(), e.getIdUsuario(), e.getIdJuego(), e.getFechaAdquisicion(), e.getHorasJugadas()));
-        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
-        return BibliotecaMapper.toDTO(resultado.get(),usuario,juego);
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
+        return BibliotecaMapper.toDTO(resultado.get(), usuario, juego);
     }
 
 
@@ -182,9 +189,9 @@ public class BibliotecaControlador {
             errores.add(new ErrorDto("fecha", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
-        return BibliotecaMapper.toDTO(biblioteca.get(),usuario,juego);
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
+        return BibliotecaMapper.toDTO(biblioteca.get(), usuario, juego);
     }
 
 
@@ -195,13 +202,13 @@ public class BibliotecaControlador {
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
-        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
 
 
         for (BibliotecaEntidad b : lista) {
             if (b != null) {
-                var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(b.getIdJuego()).get());
-                bibliotecaDtos.add(BibliotecaMapper.toDTO(b,usuario,juego));
+                var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(b.getIdJuego()).get());
+                bibliotecaDtos.add(BibliotecaMapper.toDTO(b, usuario, juego));
             }
         }
 

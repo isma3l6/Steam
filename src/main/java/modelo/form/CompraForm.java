@@ -23,9 +23,7 @@ public class CompraForm {
         if (idUsuario == 0) {
             errores.add(new ErrorDto("Ususario", ErrorType.REQUERIDO));
         }
-        if (usuarioRepoInMemory.obtenerPorId(idUsuario).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
-        }
+
         //Activa
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
