@@ -33,8 +33,13 @@ public class JuegoControlador {
         if (!errores.isEmpty()) {
             throw new ValidationException(errores);
         }
-
+        if(repo.obtenerTodos().stream().anyMatch(j->j.getTitulo().equals(form.getTitulo()))) {
+            errores.add(new ErrorDto("Juego", ErrorType.DUPLICADO));
+            throw new ValidationException(errores);
+        }
         JuegoEntidad juego = repo.crear(form).get();
+
+
         JuegoEntidad juegoAnadido = repo.obtenerPorId(juego.getId()).get();
 
 
@@ -114,7 +119,7 @@ public class JuegoControlador {
 
         // ORDEN
 
-        // Pelea futura ;)
+
 
         switch (orden) {
 

@@ -1,5 +1,6 @@
 package repositorio.inmemory;
 
+import excepciones.ValidationException;
 import modelo.entidad.*;
 import modelo.form.JuegoForm;
 import repositorio.interfaz.IJuegoRepo;

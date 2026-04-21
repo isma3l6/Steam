@@ -43,16 +43,16 @@ public class JuegoForm {
         if (titulo.isBlank() || titulo == null) {
             errores.add(new ErrorDto("titulo", ErrorType.REQUERIDO));
         }
-        if (!titulo.isEmpty()) {
+        if (titulo.isEmpty()) {
             errores.add(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (titulo.length() <= 100) {
+        if (titulo.length() >= 100) {
             errores.add(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         //descripcion
 
-        if (descripcion.length() <= 2000) {
+        if (descripcion.length() >= 2000) {
             errores.add(new ErrorDto("descripcion", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -61,10 +61,10 @@ public class JuegoForm {
             errores.add(new ErrorDto("desarrollador", ErrorType.REQUERIDO));
         }
 
-        if (desarrollador.length() >= 2) {
+        if (desarrollador.length() <= 2) {
             errores.add(new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (desarrollador.length() <= 100) {
+        if (desarrollador.length() >= 100) {
             errores.add(new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -76,18 +76,18 @@ public class JuegoForm {
         //precio base
         double precioEntero = (Math.round(precioBase * 100.0) / 100.0);
 
-        if ((precioBase - precioEntero) > 0.00) {
+        if ((precioBase - precioEntero) < 0.00) {
             errores.add(new ErrorDto("precio base", ErrorType.FORMATO_INVALIDO));
         }
-        if (precioBase >= 0) {
+        if (precioBase <= 0) {
             errores.add(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (precioBase < 1000) {
+        if (precioBase > 1000) {
             errores.add(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         //descuento
-        if (porcentajeDescuento >= 0 && porcentajeDescuento < 100) {
+        if (porcentajeDescuento < 0 && porcentajeDescuento > 100) {
             errores.add(new ErrorDto("precio base", ErrorType.PORCENTAJE_INVALIDO));
         }
 
@@ -98,7 +98,7 @@ public class JuegoForm {
         //que sea de la lista
 
         //idioma
-        if (!idiomas.isEmpty() && idiomas.size() < 1) {
+        if (idiomas.isEmpty() && idiomas.size() < 1) {
             errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
         }
         if (idiomas.stream().toString().length() > 200) {
