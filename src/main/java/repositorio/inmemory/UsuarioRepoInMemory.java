@@ -105,8 +105,8 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     //BUSCAR POR EMAIL
-    public boolean buscarUsuarioPorCorreo(String email) {
-        return  usuarios.stream().filter(u -> Objects.equals(u.getEmail(), email)).findFirst().isPresent();
+    public Optional<UsuarioEntidad> buscarUsuarioPorCorreo(String email) {
+        return  usuarios.stream().filter(u -> Objects.equals(u.getEmail(), email)).findFirst();
 
     }
 }

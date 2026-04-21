@@ -47,7 +47,7 @@ public class UsuarioControlador {
             errores.add(new ErrorDto("usuario",ErrorType.DUPLICADO));
             throw new ValidationException(errores);
         }
-        if (!repo.buscarUsuarioPorCorreo(form.getEmail())) {
+        if (!repo.buscarUsuarioPorCorreo(form.getEmail()).isEmpty()) {
             errores.add(new ErrorDto("Email duplicado", ErrorType.DUPLICADO));
             throw new ValidationException(errores);
 

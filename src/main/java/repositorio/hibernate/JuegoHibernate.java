@@ -52,7 +52,7 @@ public class JuegoHibernate implements IJuegoRepo {
 
     @Override
     public Optional<JuegoEntidad> actualizar(int id, JuegoForm form) {
-        
+
         return Optional.empty();
     }
 
