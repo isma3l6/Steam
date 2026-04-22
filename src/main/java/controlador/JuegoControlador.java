@@ -34,7 +34,7 @@ public class JuegoControlador {
             throw new ValidationException(errores);
         }
         if(repo.obtenerTodos().stream().anyMatch(j->j.getTitulo().equals(form.getTitulo()))) {
-            errores.add(new ErrorDto("Juego", ErrorType.DUPLICADO));
+            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
             throw new ValidationException(errores);
         }
         JuegoEntidad juego = repo.crear(form).get();
