@@ -102,12 +102,35 @@ public class TestJuegoControlador {
             assertEquals(List.of(new ErrorDto("titulo", ErrorType.REQUERIDO)), e.getErrores());
         }
     }
+    @Test
+    public void testNombreObligatorio() {
+        try {
+            JuegoForm j = new JuegoForm(null, "El cazador se llama Pepe",
+                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+            JuegoDto creacionbien = jc.anadirJuego(j);
+
+        } catch (ValidationException e) {
+            assertEquals(List.of(new ErrorDto("titulo", ErrorType.REQUERIDO)), e.getErrores());
+        }
+    }
+
 
     //descripcion
     @Test
     public void testCreaSinDescripcion() throws ValidationException {
 
         JuegoForm j = new JuegoForm("Pepe el cazador", "",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+        JuegoDto creacionbien = jc.anadirJuego(j);
+
+        assertEquals(j.getTitulo(), creacionbien.getTitulo());
+    }
+    @Test
+    public void testNoCreaDescripcionNull() throws ValidationException {
+
+        JuegoForm j = new JuegoForm("Pepe el cazador", null,
                 "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);

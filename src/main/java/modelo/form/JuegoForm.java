@@ -40,19 +40,17 @@ public class JuegoForm {
 
     public List<ErrorDto> validarJuego() {
         var errores = new ArrayList<ErrorDto>();
-        if (titulo.isBlank() || titulo == null) {
+        if (  titulo == null||titulo.isBlank()) {
             errores.add(new ErrorDto("titulo", ErrorType.REQUERIDO));
         }
-        if (titulo.isEmpty()) {
-            errores.add(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_BAJO));
-        }
-        if (titulo.length() >= 100) {
+
+       else   if (titulo.length() >= 100) {
             errores.add(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
         //descripcion
 
-        if (descripcion.length() >= 2000) {
+        if (descripcion != null && descripcion.length() >= 2000) {
             errores.add(new ErrorDto("descripcion", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
