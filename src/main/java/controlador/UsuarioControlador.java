@@ -16,10 +16,10 @@ import java.util.*;
 
 public class UsuarioControlador {
 
-    private UsuarioRepoInMemory repo=new UsuarioRepoInMemory();
+    private UsuarioRepoInMemory repo = new UsuarioRepoInMemory();
 
     public UsuarioControlador(UsuarioRepoInMemory repo) {
-      this.repo = repo;
+        this.repo = repo;
     }
 
 
@@ -29,27 +29,24 @@ public class UsuarioControlador {
 
         var errores = form.validarUsuario();
 
+        verificarDuplicidad(form, errores);
 
         if (!errores.isEmpty()) {
 
             throw new ValidationException(errores);
         }
-        verificarExistencia(form, errores);
-
         UsuarioEntidad usuario = repo.crear(form).get();
 
         return UsuarioMapper.toDTO(usuario);
     }
 
-    private void verificarExistencia(UsuarioForm form, List<ErrorDto> errores) throws ValidationException {
+    private void verificarDuplicidad(UsuarioForm form, List<ErrorDto> errores) {
 
         if (!repo.buscarUsuarioPorNombre(form.getNombreUsuario()).isEmpty()) {
-            errores.add(new ErrorDto("usuario",ErrorType.DUPLICADO));
-            throw new ValidationException(errores);
+            errores.add(new ErrorDto("usuario", ErrorType.DUPLICADO));
         }
         if (!repo.buscarUsuarioPorCorreo(form.getEmail()).isEmpty()) {
             errores.add(new ErrorDto("Email duplicado", ErrorType.DUPLICADO));
-            throw new ValidationException(errores);
 
         }
     }
@@ -105,6 +102,7 @@ public class UsuarioControlador {
     }
 
     //AÑADIR SALDO A CARTERA
+
     public UsuarioDto anadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
 
         UsuarioEntidad usuario = repo.obtenerPorId(usuarioId).get();
@@ -124,11 +122,13 @@ public class UsuarioControlador {
             errores.add(new ErrorDto("saldo", ErrorType.VALOR_DEMASIADO_BAJO));
             throw new ValidationException(errores);
         }
-
+        double saldo= (usuario.getSaldo()+ cantidad);
         var actualizado = repo.actualizar(usuario.getId(),
                 new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
                         usuario.getContrasena(), usuario.getNombre(), usuario.getApellido(),
-                        usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(), usuario.getSaldo() + cantidad)).get();
+                        usuario.getPais(), usuario.getFechaNacimiento(), usuario.getAvatar(),saldo)).get();
+
+
         return UsuarioMapper.toDTO(actualizado);
     }
 

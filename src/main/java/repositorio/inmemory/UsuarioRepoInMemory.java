@@ -75,7 +75,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                         form.getFechaNacimiento(),
                         u.getFechaRegistro(), // mantiene fecha registro
                         form.getAvatr(),
-                        u.getSaldo(), // mantiene saldo
+                        form.getSaldo(), // mantiene saldo
                         u.getEstadoType()
                 );
                 usuarios.remove(u);

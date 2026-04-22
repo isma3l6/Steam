@@ -237,5 +237,7 @@ public class UsuarioForm {
         return avatr;
     }
 
-
+    public double getSaldo() {
+        return saldo;
+    }
 }
