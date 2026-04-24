@@ -11,6 +11,6 @@ public class UsuarioMapper {
         if (usuario == null) {
             return null;
         }
-        return new UsuarioDto(usuario.getNombreUsuario(), usuario.getEmail(), usuario.getNombre(), usuario.getApellido(), usuario.getFechaNacimiento(), usuario.getSaldo());
+        return new UsuarioDto(usuario.getNombreUsuario(), usuario.getEmail(), usuario.getNombre(), usuario.getApellido(), usuario.getFechaNacimiento(), usuario.getSaldo(),usuario.getFechaRegistro());
     }
 }

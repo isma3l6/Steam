@@ -2,6 +2,7 @@ package modelo.entidad;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Table(name = "compra")
 @Entity
@@ -21,9 +22,9 @@ public class UsuarioEntidad {
     @Column(name="apellido")
     private String apellido;
     @Column(name = "fecha_nacimiento")
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     @Column(name = "fecha_registro")
-    private Date fechaRegistro;
+    private LocalDate fechaRegistro;
     @Column(name ="avatar")
     private String avatar;
     @Column(name="saldo")
@@ -82,11 +83,11 @@ public class UsuarioEntidad {
         this.nombre = nombre;
     }
 
-    public Date getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(Date fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
@@ -106,11 +107,11 @@ public class UsuarioEntidad {
         this.avatar = avatar;
     }
 
-    public Date getFechaRegistro() {
+    public LocalDate getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(Date fechaRegistro) {
+    public void setFechaRegistro(LocalDate fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
 
@@ -130,7 +131,7 @@ public class UsuarioEntidad {
         this.estadoType = estadoType;
     }
 
-    public UsuarioEntidad(long id, String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, Date fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
+    public UsuarioEntidad(long id, String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;

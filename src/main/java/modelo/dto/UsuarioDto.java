@@ -2,6 +2,7 @@ package modelo.dto;
 
 import modelo.entidad.EstadoUserType;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class UsuarioDto {
@@ -10,10 +11,19 @@ public class UsuarioDto {
     private String email;
     private String nombre;
     private String apellido;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
+    private  LocalDate fechaRegistro;
     private double saldo;
     //Estado de cuanta
     private EstadoUserType estadoUserType;
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
 
     public double getSaldo() {
         return saldo;
@@ -63,11 +73,11 @@ public class UsuarioDto {
         this.apellido = apellido;
     }
 
-    public Date getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(Date fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
@@ -79,7 +89,8 @@ public class UsuarioDto {
         this.estadoUserType = estadoUserType;
     }
 
-    public UsuarioDto(String nombreUsuario, String email, String nombre, String apellido, Date fechaNacimiento,double saldo) {
+    public UsuarioDto(String nombreUsuario, String email, String nombre, String apellido, LocalDate fechaNacimiento,double saldo,
+                      LocalDate fechaRegistro) {
         this.id=id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -88,5 +99,6 @@ public class UsuarioDto {
         this.fechaNacimiento = fechaNacimiento;
         this.saldo=saldo;
         this.estadoUserType=EstadoUserType.ACTIVA;
+        this.fechaRegistro = fechaRegistro;
     }
 }

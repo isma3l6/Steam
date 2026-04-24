@@ -2,6 +2,7 @@ package modelo.form;
 
 import repositorio.inmemory.UsuarioRepoInMemory;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,11 +14,11 @@ public class UsuarioForm {
     private String nombre;
     private String apellido;
     private String pais;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String avatr;
     private double saldo;
 
-    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, Date fechaNacimiento, String avatr, double saldo) {
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, LocalDate fechaNacimiento, String avatr, double saldo) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
@@ -104,10 +105,11 @@ public class UsuarioForm {
         if (fechaNacimiento == null) {
             errores.add(new ErrorDto("fecha nacimiento", ErrorType.REQUERIDO));
         }
+
         //Mallorde 13 y no puede ser futura
 
         //avatar
-        if (avatr.length() > 100) {
+        if (avatr!=null&&avatr.length() > 100) {
             errores.add(new ErrorDto("pais", ErrorType.FORMATO_INVALIDO));
         }
 
@@ -229,7 +231,7 @@ public class UsuarioForm {
         return pais;
     }
 
-    public Date getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 

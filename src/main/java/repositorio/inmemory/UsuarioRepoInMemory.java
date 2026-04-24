@@ -5,6 +5,7 @@ import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
 import repositorio.interfaz.IUsuarioRepo;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class UsuarioRepoInMemory implements IUsuarioRepo {
@@ -27,7 +28,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
                 form.getApellido(),
                 form.getPais(),
                 form.getFechaNacimiento(),
-                new Date(),
+                LocalDate.now(),
                 form.getAvatr(),
                 0.0,
                 EstadoUserType.ACTIVA

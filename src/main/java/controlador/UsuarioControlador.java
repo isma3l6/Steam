@@ -58,7 +58,7 @@ public class UsuarioControlador {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (id != null) {
-            usuario = repo.obtenerPorId(id).get();
+            usuario = repo.obtenerPorId(id).orElse(null);
         }
 
 
@@ -69,6 +69,8 @@ public class UsuarioControlador {
 
         if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
             errores.add(new ErrorDto("usuario", ErrorType.CUENTA_BLOQUEADA));
+        }
+        if (!errores.isEmpty()){
             throw new ValidationException(errores);
         }
 
@@ -142,9 +144,10 @@ public class UsuarioControlador {
 
         if (usuarioId == null) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+
             throw new ValidationException(errores);
         }
-        usuario = repo.obtenerPorId(usuarioId).get();
+        usuario = repo.obtenerPorId(usuarioId).orElse(null);
 
 
         if (usuario == null) {
