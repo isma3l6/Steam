@@ -40,11 +40,9 @@ public class JuegoForm {
 
     public List<ErrorDto> validarJuego() {
         var errores = new ArrayList<ErrorDto>();
-        if (  titulo == null||titulo.isBlank()) {
+        if (titulo == null || titulo.isBlank()) {
             errores.add(new ErrorDto("titulo", ErrorType.REQUERIDO));
-        }
-
-       else   if (titulo.length() >= 100) {
+        } else if (titulo.length() >= 100) {
             errores.add(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -85,9 +83,10 @@ public class JuegoForm {
         }
 
         //descuento
-        if (porcentajeDescuento < 0 && porcentajeDescuento > 100) {
-            errores.add(new ErrorDto("precio base", ErrorType.PORCENTAJE_INVALIDO));
+        if (porcentajeDescuento < 0 || porcentajeDescuento > 100) {
+            errores.add(new ErrorDto("descuento", ErrorType.PORCENTAJE_INVALIDO));
         }
+
 
         //clasificacion
         if (clasificaionEdad == null) {
@@ -96,14 +95,20 @@ public class JuegoForm {
         //que sea de la lista
 
         //idioma
-        if (idiomas.isEmpty() && idiomas.size() < 1) {
-            errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
+        if (idiomas == null) {
+            idiomas = List.of();
         }
-        if (idiomas.stream().toString().length() > 200) {
+        //if (idiomas.isEmpty()) {
+        //   errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
+        //}
+
+        if (!idiomas.isEmpty()&&idiomas.stream().toString().length() > 200) {
             errores.add(new ErrorDto("idioma", ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //estado
-
+        if (estadoJuego == null) {
+            errores.add(new ErrorDto("estado", ErrorType.REQUERIDO));
+        }
         return errores;
     }
 

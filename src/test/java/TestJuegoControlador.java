@@ -41,6 +41,7 @@ public class TestJuegoControlador {
                     "MembrilloGames", null, 15.75, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             var creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("fecha", ErrorType.REQUERIDO)), e.getErrores());
         }
@@ -68,7 +69,7 @@ public class TestJuegoControlador {
         try {
 
             JuegoDto creacionbien = jc.anadirJuego(jValido);
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("juego", ErrorType.DUPLICADO)), e.getErrores());
         }
@@ -82,8 +83,7 @@ public class TestJuegoControlador {
                     "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
-
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("titulo", ErrorType.VALOR_DEMASIADO_ALTO)), e.getErrores());
 
@@ -97,11 +97,12 @@ public class TestJuegoControlador {
                     "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("titulo", ErrorType.REQUERIDO)), e.getErrores());
         }
     }
+
     @Test
     public void testNombreObligatorio() {
         try {
@@ -109,7 +110,7 @@ public class TestJuegoControlador {
                     "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("titulo", ErrorType.REQUERIDO)), e.getErrores());
         }
@@ -127,6 +128,7 @@ public class TestJuegoControlador {
 
         assertEquals(j.getTitulo(), creacionbien.getTitulo());
     }
+
     @Test
     public void testNoCreaDescripcionNull() throws ValidationException {
 
@@ -149,6 +151,7 @@ public class TestJuegoControlador {
                     "", new Date(12 / 4 / 2015), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("desarrollador", ErrorType.REQUERIDO), new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_BAJO)),
                     e.getErrores());
@@ -163,6 +166,7 @@ public class TestJuegoControlador {
                     new Date(12 / 4 / 2015), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(List.of(new ErrorDto("desarrollador", ErrorType.VALOR_DEMASIADO_ALTO)), e.getErrores());
         }
@@ -176,7 +180,7 @@ public class TestJuegoControlador {
                     "MembrilloGames", new Date(12 / 4 / 2015), -5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(e.getErrores(), List.of(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_BAJO)));
         }
@@ -186,10 +190,10 @@ public class TestJuegoControlador {
     public void testPrecioDemasiadoAlto() {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 1000, 0,
+                    "MembrilloGames", new Date(12 / 4 / 2015), 1000.1, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
-
+            assertTrue(false);
         } catch (ValidationException e) {
             assertEquals(e.getErrores(), List.of(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_ALTO)));
         }
@@ -204,21 +208,98 @@ public class TestJuegoControlador {
 
 
     }
-    //  Descuento actual:
-    //Opcional
-    //  Rango: 0 a 100
-    //   Solo números enteros
-    //   Valor por defecto: 0
-    //  // Clasificación por edad:
-    //  Obligatoria
-    //   Debe ser uno de: {PEGI_3, PEGI_7, PEGI_12, PEGI_16, PEGI_18}
-    // // Idiomas disponibles:
-    //Opcional
-    // Al menos un idioma si se proporciona
-    // Longitud máxima: 200 caracteres
-    // //  Estado:
-    //  Valor por defecto: DISPONIBLE
-    //   Debe ser uno de: {DISPONIBLE, PREVENTA, ACCESO_ANTICIPADO, NO_DISPONIBLE}
 
+
+    //Opcional
+    @Test
+    public void testDescuentoBien() throws ValidationException {
+        JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 15,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+        JuegoDto creacionbien = jc.anadirJuego(j);
+        assertEquals(j.getTitulo(), creacionbien.getTitulo());
+    }
+
+    //  Rango: 0 a 100
+    @Test
+    public void testDescuentoSuperaRango() throws ValidationException {
+
+        try {
+            JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 120,
+                    ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+            JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
+        } catch (ValidationException e) {
+            assertEquals(List.of(new ErrorDto("descuento", ErrorType.PORCENTAJE_INVALIDO)), e.getErrores());
+        }
+
+    }
+
+    @Test
+    public void testDescuentooInferiorRango() {
+        try {
+            JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                    "MembrilloGames", new Date(12 / 4 / 2015), 5, -5,
+                    ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+            JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
+        } catch (ValidationException e) {
+            assertEquals(List.of(new ErrorDto("descuento", ErrorType.PORCENTAJE_INVALIDO)), e.getErrores());
+        }
+    }
+
+    @Test
+    public void testDescuentoLimite() throws ValidationException {
+
+        JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 100,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+        JuegoDto creacionbien = jc.anadirJuego(j);
+
+    }
+
+
+    //  // Clasificación por edad:
+    @Test
+    public void testClasificacionEdad() throws ValidationException {
+        try {
+            JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    null, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+            JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
+        } catch (ValidationException e) {
+            assertEquals(List.of(new ErrorDto("clasificacion", ErrorType.REQUERIDO)), e.getErrores());
+        }
+    }
+
+
+    //To do // Idiomas disponibles:
+    //Opcional
+    @Test
+    public void testSinIdiomas() throws ValidationException {
+
+        JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                ClasificacionType.PEGI_18, null, EstadoJuegoType.DISPONIBLE);
+
+        JuegoDto creacionbien = jc.anadirJuego(j);
+        assertEquals(j.getTitulo(), creacionbien.getTitulo());
+    }
+
+    @Test
+    public void testEstado() throws ValidationException {
+        try {
+            JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    ClasificacionType.PEGI_18, List.of("español", "ingles"), null);
+
+            JuegoDto creacionbien = jc.anadirJuego(j);
+            assertTrue(false);
+        } catch (ValidationException e) {
+            assertEquals(List.of(new ErrorDto("estado", ErrorType.REQUERIDO)), e.getErrores());
+        }
+    }
 
 }
