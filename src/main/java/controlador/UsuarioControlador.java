@@ -107,24 +107,25 @@ public class UsuarioControlador {
 
     public UsuarioDto anadirSaldo(Long usuarioId, double cantidad) throws ValidationException {
 
-        UsuarioEntidad usuario = repo.obtenerPorId(usuarioId).get();
+        UsuarioEntidad usuario = repo.obtenerPorId(usuarioId).orElse(null);
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (usuarioId < 0) {
+        if (usuario==null) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 
         if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
             errores.add(new ErrorDto("id", ErrorType.CUENTA_BLOQUEADA));
-            throw new ValidationException(errores);
+
         }
 
         if (cantidad <= 0) {
             errores.add(new ErrorDto("saldo", ErrorType.VALOR_DEMASIADO_BAJO));
             throw new ValidationException(errores);
         }
-        double saldo= (usuario.getSaldo()+ cantidad);
+        double saldo= (usuario.getSaldo() + cantidad);
+
         var actualizado = repo.actualizar(usuario.getId(),
                 new UsuarioForm(usuario.getNombreUsuario(), usuario.getEmail(),
                         usuario.getContrasena(), usuario.getNombre(), usuario.getApellido(),
