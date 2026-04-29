@@ -14,6 +14,7 @@ import modelo.entidad.*;
 import modelo.form.CompraForm;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
+import modelo.form.UsuarioForm;
 import repositorio.interfaz.ICompraRepo;
 import repositorio.interfaz.IJuegoRepo;
 import repositorio.interfaz.IUsuarioRepo;
@@ -34,30 +35,35 @@ public class CompraControlador {
     //REALIZAR COMPRA
 
     public CompraDto realizarCompra(CompraForm form) throws ValidationException {
-        List<ErrorDto> errores = new ArrayList<>();
-        var usuario=usuarioRepo.obtenerPorId(form.getIdUsuario()).get();
 
-        var juego=juegoRepo.obtenerPorId(form.getIdJuego()).get();
-        // Validaciones básicas
-        if (usuarioRepo.obtenerPorId(form.getIdUsuario()).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+        var errores = form.validarCompra();
+
+        var usuario=usuarioRepo.obtenerPorId(form.getIdUsuario()).orElse(null);
+
+        if (usuario==null) {
+            throw new ValidationException( List.of( new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO)));
+
         }
+        var juego=juegoRepo.obtenerPorId(form.getIdJuego()).orElse(null);
+        // Validaciones básicas
+        if (juego == null) {
+
+            throw new ValidationException( List.of( new ErrorDto("Juego", ErrorType.NO_ENCONTRADO)));
+        }
+
 
         if (usuario.getEstadoType() != EstadoUserType.ACTIVA) {
             errores.add(new ErrorDto("usuario", ErrorType.CUENTA_BLOQUEADA));
-            throw new ValidationException(errores);
-
         }
 
 
-        if (juego == null) {
-            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
-            throw new ValidationException(errores);
-        }
+
         // Validar duplicado (usuario ya compró el juego)
         List<CompraEntidad> comprasUsuario = compraRepo.obtenerTodos().stream()
                 .filter(c -> c.getIdUsuario() == usuario.getId() && c.getIdJuego() == juego.getId())
                 .toList();
+
+
         if (!comprasUsuario.isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
             throw new ValidationException(errores);
@@ -65,9 +71,14 @@ public class CompraControlador {
 
         // Crear compra
 
-        Optional<CompraEntidad> compraOpt = compraRepo.crear(form);
-        if (compraOpt.isPresent()) {
-            return CompraMapper.toDTO(compraOpt.get(), UsuarioMapper.toDTO(usuario), JuegoMapper.toDTO(juego));
+       var compraOpt = compraRepo.crear(form).orElse(null);
+
+        if (!errores.isEmpty()){
+            throw new ValidationException(errores);
+        }
+
+        if (compraOpt!=null) {
+            return CompraMapper.toDTO(compraOpt, UsuarioMapper.toDTO(usuario), JuegoMapper.toDTO(juego));
         } else {
             errores.add(new ErrorDto("compra", ErrorType.ERROR_EN_BASE));
             throw new ValidationException(errores);
@@ -130,22 +141,26 @@ public class CompraControlador {
 
     //SOLICITAR REEMBOLSO
 
-    public CompraDto solicitarReembolso(Long idCompra, String motivo, UsuarioEntidad usuario) throws ValidationException{
-        Optional<CompraEntidad> compraOpt = compraRepo.obtenerPorId(idCompra);
-        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.get().getIdUsuario()).get());
-        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.get().getIdJuego()).get());
+    public CompraDto solicitarReembolso(Long idCompra, String motivo,Long usuarioId) throws ValidationException{
+        var compraOpt = compraRepo.obtenerPorId(idCompra).orElse(null);
+
+
+        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.getIdUsuario()).get());
+
+        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.getIdJuego()).get());
 
 
         List<ErrorDto>errores=new ArrayList<>();
-        if (compraOpt.isEmpty()) {
+
+        if (compraOpt==null) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 
-        CompraEntidad compra = compraOpt.get();
+        CompraEntidad compra = compraOpt;
 
         // Validaciones
-        if (compra.getIdUsuario() != (usuario.getId())) {
+        if (compra.getIdUsuario() != (usuarioId)) {
             errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
@@ -158,8 +173,19 @@ public class CompraControlador {
         // Reembolsar
         compra.setEstadoCompraType(EstadoCompraType.REEMBOLDSADA);
         // Actualizar saldo del usuario
-        usuario.setSaldo(usuario.getSaldo() + compra.getPrecio());
+        var usuario=usuarioRepo.obtenerPorId(usuarioId).get();
+        var usuarioActualizado=new UsuarioForm(usuario.getNombreUsuario(),
+                usuario.getEmail(),
+                usuario.getContrasena(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getPais(),
+                usuario.getFechaNacimiento(),
+                usuario.getAvatar(),
+                usuario.getSaldo()+((compraOpt.getPrecio()* compra.getDescuento())/100)
+                );
 
+usuarioRepo.actualizar(usuarioId,usuarioActualizado);
         return CompraMapper.toDTO(compra,u,j);
     }
 }

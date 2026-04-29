@@ -5,6 +5,7 @@ import modelo.entidad.JuegoEntidad;
 import modelo.entidad.MetodoPagoType;
 import modelo.entidad.UsuarioEntidad;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class CompraDto {
@@ -13,7 +14,7 @@ public class CompraDto {
     private UsuarioDto Usuario;
     private long idJuego;
     private JuegoDto Juego;
-    private Date fechaCompra;
+    private LocalDate fechaCompra;
     //Metodo de pago enum
 private MetodoPagoType metodoPagoType;
     private double precio;
@@ -38,11 +39,11 @@ private MetodoPagoType metodoPagoType;
         Juego = juego;
     }
 
-    public Date getFechaCompra() {
+    public LocalDate getFechaCompra() {
         return fechaCompra;
     }
 
-    public void setFechaCompra(Date fechaCompra) {
+    public void setFechaCompra(LocalDate fechaCompra) {
         this.fechaCompra = fechaCompra;
     }
 
@@ -110,7 +111,7 @@ private MetodoPagoType metodoPagoType;
         this.id = id;
     }
 
-    public CompraDto(UsuarioDto usuario, JuegoDto juego, double precio, int descuento, double descuentoAplicado, MetodoPagoType metodoPagoType) {
+    public CompraDto(UsuarioDto usuario, JuegoDto juego, double precio, int descuento, double descuentoAplicado, MetodoPagoType metodoPagoType,EstadoCompraType estadoCompraType,LocalDate fechaCompra) {
 
         this.id=id;
         Usuario = usuario;
@@ -119,5 +120,7 @@ private MetodoPagoType metodoPagoType;
         this.descuento = descuento;
         this.descuentoAplicado = descuentoAplicado;
         this.metodoPagoType=metodoPagoType;
+        this.estadoCompraType=estadoCompraType;
+        this.fechaCompra=fechaCompra;
     }
 }

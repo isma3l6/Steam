@@ -75,7 +75,7 @@ public class JuegoForm {
         if ((precioBase - precioEntero) < 0.00) {
             errores.add(new ErrorDto("precio base", ErrorType.FORMATO_INVALIDO));
         }
-        if (precioBase <= 0) {
+        if (precioBase < 0) {
             errores.add(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         if (precioBase > 1000) {

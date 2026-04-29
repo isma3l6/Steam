@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Table(name = "compra")
@@ -18,7 +19,7 @@ public class CompraEntidad {
     @Column(name = "id_juego")
     private long idJuego;
     @Column(name = "fecha_compra")
-    private Date fechaCompra;
+    private LocalDate fechaCompra;
     //Metodo de pago enum
     @Column(name = "matodo_pago_type")
     private MetodoPagoType metodoPagoType;
@@ -46,11 +47,11 @@ public class CompraEntidad {
         this.idUsuario = idUsuario;
     }
 
-    public Date getFechaCompra() {
+    public LocalDate getFechaCompra() {
         return fechaCompra;
     }
 
-    public void setFechaCompra(Date fechaCompra) {
+    public void setFechaCompra(LocalDate fechaCompra) {
         this.fechaCompra = fechaCompra;
     }
 
@@ -94,7 +95,7 @@ public class CompraEntidad {
         this.estadoCompraType = estadoCompraType;
     }
 
-    public CompraEntidad(Date fechaCompra, long id, long idUsuario, long idJuego, MetodoPagoType metodoPagoType, double precio, EstadoCompraType estadoCompraType, int descuento) {
+    public CompraEntidad(LocalDate fechaCompra, long id, long idUsuario, long idJuego, MetodoPagoType metodoPagoType, double precio, EstadoCompraType estadoCompraType, int descuento) {
         this.fechaCompra = fechaCompra;
         this.id = id;
         this.idUsuario = idUsuario;

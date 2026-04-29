@@ -1,5 +1,6 @@
 package repositorio.inmemory;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,15 +17,15 @@ public class CompraRepoInMemory implements ICompraRepo {
     private static Long idCounter = 1L;
 
 
-      // CREAR COMPRA
+    // CREAR COMPRA
 
     public Optional<CompraEntidad> crear(CompraForm form) {
         var compra = new CompraEntidad(
-                new Date(),                          // fechaCompra
+                LocalDate.now(),                          // fechaCompra
                 idCounter++,                          // id auto-incremental
                 form.getIdUsuario(),                  // idUsuario
                 form.getIdJuego(),                    // idJuego
-                MetodoPagoType.valueOf(form.getMetodoPago().toUpperCase()), // metodoPago
+                form.getMetodoPago(), // metodoPago
                 form.getPrecioFinal(),                // precio
                 EstadoCompraType.PENDIENTE,           // estado inicial
                 form.getDescuento()                   // descuento
@@ -34,7 +35,7 @@ public class CompraRepoInMemory implements ICompraRepo {
     }
 
 
-      // OBTENER POR ID
+    // OBTENER POR ID
 
     public Optional<CompraEntidad> obtenerPorId(Long id) {
         return compras.stream()
@@ -42,14 +43,14 @@ public class CompraRepoInMemory implements ICompraRepo {
                 .findFirst();
     }
 
-       //OBTENER TODAS LAS COMPRAS
+    //OBTENER TODAS LAS COMPRAS
 
     public List<CompraEntidad> obtenerTodos() {
         return new ArrayList<>(compras);
     }
 
 
-       //ACTUALIZAR COMPRA
+    //ACTUALIZAR COMPRA
 
     public Optional<CompraEntidad> actualizar(Long id, CompraForm form) {
         var compraOpt = obtenerPorId(id);
@@ -62,7 +63,7 @@ public class CompraRepoInMemory implements ICompraRepo {
                 id,
                 form.getIdUsuario(),
                 form.getIdJuego(),
-                MetodoPagoType.valueOf(form.getMetodoPago().toUpperCase()),
+                form.getMetodoPago(),
                 form.getPrecioFinal(),
                 compraOpt.get().getEstadoCompraType(),    // mantenemos el estado actual
                 form.getDescuento()
@@ -74,7 +75,7 @@ public class CompraRepoInMemory implements ICompraRepo {
     }
 
 
-      // ELIMINAR COMPRA
+    // ELIMINAR COMPRA
 
     public boolean eliminar(Long id) {
         return compras.removeIf(c -> c.getId() == id);

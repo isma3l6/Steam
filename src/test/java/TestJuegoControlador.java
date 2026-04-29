@@ -202,7 +202,7 @@ public class TestJuegoControlador {
     @Test
     public void testPrecioJusto() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 999.99, 0,
+                "MembrilloGames", new Date(12 / 4 / 2015), 0, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
 

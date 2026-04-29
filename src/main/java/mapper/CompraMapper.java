@@ -18,6 +18,6 @@ public class CompraMapper {
         }
 
 
-        return new CompraDto(u,j,b.getPrecio(),b.getDescuento(),b.getDescuento()/100* b.getPrecio(),b.getMetodoPagoType());
+        return new CompraDto(u,j,b.getPrecio(),b.getDescuento(),b.getDescuento()/100* b.getPrecio(),b.getMetodoPagoType(),b.getEstadoCompraType(),b.getFechaCompra());
     }
 }

@@ -1,5 +1,6 @@
 package modelo.form;
 
+import modelo.entidad.MetodoPagoType;
 import repositorio.inmemory.JuegoRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
 
@@ -10,12 +11,11 @@ public class CompraForm {
     private long idUsuario;
     private long idJuego;
     //fecha compra
-    private String metodoPago;
+    private MetodoPagoType metodoPago;
     private double precio;
     private int descuento;
     private double precioFinal;
-    private UsuarioRepoInMemory usuarioRepoInMemory;
-    private JuegoRepoInMemory juegoRepoInMemory;
+
 
     public List<ErrorDto> validarCompra() {
         var errores = new ArrayList<ErrorDto>();
@@ -28,13 +28,11 @@ public class CompraForm {
         if (idJuego == 0) {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
-        if (juegoRepoInMemory.obtenerPorId(idJuego).isEmpty()) {
-            errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
-        }
+
         //Estado juego
-        if (metodoPago.isBlank()) {
+       /** if (metodoPago.isBlank()) {
             errores.add(new ErrorDto("Metodo pago", ErrorType.REQUERIDO));
-        }
+        }*/
         if (precio < 0.00) {
             errores.add(new ErrorDto("precio", ErrorType.REQUERIDO));
         }
@@ -48,6 +46,15 @@ public class CompraForm {
         return errores;
     }
 
+    public CompraForm(long idUsuario, long idJuego, MetodoPagoType metodoPago, double precio, int descuento) {
+        this.idUsuario = idUsuario;
+        this.idJuego = idJuego;
+        this.metodoPago = metodoPago;
+        this.precio = precio;
+        this.descuento = descuento;
+        this.precioFinal = (precioFinal*descuento)/100;
+    }
+
     public long getIdUsuario() {
         return idUsuario;
     }
@@ -56,7 +63,7 @@ public class CompraForm {
         return idJuego;
     }
 
-    public String getMetodoPago() {
+    public MetodoPagoType getMetodoPago() {
         return metodoPago;
     }
 
