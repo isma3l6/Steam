@@ -13,7 +13,7 @@ import java.util.Optional;
 public class JuegoRepoInMemory implements IJuegoRepo {
 
     private final List<JuegoEntidad> juegos = new ArrayList<>();
-    private int idCounter = 1;
+    private long idCounter = 1;
 
     // CREATE
     @Override
@@ -60,7 +60,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     //  UPDATE
 
     @Override
-    public Optional<JuegoEntidad> actualizar(int id, JuegoForm form) {
+    public Optional<JuegoEntidad> actualizar(long id, JuegoForm form) {
         JuegoEntidad actualizado=null;
 
         for (JuegoEntidad j:juegos) {
@@ -92,7 +92,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     //   DELETE
 
     @Override
-    public boolean eliminar(int id) {
+    public boolean eliminar(long id) {
         return juegos.remove(juegos.stream().filter(j -> j.getId() == id).findFirst().get());
 
     }

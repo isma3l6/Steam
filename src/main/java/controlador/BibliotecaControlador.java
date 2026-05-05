@@ -14,6 +14,7 @@ import repositorio.interfaz.IBibliotecaRepo;
 import repositorio.interfaz.IJuegoRepo;
 import repositorio.interfaz.IUsuarioRepo;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class BibliotecaControlador {
@@ -36,22 +37,26 @@ public class BibliotecaControlador {
     // VER BIBLIOTECA PERSONAL
 
     public List<BibliotecaDto> verBiblioteca(Long usuarioId, String orden) throws ValidationException {
+
         List<ErrorDto> errores = new ArrayList<>();
+
         List<BibliotecaDto> resultado = new ArrayList<>();
 
         var lista = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId)
                 .toList();
 
-        var u = usuarioRepo.obtenerPorId(usuarioId).get();
+        var u = usuarioRepo.obtenerPorId(usuarioId).orElse(null);
 
-        if (usuarioRepo.obtenerPorId(usuarioId).isEmpty()) {
+
+        if (u == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+
         }
 
 
-
-        if (lista.isEmpty()) {
+        if (!lista.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
 
@@ -86,30 +91,26 @@ public class BibliotecaControlador {
 
     public BibliotecaDto agregarJuego(Long usuarioId, Long juegoId) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        boolean duplicado = repo.obtenerTodos().stream()
-                .anyMatch(b -> b.getIdUsuario() == usuarioId &&
-                        b.getIdJuego() == juegoId);
+        var duplicado = repo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuarioId &&
+                        b.getIdJuego() == juegoId).findFirst().orElse(null);
 
-        if (duplicado) {
+        if (duplicado != null) {
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
             throw new ValidationException(errores);
         }
-        var entidad = new BibliotecaEntidad(
-                new Random().nextLong(),
-                usuarioId,
-                juegoId,
-                new Date(),
-                0,
-                null,
-                InstalacionType.NO_INSTALADO
-        );
+        var nuevo=repo.crear(new BibliotecaForm(usuarioId,juegoId,0)).orElse(null);
+
+        if (nuevo == null) {
+            errores.add(new ErrorDto("base",ErrorType.ERROR_EN_BASE));
+        throw new ValidationException(errores);
+        }
         var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
+
         var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
 
-
-        boolean resultado = repo.obtenerTodos().add(entidad);
-        if (resultado) {
-            return BibliotecaMapper.toDTO(entidad, usuario, juego);
+        if (nuevo!=null) {
+            return BibliotecaMapper.toDTO(nuevo, usuario, juego);
         } else {
             errores.add(new ErrorDto("Servidor", ErrorType.ERROR_EN_BASE));
             throw new ValidationException(errores);
@@ -161,8 +162,8 @@ public class BibliotecaControlador {
 
         var e = biblioteca.get();
         e.setHorasJugadas(e.getHorasJugadas() + horas);
-        e.setJugadoPorUltimavez(new Date());
-        var resultado = repo.actualizar(e.getId(), new BibliotecaForm(e.getId(), e.getIdUsuario(), e.getIdJuego(), e.getFechaAdquisicion(), e.getHorasJugadas()));
+        e.setJugadoPorUltimavez(LocalDate.now());
+        var resultado = repo.actualizar(e.getId(), new BibliotecaForm( e.getIdUsuario(), e.getIdJuego(), e.getHorasJugadas()));
         var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
         var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
         return BibliotecaMapper.toDTO(resultado.get(), usuario, juego);

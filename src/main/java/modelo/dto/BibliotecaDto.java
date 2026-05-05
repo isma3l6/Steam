@@ -4,6 +4,7 @@ import modelo.entidad.InstalacionType;
 import modelo.entidad.JuegoEntidad;
 import modelo.entidad.UsuarioEntidad;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class BibliotecaDto {
@@ -12,9 +13,9 @@ public class BibliotecaDto {
     private UsuarioDto Usuario;
     private long idJuego;
     private JuegoDto Juego;
-    private Date fechaAdquisicion;
+    private LocalDate fechaAdquisicion;
     private int horasJugadas;
-    private Date jugadoPorUltimavez;
+    private LocalDate jugadoPorUltimavez;
     private InstalacionType instalacionType;
 
     public long getId() {
@@ -57,17 +58,17 @@ public class BibliotecaDto {
         Juego = juego;
     }
 
-    public Date getFechaAdquisicion() {return fechaAdquisicion;}
+    public LocalDate getFechaAdquisicion() {return fechaAdquisicion;}
 
-    public void setFechaAdquisicion(Date fechaAdquisicion) {this.fechaAdquisicion = fechaAdquisicion;}
+    public void setFechaAdquisicion(LocalDate fechaAdquisicion) {this.fechaAdquisicion = fechaAdquisicion;}
 
     public int getHorasJugadas() {return horasJugadas;}
 
     public void setHorasJugadas(int horasJugadas) {this.horasJugadas = horasJugadas;}
 
-    public Date getJugadoPorUltimavez() {return jugadoPorUltimavez;}
+    public LocalDate getJugadoPorUltimavez() {return jugadoPorUltimavez;}
 
-    public void setJugadoPorUltimavez(Date jugadoPorUltimavez) {
+    public void setJugadoPorUltimavez(LocalDate jugadoPorUltimavez) {
         this.jugadoPorUltimavez = jugadoPorUltimavez;
     }
 
@@ -79,7 +80,7 @@ public class BibliotecaDto {
         this.instalacionType = instalacionType;
     }
 
-    public BibliotecaDto( UsuarioDto usuario, JuegoDto juego, Date fechaAdquisicion, int horasJugadas, Date jugadoPorUltimavez, InstalacionType instalacionType) {
+    public BibliotecaDto(UsuarioDto usuario, JuegoDto juego, LocalDate fechaAdquisicion, int horasJugadas, LocalDate jugadoPorUltimavez, InstalacionType instalacionType) {
         Usuario = usuario;
         Juego = juego;
         this.fechaAdquisicion = fechaAdquisicion;

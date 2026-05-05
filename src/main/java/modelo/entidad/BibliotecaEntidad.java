@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Table(name = "biblioteca")
 @Entity
@@ -17,11 +18,11 @@ public class BibliotecaEntidad {
     @Column(name = "id_juego")
     private long idJuego;
     @Column(name = "fecha_adquisicion")
-    private Date fechaAdquisicion;
+    private LocalDate fechaAdquisicion;
     @Column(name = "horas_jugadas")
     private int horasJugadas;
     @Column(name = "jugado_por_ultima_vez")
-    private Date jugadoPorUltimavez;
+    private LocalDate jugadoPorUltimavez;
     @Column(name = "instalacion")
     private InstalacionType instalacionType;
 
@@ -49,11 +50,11 @@ public class BibliotecaEntidad {
         this.idJuego = idJuego;
     }
 
-    public Date getFechaAdquisicion() {
+    public LocalDate getFechaAdquisicion() {
         return fechaAdquisicion;
     }
 
-    public void setFechaAdquisicion(Date fechaAdquisicion) {
+    public void setFechaAdquisicion(LocalDate fechaAdquisicion) {
         this.fechaAdquisicion = fechaAdquisicion;
     }
 
@@ -65,11 +66,11 @@ public class BibliotecaEntidad {
         this.horasJugadas = horasJugadas;
     }
 
-    public Date getJugadoPorUltimavez() {
+    public LocalDate getJugadoPorUltimavez() {
         return jugadoPorUltimavez;
     }
 
-    public void setJugadoPorUltimavez(Date jugadoPorUltimavez) {
+    public void setJugadoPorUltimavez(LocalDate jugadoPorUltimavez) {
         this.jugadoPorUltimavez = jugadoPorUltimavez;
     }
 
@@ -84,7 +85,7 @@ public class BibliotecaEntidad {
         this.instalacionType = instalacionType;
     }
 
-    public BibliotecaEntidad(long id, long idUsuario, long idJuego, Date fechaAdquisicion, int horasJugadas, Date jugadoPorUltimavez, InstalacionType instalacionType) {
+    public BibliotecaEntidad(long id, long idUsuario, long idJuego, LocalDate fechaAdquisicion, int horasJugadas, LocalDate jugadoPorUltimavez, InstalacionType instalacionType) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.idJuego = idJuego;

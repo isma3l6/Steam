@@ -40,6 +40,7 @@ public class CompraControlador {
 
         var usuario=usuarioRepo.obtenerPorId(form.getIdUsuario()).orElse(null);
 
+
         if (usuario==null) {
             throw new ValidationException( List.of( new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO)));
 
@@ -49,6 +50,10 @@ public class CompraControlador {
         if (juego == null) {
 
             throw new ValidationException( List.of( new ErrorDto("Juego", ErrorType.NO_ENCONTRADO)));
+        }
+        if (juego.getEstadoJuegoType()==EstadoJuegoType.NO_DISPONIBLE){
+            throw new ValidationException( List.of( new ErrorDto("Juego", ErrorType.INVALIDO)));
+
         }
 
 
@@ -64,10 +69,7 @@ public class CompraControlador {
                 .toList();
 
 
-        if (!comprasUsuario.isEmpty()) {
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
-            throw new ValidationException(errores);
-        }
+
 
         // Crear compra
 
@@ -89,16 +91,23 @@ public class CompraControlador {
     //PROCESAR PAGO
 
     public CompraDto procesarPago(Long idCompra, MetodoPagoType metodoPago) throws ValidationException {
-        Optional<CompraEntidad> compraOpt = compraRepo.obtenerPorId(idCompra);
+        var compraOpt = compraRepo.obtenerPorId(idCompra).orElse(null);
+
         List<ErrorDto> errores = new ArrayList<>();
-        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.get().getIdUsuario()).get());
-        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.get().getIdJuego()).get());
-        if (compraOpt.isEmpty()) {
+
+        if (compraOpt==null) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-        CompraEntidad compra = compraOpt.get();
-        if (compra.getEstadoCompraType() != EstadoCompraType.PENDIENTE) {
+
+        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.getIdUsuario()).get());
+
+        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.getIdJuego()).get());
+
+
+
+
+        if (compraOpt.getEstadoCompraType() != EstadoCompraType.PENDIENTE) {
             errores.add(new ErrorDto("compra", ErrorType.FORMATO_INVALIDO));
             throw new ValidationException(errores);
         }
@@ -110,52 +119,71 @@ public class CompraControlador {
         }
 
         // Procesar
-        compra.setEstadoCompraType(EstadoCompraType.COMPLETADA);
-        compra.setMetodoPagoType(metodoPago);
-        return CompraMapper.toDTO(compra,u,j);
+        compraOpt.setEstadoCompraType(EstadoCompraType.COMPLETADA);
+        compraOpt.setMetodoPagoType(metodoPago);
+        if (errores.isEmpty()){
+            return CompraMapper.toDTO(compraOpt,u,j);
+
+        }
+        else {
+            throw new ValidationException(errores);
+        }
     }
 
 
     //CONSULTAR DETALLES DE COMPRA
 
     public CompraDto consultarCompra(Long idCompra, Long idUsuario) throws ValidationException {
-        Optional<CompraEntidad> compraOpt = compraRepo.obtenerPorId(idCompra);
-
-        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.get().getIdUsuario()).get());
-
-        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.get().getIdJuego()).get());
-
         List<ErrorDto>errores=new ArrayList<>();
-        if (compraOpt.isPresent()) {
-            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
-            throw new ValidationException(errores);        }
 
-        CompraEntidad compra = compraOpt.get();
-        if (compra.getIdUsuario() != (idUsuario)) {
-            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-            throw new ValidationException(errores); // Usuario no propietario
-        }
-        return CompraMapper.toDTO(compra,u,j);
-    }
-
-
-    //SOLICITAR REEMBOLSO
-
-    public CompraDto solicitarReembolso(Long idCompra, String motivo,Long usuarioId) throws ValidationException{
         var compraOpt = compraRepo.obtenerPorId(idCompra).orElse(null);
 
+        if (compraOpt==null) {
+            errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);        }
 
         var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.getIdUsuario()).get());
 
         var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.getIdJuego()).get());
 
 
+        if (compraOpt.getIdUsuario() != (idUsuario)) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores); // Usuario no propietario
+        }
+
+        return CompraMapper.toDTO(compraOpt,u,j);
+    }
+
+
+    //SOLICITAR REEMBOLSO
+
+    public CompraDto solicitarReembolso(Long idCompra, String motivo,Long usuarioId) throws ValidationException{
+
         List<ErrorDto>errores=new ArrayList<>();
+
+        var compraOpt = compraRepo.obtenerPorId(idCompra).orElse(null);
 
         if (compraOpt==null) {
             errores.add(new ErrorDto("compra", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
+
+        var u=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(compraOpt.getIdUsuario()).orElse(null));
+        if (u==null) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+        var j=JuegoMapper.toDTO(juegoRepo.obtenerPorId(compraOpt.getIdJuego()).orElse(null));
+        if (compraOpt==null) {
+            errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+
+
+
 
         CompraEntidad compra = compraOpt;
 

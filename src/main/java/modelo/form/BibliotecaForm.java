@@ -11,18 +11,15 @@ import java.util.Date;
 import java.util.List;
 
 public class BibliotecaForm {
-    private long id;
     private long idUsario;
     private long idJuego;
-    private Date fechaAdquisicion;
     private double tiempoJugado;
 
 
-    public BibliotecaForm(long id, long idUsario, long idJuego, Date fechaAdquisicion, double tiempoJugado) {
-        this.id = id;
+    public BibliotecaForm( long idUsario, long idJuego, double tiempoJugado) {
         this.idUsario = idUsario;
         this.idJuego = idJuego;
-        this.fechaAdquisicion = fechaAdquisicion;
+
         this.tiempoJugado = tiempoJugado;
 
     }
@@ -39,9 +36,6 @@ public class BibliotecaForm {
             errores.add(new ErrorDto("Juego", ErrorType.REQUERIDO));
         }
 
-        if (!juegoUnico(idJuego)) {
-            errores.add(new ErrorDto("Juego", ErrorType.DUPLICADO));
-        }
         //Fecha Adquisicion No puede ser futura, No anterior fecha registro user
         if (tiempoJugado < 0) {
             errores.add(new ErrorDto("Juego", ErrorType.FORMATO_INVALIDO));
@@ -49,16 +43,7 @@ public class BibliotecaForm {
         return errores;
     }
 
-    private boolean juegoUnico(long idJuego) {
-        // no se si hacerlo general, porque que el juego este dos veces en Steam no me tiene sentido
-        var listaJuegos = new ArrayList<Long>();
-        for (int i = 0; i < listaJuegos.size(); i++) {
-            if (idJuego == i) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     public long getIdUsario() {
         return idUsario;
@@ -68,9 +53,7 @@ public class BibliotecaForm {
         return idJuego;
     }
 
-    public Date getFechaAdquisicion() {
-        return fechaAdquisicion;
-    }
+
 
     public double getTiempoJugado() {
         return tiempoJugado;

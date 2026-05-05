@@ -11,7 +11,7 @@ import transaction.ISesionManager;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
 public class JuegoHibernate implements IJuegoRepo {
     private ISesionManager sesionManager;
 
@@ -60,4 +60,4 @@ public class JuegoHibernate implements IJuegoRepo {
     public boolean eliminar(int id) {
         return false;
     }
-}
+}*/

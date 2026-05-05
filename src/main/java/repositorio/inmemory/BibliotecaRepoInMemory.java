@@ -5,6 +5,7 @@ import modelo.entidad.InstalacionType;
 import modelo.form.BibliotecaForm;
 import repositorio.interfaz.IBibliotecaRepo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,9 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
                 idCounter++,
                 form.getIdUsario(),
                 form.getIdJuego(),
-                form.getFechaAdquisicion(),
+                LocalDate.now(),
                 (int) form.getTiempoJugado(),
-                new Date(),
+                LocalDate.now(),
                 InstalacionType.INSTALADO
         );
 
@@ -58,9 +59,9 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
                 id,
                 form.getIdUsario(),
                 form.getIdJuego(),
-                form.getFechaAdquisicion(),
+                bibliotecaOpt.get().getFechaAdquisicion(),
                 (int) form.getTiempoJugado(),
-                new Date(),
+                LocalDate.now(),
                 InstalacionType.INSTALADO
         );
 

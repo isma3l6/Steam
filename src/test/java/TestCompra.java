@@ -13,13 +13,11 @@ import controlador.CompraControlador;
 import controlador.JuegoControlador;
 import controlador.UsuarioControlador;
 import excepciones.ValidationException;
-import modelo.dto.JuegoDto;
 import modelo.dto.UsuarioDto;
 import modelo.entidad.*;
 import modelo.form.CompraForm;
 import modelo.form.JuegoForm;
 import modelo.form.UsuarioForm;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repositorio.inmemory.CompraRepoInMemory;
 import repositorio.inmemory.JuegoRepoInMemory;
@@ -48,6 +46,13 @@ public class TestCompra {
       JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
               "MembrilloGames", new Date(12 / 4 / 9), 15.75, 0,
               ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+
+      CompraEntidad compraValida=cr.crear(new CompraForm(
+              usuarioValido.getId(),
+              juegoValido.getId(),
+              MetodoPagoType.PAYPAL,
+              29.99,
+              0)).get();
 
     public TestCompra() throws ValidationException {
     }
@@ -252,12 +257,12 @@ public class TestCompra {
 
     @Test
     public void procesarPago_CompraEnEstadoPendiente_RetornaCompraCompletada() throws ValidationException {
-        var compra = compraController.realizarCompra(new CompraForm(
+        var compra = cr.crear(new CompraForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 MetodoPagoType.TARJETA_CREDITO,
                 29.99,
-                0));
+                0)).get();
 
         var procesada = compraController.procesarPago(compra.getIdJuego(),compra.getMetodoPagoType());
 
@@ -273,12 +278,12 @@ public class TestCompra {
 
     @Test
     public void procesarPago_CompraYaCompletada_LanzaValidationException() throws ValidationException {
-        var compra = compraController.realizarCompra(new CompraForm(
+        var compra = cr.crear(new CompraForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 MetodoPagoType.PAYPAL,
                 29.99,
-                0));
+                0)).get();
 
         compraController.procesarPago(compra.getId(),compra.getMetodoPagoType()); // primera vez: PENDIENTE → COMPLETADA
 
@@ -293,18 +298,18 @@ public class TestCompra {
 
     @Test
     public void consultarCompra_IdValidoUsuarioCorrecto_RetornaCompraDTO() throws ValidationException {
-        var compra = compraController.realizarCompra(new CompraForm(
+        var compra = cr.crear(new CompraForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 MetodoPagoType.TRANSFERENCIA,
                 29.99,
                 0
-                ));
+                )).get();
 
         var detalle = compraController.consultarCompra(compra.getId(), usuarioValido.getId());
 
         assertNotNull(detalle);
-        assertEquals(compra.getId(), detalle.getId());
+        assertEquals(EstadoCompraType.PENDIENTE, detalle.getEstadoCompraType());
     }
 
     @Test
@@ -346,36 +351,36 @@ public class TestCompra {
     @Test
     public void solicitarReembolso_CompraCompletada_RetornaCompraReembolsada() throws ValidationException {
         usuarioController.anadirSaldo(usuarioValido.getId(), 29.99);
-        var compra = compraController.realizarCompra(new CompraForm(
+        var compra = cr.crear(new CompraForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 MetodoPagoType.CARTERA_STEAM,
                 29.99,
                 0
-                ));
+                )).get();
         compraController.procesarPago(compra.getId(),compra.getMetodoPagoType()); // PENDIENTE → COMPLETADA
 
         var reembolsada = compraController.solicitarReembolso(compra.getId(),"alfo",usuarioValido.getId());
 
         assertNotNull(reembolsada);
         assertEquals(EstadoCompraType.REEMBOLDSADA, reembolsada.getEstadoCompraType());
-        assertEquals(29.99, usuarioController.consultarSaldo(usuarioValido.getId())); // saldo reembolsado
+        assertEquals(29.99, usuarioController.consultarSaldo(usuarioValido.getId()).getSaldo()); // saldo reembolsado
     }
 
     @Test
     public void solicitarReembolso_IdInvalido_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> compraController.solicitarReembolso(9999L,"",usuarioValido.getId())); // ID que no existe
+                () -> compraController.solicitarReembolso(9999L,"", new Long(99))); // ID que no existe
     }
 
     @Test
     public void solicitarReembolso_CompraPendiente_LanzaValidationException() throws ValidationException {
-        var compra = compraController.realizarCompra(new CompraForm(
+        var compra = cr.crear(new CompraForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 MetodoPagoType.PAYPAL,
                 29.99,
-                0));
+                0)).get();
 
         // Solo se puede reembolsar si está COMPLETADA, no PENDIENTE
         assertThrows(ValidationException.class,

@@ -14,7 +14,7 @@ public interface IJuegoRepo {
 
     List<JuegoEntidad> obtenerTodos();
 
-    Optional<JuegoEntidad> actualizar(int id, JuegoForm form);
+    Optional<JuegoEntidad> actualizar(long id, JuegoForm form);
 
-    boolean eliminar(int id);
+    boolean eliminar(long id);
 }

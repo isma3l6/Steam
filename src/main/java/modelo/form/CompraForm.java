@@ -30,9 +30,9 @@ public class CompraForm {
         }
 
         //Estado juego
-       /** if (metodoPago.isBlank()) {
+        if (metodoPago == null) {
             errores.add(new ErrorDto("Metodo pago", ErrorType.REQUERIDO));
-        }*/
+        }
         if (precio < 0.00) {
             errores.add(new ErrorDto("precio", ErrorType.REQUERIDO));
         }
@@ -52,7 +52,7 @@ public class CompraForm {
         this.metodoPago = metodoPago;
         this.precio = precio;
         this.descuento = descuento;
-        this.precioFinal = (precioFinal*descuento)/100;
+        this.precioFinal = (precioFinal * descuento) / 100;
     }
 
     public long getIdUsuario() {

@@ -147,7 +147,7 @@ public class JuegoControlador {
 
     //CONSULTAR DETALLES DE JUEGO
 
-    public JuegoDto detallesJuego(int id) throws ValidationException {
+    public JuegoDto detallesJuego(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
 
         JuegoEntidad juego = repo.obtenerPorId(id).get();
@@ -163,7 +163,7 @@ public class JuegoControlador {
 
     //APLICAR DESCUENTO
 
-    public Double aplicarDescuento(int id, double porcentaje) throws ValidationException {
+    public Double aplicarDescuento(Long id, double porcentaje) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
         if (porcentaje < 0 || porcentaje > 100) {
             errores.add(new ErrorDto("porcentaje", ErrorType.PORCENTAJE_INVALIDO));
@@ -187,7 +187,7 @@ public class JuegoControlador {
 
     //CAMBIAR ESTADO DEL JUEGO
 
-    public JuegoDto cambiarEstado(int id, EstadoJuegoType nuevoEstado) throws ValidationException {
+    public JuegoDto cambiarEstado(Long id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
         JuegoEntidad juego = repo.obtenerPorId(id).get();
         List<ErrorDto> errores = new ArrayList<>();

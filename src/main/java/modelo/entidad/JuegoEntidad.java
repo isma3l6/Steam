@@ -8,7 +8,7 @@ import java.util.Date;
 public class JuegoEntidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "titulo")
     private String titulo;
     @Column(name = "descripcion")
@@ -39,11 +39,11 @@ public class JuegoEntidad {
         this.titulo = titulo;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -111,7 +111,7 @@ public class JuegoEntidad {
         this.estadoJuegoType = estadoJuegoType;
     }
 
-    public JuegoEntidad(int id, String titulo, String desarrollador, String descripcion, Date fechaLanzamiento, double precioBase, CategoriaType categoriaType, double procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
+    public JuegoEntidad(Long id, String titulo, String desarrollador, String descripcion, Date fechaLanzamiento, double precioBase, CategoriaType categoriaType, double procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
         this.id = id;
         this.titulo = titulo;
         this.desarrollador = desarrollador;
@@ -124,7 +124,7 @@ public class JuegoEntidad {
         this.estadoJuegoType = estadoJuegoType;
     }
 
-    public JuegoEntidad(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, CategoriaType categoriaType, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
+   /** public JuegoEntidad(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, CategoriaType categoriaType, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.desarrollador = desarrollador;
@@ -132,11 +132,11 @@ public class JuegoEntidad {
         this.categoriaType = categoriaType;
         this.clasificacionType = clasificacionType;
         this.estadoJuegoType = estadoJuegoType;
-    }
+    }*/
 
     @Override
     public String toString() {
-        return "JuegoEntidad{" +
+        return
                 "id=" + id +
                 ", titulo='" + titulo + '\'' +
                 ", descripcion='" + descripcion + '\'' +
@@ -146,7 +146,7 @@ public class JuegoEntidad {
                 ", procentajeDescuento=" + procentajeDescuento +
                 ", categoriaType=" + categoriaType +
                 ", clasificacionType=" + clasificacionType +
-                ", estadoJuegoType=" + estadoJuegoType +
-                '}';
+                ", estadoJuegoType=" + estadoJuegoType
+                ;
     }
 }
