@@ -319,7 +319,7 @@ public class TestJuegoControlador {
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoEntidad juego = repo.crear(j).get();
          var result=jc.cambiarEstado(juego.getId(), EstadoJuegoType.NO_DISPONIBLE);
-         assertEquals(EstadoJuegoType.NO_DISPONIBLE, result.get);
+         assertEquals(EstadoJuegoType.NO_DISPONIBLE, result.getEstado());
 
     }
 

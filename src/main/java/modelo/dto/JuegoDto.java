@@ -59,12 +59,13 @@ public class JuegoDto {
         this.estadoJuego = estadoJuego;
     }
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase, EstadoJuegoType estado) {
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.categoria = categoria;
         this.precioBase = precioBase;
+        this.estadoJuego = estadoJuego;
 
     }
 }

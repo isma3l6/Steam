@@ -45,7 +45,7 @@ public class JuegoControlador {
 
 
     //BUSCAR JUEGOS
-    //todo
+
     //Añadir formBusquda
 
     public List<JuegoDto> buscar(
@@ -147,7 +147,7 @@ public class JuegoControlador {
     public JuegoDto detallesJuego(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        JuegoEntidad juego = repo.obtenerPorId(id).get();
+        JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
 
         if (juego ==null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
@@ -182,7 +182,7 @@ public class JuegoControlador {
 
     public JuegoDto cambiarEstado(Long id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
-        JuegoEntidad juego = repo.obtenerPorId(id).get();
+        JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
         List<ErrorDto> errores = new ArrayList<>();
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
