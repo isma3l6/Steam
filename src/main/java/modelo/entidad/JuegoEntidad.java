@@ -21,7 +21,7 @@ public class JuegoEntidad {
     private double precioBase;
     //descuento en porcentaje
     @Column(name = "porcentaje_descuento")
-    private double procentajeDescuento;
+    private int procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
     @Column(name = "categoria")
     private CategoriaType categoriaType;
@@ -79,11 +79,11 @@ public class JuegoEntidad {
         this.fechaLanzamiento = fechaLanzamiento;
     }
 
-    public double getProcentajeDescuento() {
+    public int getProcentajeDescuento() {
         return procentajeDescuento;
     }
 
-    public void setProcentajeDescuento(double procentajeDescuento) {
+    public void setProcentajeDescuento(int procentajeDescuento) {
         this.procentajeDescuento = procentajeDescuento;
     }
 
@@ -111,7 +111,7 @@ public class JuegoEntidad {
         this.estadoJuegoType = estadoJuegoType;
     }
 
-    public JuegoEntidad(Long id, String titulo, String desarrollador, String descripcion, Date fechaLanzamiento, double precioBase, CategoriaType categoriaType, double procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
+    public JuegoEntidad(Long id, String titulo, String desarrollador, String descripcion, Date fechaLanzamiento, double precioBase, CategoriaType categoriaType, int procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
         this.id = id;
         this.titulo = titulo;
         this.desarrollador = desarrollador;

@@ -4,10 +4,7 @@ import excepciones.ValidationException;
 import mapper.JuegoMapper;
 import modelo.dto.JuegoDto;
 import modelo.entidad.*;
-import modelo.form.ErrorDto;
-import modelo.form.ErrorType;
-import modelo.form.JuegoForm;
-import modelo.form.UsuarioForm;
+import modelo.form.*;
 import repositorio.interfaz.IJuegoRepo;
 
 import java.text.DecimalFormat;
@@ -163,25 +160,21 @@ public class JuegoControlador {
 
     //APLICAR DESCUENTO
 
-    public Double aplicarDescuento(Long id, double porcentaje) throws ValidationException {
+    public Double aplicarDescuento(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        if (porcentaje < 0 || porcentaje > 100) {
-            errores.add(new ErrorDto("porcentaje", ErrorType.PORCENTAJE_INVALIDO));
-            throw new ValidationException(errores);
-        }
 
-        JuegoEntidad juego = repo.obtenerPorId(id).get();
+        JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
 
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 
-        juego.setProcentajeDescuento(porcentaje);
 
-        double precioFinal = juego.getPrecioBase() * (1 - porcentaje / 100);
 
-        return precioFinal;
+        return  juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
+
+
     }
 
 
@@ -200,5 +193,19 @@ public class JuegoControlador {
         var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getEstadoJuegoType())).get();
 
         return JuegoMapper.toDTO(actualizado);
+    }
+    public JuegoDto ActualizarPorcentajeDescuento(Long id, int nuevoPrecio) throws ValidationException {
+        JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
+        List<ErrorDto> errores = new ArrayList<>();
+        if (juego == null) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+        juego.setProcentajeDescuento(nuevoPrecio);
+
+        var actualizado = repo.actualizar(juego.getId(), new JuegoForm(juego.getTitulo(), juego.getProcentajeDescuento())).get();
+
+        return JuegoMapper.toDTO(actualizado);
+
     }
 }

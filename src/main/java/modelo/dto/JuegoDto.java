@@ -2,6 +2,7 @@ package modelo.dto;
 
 import modelo.entidad.CategoriaType;
 import modelo.entidad.ClasificacionType;
+import modelo.entidad.EstadoJuegoType;
 
 import java.util.Date;
 
@@ -36,6 +37,9 @@ public class JuegoDto {
     public long getId() {
         return id;
     }
+    public EstadoJuegoType getEstado() {return estadoJuego;}
+
+    private EstadoJuegoType estadoJuego;
 
     private String desarrollador;
     private Date fechaLanzamiento;
@@ -45,20 +49,22 @@ public class JuegoDto {
     //categoria, clasificacion y Estado ponerlo como enum
     private CategoriaType categoria;
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria) {
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.precioBase = precioBase;
         this.procentajeDescuento = procentajeDescuento;
         this.categoria = categoria;
+        this.estadoJuego = estadoJuego;
     }
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase) {
+    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase, EstadoJuegoType estado) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.categoria = categoria;
         this.precioBase = precioBase;
+
     }
 }

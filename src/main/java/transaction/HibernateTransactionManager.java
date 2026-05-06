@@ -32,20 +32,14 @@ public class HibernateTransactionManager implements transaction.ITransactionMana
                     tx.rollback();
                 throw e;
             }
-        } catch (ValidationException ve) {
-            throw ve;
-        } catch (Exception e) {
-            try {
-                return (T) Optional.empty();
-            } catch (ClassCastException ex) {
-                return null;
-            }
         } finally {
             session = null;
         }
     }
 
-    /** Devuelve la sesión activa dentro de un bloque {@link #inTransaction}. */
+    /**
+     * Devuelve la sesión activa dentro de un bloque {@link #inTransaction}.
+     */
     public Session getSession() {
         return session;
     }

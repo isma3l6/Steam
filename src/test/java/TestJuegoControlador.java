@@ -302,5 +302,25 @@ public class TestJuegoControlador {
         }
     }
 
+    @Test
+    public void testAplicarDescuento() throws ValidationException {
+        JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+        JuegoEntidad juego = repo.crear(j).get();
+        Double juegoDescuento = jc.aplicarDescuento(juego.getId());
+        assertEquals(j.getPorcentajeDescuento() * (j.getPrecioBase() / 100), juegoDescuento);
+    }
+
+    @Test
+    public void testCambiarEstado() throws ValidationException {
+        JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+        JuegoEntidad juego = repo.crear(j).get();
+         var result=jc.cambiarEstado(juego.getId(), EstadoJuegoType.NO_DISPONIBLE);
+         assertEquals(EstadoJuegoType.NO_DISPONIBLE, result.get);
+
+    }
 
 }

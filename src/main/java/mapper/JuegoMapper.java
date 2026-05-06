@@ -9,6 +9,6 @@ public class JuegoMapper {
         if (juego == null) {
             return null;
         }
-        return new JuegoDto(juego.getTitulo(), juego.getDesarrollador(), juego.getFechaLanzamiento(), juego.getCategoriaType(), juego.getPrecioBase());
+        return new JuegoDto(juego.getTitulo(), juego.getDesarrollador(), juego.getFechaLanzamiento(), juego.getCategoriaType(), juego.getPrecioBase(), juego.getEstadoJuegoType());
     }
 }
