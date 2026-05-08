@@ -7,6 +7,7 @@ import mapper.UsuarioMapper;
 import modelo.dto.BibliotecaDto;
 import modelo.entidad.BibliotecaEntidad;
 import modelo.entidad.InstalacionType;
+import modelo.entidad.JuegoEntidad;
 import modelo.form.BibliotecaForm;
 import modelo.form.ErrorDto;
 import modelo.form.ErrorType;
@@ -56,7 +57,7 @@ public class BibliotecaControlador {
         }
 
 
-        if (!lista.isEmpty()) {
+        if (lista.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
 
@@ -91,6 +92,18 @@ public class BibliotecaControlador {
 
     public BibliotecaDto agregarJuego(Long usuarioId, Long juegoId) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
+        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).orElse(null));
+        if (juego==null){
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+        var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).orElse(null));
+        if (usuario==null){
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
         var duplicado = repo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuarioId &&
                         b.getIdJuego() == juegoId).findFirst().orElse(null);
@@ -99,15 +112,13 @@ public class BibliotecaControlador {
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
             throw new ValidationException(errores);
         }
+
         var nuevo=repo.crear(new BibliotecaForm(usuarioId,juegoId,0)).orElse(null);
 
         if (nuevo == null) {
             errores.add(new ErrorDto("base",ErrorType.ERROR_EN_BASE));
-        throw new ValidationException(errores);
+            throw new ValidationException(errores);
         }
-        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-
-        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
 
         if (nuevo!=null) {
             return BibliotecaMapper.toDTO(nuevo, usuario, juego);
@@ -146,6 +157,18 @@ public class BibliotecaControlador {
 
     public BibliotecaDto actualizarHoras(Long usuarioId, Long juegoId, int horas) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).orElse(null));
+        if (usuario==null){
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+
+        }
+        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).orElse(null));
+        if (juego==null){
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
         if (horas <= 0) {
             errores.add(new ErrorDto("horas", ErrorType.VALOR_DEMASIADO_BAJO));
             throw new ValidationException(errores);
@@ -156,43 +179,57 @@ public class BibliotecaControlador {
                         b.getIdJuego() == juegoId)
                 .findFirst();
 
+
         if (biblioteca.isEmpty()) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
+
 
         var e = biblioteca.get();
         e.setHorasJugadas(e.getHorasJugadas() + horas);
         e.setJugadoPorUltimavez(LocalDate.now());
         var resultado = repo.actualizar(e.getId(), new BibliotecaForm( e.getIdUsuario(), e.getIdJuego(), e.getHorasJugadas()));
-        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
+
         return BibliotecaMapper.toDTO(resultado.get(), usuario, juego);
     }
 
 
     // CONSULTAR ÚLTIMA SESIÓN
 
-    public BibliotecaDto consultarUltimaSesion(Long usuarioId, Long juegoId) throws ValidationException {
+    public BibliotecaDto consultarUltimaSesion(Long usuarioId) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
+
+        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).orElse(null));
+        if (usuario==null){
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+
+        }
+
+
         var biblioteca = repo.obtenerTodos().stream()
-                .filter(b -> b.getIdUsuario() == usuarioId &&
-                        b.getIdJuego() == juegoId)
-                .findFirst();
+                .filter(b -> b.getIdUsuario() == usuarioId )
+                .toList();
 
         if (biblioteca.isEmpty()) {
             errores.add(new ErrorDto("Biblioteca", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
+       BibliotecaEntidad resultado=null;
+        for (BibliotecaEntidad b:biblioteca){
+           if(b.getJugadoPorUltimavez().isBefore(LocalDate.now())&&
+            b.getJugadoPorUltimavez().isAfter(resultado.getJugadoPorUltimavez()))
+        {
+               resultado=b;
+           }
 
-        var fecha = biblioteca.get().getJugadoPorUltimavez();
 
-        if (fecha == null) {
-            errores.add(new ErrorDto("fecha", ErrorType.NO_ENCONTRADO));
-            throw new ValidationException(errores);
         }
-        var usuario = UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(usuarioId).get());
-        var juego = JuegoMapper.toDTO(juegoRepo.obtenerPorId(juegoId).get());
-        return BibliotecaMapper.toDTO(biblioteca.get(), usuario, juego);
+        var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(resultado.getId()).get());
+
+
+        return BibliotecaMapper.toDTO(resultado,usuario,juego);
     }
 
 

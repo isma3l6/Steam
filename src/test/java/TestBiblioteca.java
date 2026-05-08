@@ -1,16 +1,14 @@
 import controlador.BibliotecaControlador;
-import controlador.CompraControlador;
 import controlador.JuegoControlador;
 import controlador.UsuarioControlador;
 import excepciones.ValidationException;
 import modelo.dto.BibliotecaDto;
 import modelo.entidad.*;
-import modelo.form.CompraForm;
 import modelo.form.JuegoForm;
 import modelo.form.UsuarioForm;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repositorio.inmemory.BibliotecaRepoInMemory;
-import repositorio.inmemory.CompraRepoInMemory;
 import repositorio.inmemory.JuegoRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
 
@@ -21,52 +19,60 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBiblioteca {
-    private UsuarioRepoInMemory ur=new UsuarioRepoInMemory();
-    private UsuarioControlador usuarioController=new UsuarioControlador(ur);
-    private JuegoRepoInMemory jr=new JuegoRepoInMemory();
-    private JuegoControlador juegoController=new JuegoControlador(jr);
+    private UsuarioRepoInMemory ur;
+    private UsuarioControlador usuarioController;
+    private JuegoRepoInMemory jr;
+    private JuegoControlador juegoController;
+    UsuarioEntidad usuarioValido;
+    JuegoEntidad juegoValido;
+    private BibliotecaRepoInMemory br;
+    private BibliotecaControlador bibliotecaController;
 
-    private BibliotecaRepoInMemory br=new BibliotecaRepoInMemory();
-    private BibliotecaControlador bibliotecaController=new BibliotecaControlador(br,jr,ur);
+    @BeforeEach
+    public void setUp() {
+        ur = new UsuarioRepoInMemory();
+        jr = new JuegoRepoInMemory();
+        br = new BibliotecaRepoInMemory();
+        juegoController = new JuegoControlador(jr);
+        usuarioController = new UsuarioControlador(ur);
+        bibliotecaController = new BibliotecaControlador(br, jr, ur);
+        usuarioValido = ur.crear(new UsuarioForm("nuevo",
+                "mail",
+                "Pass12345",
+                "nom",
+                "apel",
+                "pais",
+                LocalDate.of(2026, 04, 24),
+                "avtydrr",
+                1000)).get();
 
-    UsuarioEntidad usuarioValido=ur.crear(new UsuarioForm("nuevo",
-            "mail",
-            "Pass12345",
-            "nom",
-            "apel",
-            "pais",
-            LocalDate.of(2026, 04, 24),
-            "avtydrr",
-            1000)).get();
 
-
-    JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-            "MembrilloGames", new Date(12 / 4 / 9), 15.75, 0,
-            ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+        juegoValido = jr.crear(new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+                "MembrilloGames", new Date(12 / 4 / 9), 15.75, 0,
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+    }
 
     // =====================================================
     // Obtener juegos de usuario
     // =====================================================
 
-    @Test
-    void agregar()throws ValidationException{
-        var b=bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
-        assertEquals(juegoValido.getId(),b.getIdJuego());
-    }
 
     @Test
-    public void obtenerJuegosUsuario_UsuarioValido_RetornaListaVacia() throws ValidationException {
-        var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(),"");
+    public void obtenerJuegosUsuario_UsuarioValido_RetornaLista() throws ValidationException {
+        bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
+
+
+        var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(), "");
 
         assertNotNull(biblioteca);
-        assertTrue(biblioteca.isEmpty());
+        assertTrue(!biblioteca.isEmpty());
     }
 
     @Test
     public void obtenerJuegosUsuario_UsuarioInvalido_LanzaValidationException() {
         assertThrows(ValidationException.class,
                 () -> {
-                    bibliotecaController.verBiblioteca(9999L,""); // ID que no existe
+                    bibliotecaController.verBiblioteca(9999L, ""); // ID que no existe
                 });
     }
 
@@ -79,24 +85,24 @@ public class TestBiblioteca {
         var resultado = bibliotecaController.agregarJuego(
                 usuarioValido.getId(), juegoValido.getId());
 
-        assertTrue(resultado!=null);
+        assertTrue(resultado != null);
     }
 
     @Test
     public void agregarJuegoBiblioteca_VerificaEntradaEnBiblioteca() throws ValidationException {
         bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
 
-        var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(),"");
+        var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(), "");
 
         assertFalse(biblioteca.isEmpty());
-        assertEquals(juegoValido.getId(), biblioteca.get(0).getIdJuego());
+        assertEquals(juegoValido.getTitulo(), biblioteca.get(0).getJuego().getTitulo());
     }
 
     @Test
     public void agregarJuegoBiblioteca_TiempoJuegoInicialCero() throws ValidationException {
         bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
 
-        var entrada = bibliotecaController.verBiblioteca(usuarioValido.getId(),"").get(0);
+        var entrada = bibliotecaController.verBiblioteca(usuarioValido.getId(), "").get(0);
 
         assertEquals(0.0, entrada.getHorasJugadas(), 0.001);
     }
@@ -105,7 +111,7 @@ public class TestBiblioteca {
     public void agregarJuegoBiblioteca_EstadoInstalacionPorDefectoNoInstalado() throws ValidationException {
         bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
 
-        var entrada = bibliotecaController.verBiblioteca(usuarioValido.getId(),"");
+        var entrada = bibliotecaController.verBiblioteca(usuarioValido.getId(), "");
 
         assertEquals(InstalacionType.NO_INSTALADO, entrada.getFirst().getInstalacionType());
     }
@@ -145,12 +151,13 @@ public class TestBiblioteca {
                 null,
                 0));
 
+
         bibliotecaController.agregarJuego(usuarioValido.getId(), juegoValido.getId());
 
         // El mismo juego puede estar en la biblioteca de otro usuario
         var resultado = bibliotecaController.agregarJuego(usuario2.get().getId(), juegoValido.getId());
 
-        assertTrue(resultado!=null);
+        assertTrue(resultado != null);
     }
 
     // =====================================================
@@ -163,8 +170,11 @@ public class TestBiblioteca {
 
         bibliotecaController.eliminarJuego(usuarioValido.getId(), juegoValido.getId());
 
-        var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(),"");
-        assertTrue(biblioteca.isEmpty());
+        assertThrows(ValidationException.class,
+                () -> bibliotecaController.verBiblioteca(usuarioValido.getId(), ""));
+
+        /** var biblioteca = bibliotecaController.verBiblioteca(usuarioValido.getId(),"");
+         assertTrue(biblioteca.isEmpty());*/
     }
 
     @Test
@@ -222,10 +232,5 @@ public class TestBiblioteca {
     // Consulta última sesión
     // =====================================================
 
-    @Test
-    public void consultaUltimaSesion_LanzaUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class,
-                () -> bibliotecaController.consultarUltimaSesion(usuarioValido.getId(), juegoValido.getId()));
-    }
 
 }

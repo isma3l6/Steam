@@ -26,7 +26,7 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
                 LocalDate.now(),
                 (int) form.getTiempoJugado(),
                 LocalDate.now(),
-                InstalacionType.INSTALADO
+                InstalacionType.NO_INSTALADO
         );
 
         bibliotecas.add(biblioteca);
