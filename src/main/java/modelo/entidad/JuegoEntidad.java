@@ -2,6 +2,7 @@ package modelo.entidad;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Table(name = "juegos")
 @Entity
@@ -16,7 +17,7 @@ public class JuegoEntidad {
     @Column(name = "desarrollador")
     private String desarrollador;
     @Column(name = "fecha_lanzamiento")
-    private Date fechaLanzamiento;
+    private LocalDate fechaLanzamiento;
     @Column(name = "precio_base")
     private double precioBase;
     //descuento en porcentaje
@@ -71,11 +72,11 @@ public class JuegoEntidad {
         this.precioBase = precioBase;
     }
 
-    public Date getFechaLanzamiento() {
+    public LocalDate getFechaLanzamiento() {
         return fechaLanzamiento;
     }
 
-    public void setFechaLanzamiento(Date fechaLanzamiento) {
+    public void setFechaLanzamiento(LocalDate fechaLanzamiento) {
         this.fechaLanzamiento = fechaLanzamiento;
     }
 
@@ -111,7 +112,7 @@ public class JuegoEntidad {
         this.estadoJuegoType = estadoJuegoType;
     }
 
-    public JuegoEntidad(Long id, String titulo, String desarrollador, String descripcion, Date fechaLanzamiento, double precioBase, CategoriaType categoriaType, int procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
+    public JuegoEntidad(Long id, String titulo, String desarrollador, String descripcion, LocalDate fechaLanzamiento, double precioBase, CategoriaType categoriaType, int procentajeDescuento, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
         this.id = id;
         this.titulo = titulo;
         this.desarrollador = desarrollador;

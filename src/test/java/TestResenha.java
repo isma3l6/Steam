@@ -1,9 +1,7 @@
 import controlador.*;
 import excepciones.ValidationException;
-import modelo.entidad.ClasificacionType;
-import modelo.entidad.EstadoJuegoType;
-import modelo.entidad.JuegoEntidad;
-import modelo.entidad.UsuarioEntidad;
+import modelo.dto.UsuarioDto;
+import modelo.entidad.*;
 import modelo.form.JuegoForm;
 import modelo.form.ResenhaForm;
 import modelo.form.UsuarioForm;
@@ -12,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import repositorio.inmemory.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,68 +46,66 @@ public class TestResenha {
 
 
     JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-            "MembrilloGames", new Date(12 / 4 / 9), 15.75, 0,
+            "MembrilloGames", LocalDate.of(2015 , 4 , 12), 15.75, 0,
             ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
 
     // =====================================================
     // Crear reseña
     // =====================================================
 
-   /** @Test
+
+
+ @Test
     public void crearResena_FormularioValido_RetornaResenaDTO() throws ValidationException {
         var resena = resenaController.escribirResenha(new ResenhaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
         assertNotNull(resena);
-        assertEquals(usuarioValido.id(), resena.idUsuario());
-        assertEquals(juegoValido.id(), resena.idJuego());
-        assertTrue(resena.recomendado());
+        assertEquals(usuarioValido.getId(), resena.getIdUsuario());
+        assertEquals(juegoValido.getId(), resena.getId());
+        assertTrue(resena.isRecomendado());
     }
 
     @Test
     public void crearResena_EstadoPorDefectoPublicada() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        assertEquals(EstadoResena.PUBLICADA, resena.estado());
+        assertEquals(EstadoResenhaType.PUBLICADA, resena.getEstadoResenhaType());
     }
 
     @Test
     public void crearResena_FechaPublicacionGeneradaAutomaticamente() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 false,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        assertNotNull(resena.fechaPublicacion());
-        assertEquals(LocalDate.now(), resena.fechaPublicacion());
+        assertNotNull(resena.getFechaPublicacion());
+        assertEquals(LocalDate.now(), resena.getFechaPublicacion());
     }
 
     @Test
     public void crearResena_HorasJugadasObtenidaDeBiblioteca() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
         // Las horas jugadas iniciales son 0.0 (recién añadido a la biblioteca)
-        assertEquals(0.0, resena.horasJugadas(), 0.1);
+        assertEquals(0.0, resena.getHorasJugadas(), 0.1);
     }
 
     // ── Usuario ────────────────────────────────────────────────────────────
@@ -116,38 +113,35 @@ public class TestResenha {
     @Test
     public void crearResena_UsuarioInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
+                () -> resenaController.escribirResenha(new ResenhaForm(
                         9999L, // usuario no existe
-                        juegoValido.id(),
+                        juegoValido.getId(),
                         true,
                         TEXTO_VALIDO,
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     @Test
     public void crearResena_UsuarioSinJuegoEnBiblioteca_LanzaValidationException() throws ValidationException {
-        JuegoDTO juegoSinBiblioteca = juegoController.crearJuego(new JuegoForm(
+        var juegoSinBiblioteca = jr.crear(new JuegoForm(
                 "Portal 3",
-                null,
+                "null",
                 "Valve",
                 LocalDate.now(),
                 19.99,
                 0,
-                "Puzzle",
-                ClasificacionEdad.PEGI_7,
-                new String[] { "Español" },
-                EstadoJuego.DISPONIBLE));
+                ClasificacionType.PEGI_7,
+                List.of( "Español" ),
+                EstadoJuegoType.DISPONIBLE));
 
         // El usuario no tiene este juego en su biblioteca
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
-                        juegoSinBiblioteca.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
+                        juegoSinBiblioteca.get().getId(),
                         true,
                         TEXTO_VALIDO,
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     // ── Juego ──────────────────────────────────────────────────────────────
@@ -155,34 +149,32 @@ public class TestResenha {
     @Test
     public void crearResena_JuegoInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
                         9999L, // juego no existe
                         true,
                         TEXTO_VALIDO,
-                        0.0,
-                        null)));
+                        0.0
+                        )));
     }
 
     @Test
     public void crearResena_ResenaDuplicada_LanzaValidationException() throws ValidationException {
-        resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
         // El mismo usuario no puede tener dos reseñas del mismo juego
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
-                        juegoValido.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
+                        juegoValido.getId(),
                         false,
                         TEXTO_VALIDO,
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     // ── Texto ──────────────────────────────────────────────────────────────
@@ -190,37 +182,34 @@ public class TestResenha {
     @Test
     public void crearResena_TextoVacio_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
-                        juegoValido.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
+                        juegoValido.getId(),
                         true,
                         "", // texto obligatorio
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     @Test
     public void crearResena_TextoMenor50Caracteres_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
-                        juegoValido.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
+                        juegoValido.getId(),
                         true,
                         "Muy corto.", // menos de 50 caracteres
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     @Test
     public void crearResena_TextoMayor8000Caracteres_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.crearResena(new ResenaForm(
-                        usuarioValido.id(),
-                        juegoValido.id(),
+                () -> resenaController.escribirResenha(new ResenhaForm(
+                        usuarioValido.getId(),
+                        juegoValido.getId(),
                         true,
                         "a".repeat(8001), // 8001 caracteres, máximo 8000
-                        0.0,
-                        null)));
+                        0.0)));
     }
 
     // =====================================================
@@ -229,49 +218,49 @@ public class TestResenha {
 
     @Test
     public void eliminarResena_ResenaPropiaExistente_EliminaCorrectamente() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        resenaController.eliminarResena(resena.id(), usuarioValido.id());
+        resenaController.eliminarResenha(resena.getId(), usuarioValido.getId());
 
         // Tras eliminar, la reseña no debe aparecer en el listado del juego
-        var resenas = resenaController.listarResenasJuego(juegoValido.id());
-        assertTrue(resenas.stream().noneMatch(r -> r.id() == resena.id()));
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        assertTrue(resenas.stream().noneMatch(r -> r.getId() == resena.getId()));
     }
 
     @Test
     public void eliminarResena_IdInvalido_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.eliminarResena(9999L, usuarioValido.id())); // reseña no existe
+                () -> resenaController.eliminarResenha(9999L, usuarioValido.getId())); // reseña no existe
     }
 
     @Test
     public void eliminarResena_UsuarioNoEsDuenio_LanzaValidationException() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        UsuarioDTO otroUsuario = usuarioController.creaUsuarioDTO(new UsuarioForm(
+        UsuarioDto otroUsuario = usuarioController.registrar(new UsuarioForm(
                 "usuario2",
                 "usuario2@gmail.com",
                 "12345678Aa@",
-                "Usuario Dos",
+                "Usuario",
+                " Dos",
                 "España",
                 LocalDate.now().minusYears(25),
-                null));
+                null,
+                0));
 
         // La reseña pertenece a usuarioValido, no a otroUsuario
         assertThrows(ValidationException.class,
-                () -> resenaController.eliminarResena(resena.id(), otroUsuario.id()));
+                () -> resenaController.eliminarResenha(resena.getId(), otroUsuario.getId()));
     }
 
     // =====================================================
@@ -280,15 +269,14 @@ public class TestResenha {
 
     @Test
     public void listarResenasJuego_JuegoCon1Resena_RetornaListaConUnaResena() throws ValidationException {
-        resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        var resenas = resenaController.listarResenasJuego(juegoValido.id());
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
 
         assertNotNull(resenas);
         assertFalse(resenas.isEmpty());
@@ -297,7 +285,7 @@ public class TestResenha {
 
     @Test
     public void listarResenasJuego_JuegoSinResenas_RetornaListaVacia() throws ValidationException {
-        var resenas = resenaController.listarResenasJuego(juegoValido.id());
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
 
         assertNotNull(resenas);
         assertTrue(resenas.isEmpty());
@@ -306,7 +294,7 @@ public class TestResenha {
     @Test
     public void listarResenasJuego_JuegoInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.listarResenasJuego(9999L)); // juego no existe
+                () -> resenaController.verResenasPorJuego(9999L,"","")); // juego no existe
     }
 
     // =====================================================
@@ -315,48 +303,48 @@ public class TestResenha {
 
     @Test
     public void ocultarResena_ResenaPropiaPublicada_QuedaOculta() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        resenaController.ocultarResena(resena.id(), usuarioValido.id());
+        resenaController.ocultarResenha(resena.getId(), usuarioValido.getId());
 
         // Una reseña oculta no debe aparecer en el listado público del juego
-        var resenas = resenaController.listarResenasJuego(juegoValido.id());
-        assertTrue(resenas.stream().noneMatch(r -> r.id() == resena.id()));
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        assertTrue(resenas.stream().noneMatch(r -> r.getId() == resena.getId()));
     }
 
     @Test
     public void ocultarResena_IdInvalido_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.ocultarResena(9999L, usuarioValido.id())); // reseña no existe
+                () -> resenaController.ocultarResenha(9999L, usuarioValido.getId())); // reseña no existe
     }
 
     @Test
     public void ocultarResena_UsuarioNoEsDuenio_LanzaValidationException() throws ValidationException {
-        var resena = resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        var resena = resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0));
 
-        UsuarioDTO otroUsuario = usuarioController.creaUsuarioDTO(new UsuarioForm(
+        UsuarioDto otroUsuario = usuarioController.registrar(new UsuarioForm(
                 "usuario2",
                 "usuario2@gmail.com",
                 "12345678Aa@",
-                "Usuario Dos",
+                "Usuario ",
+                "Dos",
                 "España",
                 LocalDate.now().minusYears(25),
-                null));
+                null
+        ,0));
 
         assertThrows(ValidationException.class,
-                () -> resenaController.ocultarResena(resena.id(), otroUsuario.id()));
+                () -> resenaController.ocultarResenha(resena.getId(), otroUsuario.getId()));
     }
 
     // =====================================================
@@ -365,24 +353,24 @@ public class TestResenha {
 
     @Test
     public void listarResenasPorUsuario_UsuarioConResenas_RetornaLista() throws ValidationException {
-        resenaController.crearResena(new ResenaForm(
-                usuarioValido.id(),
-                juegoValido.id(),
+        resenaController.escribirResenha(new ResenhaForm(
+                usuarioValido.getId(),
+                juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0,
-                null));
+                0.0
+                ));
 
-        var resenas = resenaController.listarResenasPorUsuario(usuarioValido.id());
+        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(),"");
 
         assertNotNull(resenas);
         assertFalse(resenas.isEmpty());
-        assertEquals(usuarioValido.id(), resenas.get(0).idUsuario());
+        assertEquals(usuarioValido.getId(), resenas.get(0).getIdUsuario());
     }
 
     @Test
     public void listarResenasPorUsuario_UsuarioSinResenas_RetornaListaVacia() throws ValidationException {
-        var resenas = resenaController.listarResenasPorUsuario(usuarioValido.id());
+        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(),"");
 
         assertNotNull(resenas);
         assertTrue(resenas.isEmpty());
@@ -391,6 +379,6 @@ public class TestResenha {
     @Test
     public void listarResenasPorUsuario_UsuarioInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.listarResenasPorUsuario(9999L)); // usuario no existe
-    }*/
+                () -> resenaController.verResenasPorUsuario(9999L,"")); // usuario no existe
+    }
 }

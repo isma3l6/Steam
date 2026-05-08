@@ -4,6 +4,7 @@ import modelo.entidad.CategoriaType;
 import modelo.entidad.ClasificacionType;
 import modelo.entidad.EstadoJuegoType;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class JuegoDto {
@@ -18,7 +19,7 @@ public class JuegoDto {
         return desarrollador;
     }
 
-    public Date getFechaLanzamiento() {
+    public LocalDate getFechaLanzamiento() {
         return fechaLanzamiento;
     }
 
@@ -42,14 +43,14 @@ public class JuegoDto {
     private EstadoJuegoType estadoJuego;
 
     private String desarrollador;
-    private Date fechaLanzamiento;
+    private LocalDate fechaLanzamiento;
     private double precioBase;
     //descuento en porcentaje
     private double procentajeDescuento;
     //categoria, clasificacion y Estado ponerlo como enum
     private CategoriaType categoria;
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria, EstadoJuegoType estadoJuego) {
+    public JuegoDto(String titulo, String desarrollador, LocalDate fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
@@ -59,12 +60,12 @@ public class JuegoDto {
         this.estadoJuego = estadoJuego;
     }
 
-    public JuegoDto(String titulo, String desarrollador, Date fechaLanzamiento, CategoriaType categoria, double precioBase, EstadoJuegoType estado) {
+    public JuegoDto(String titulo, String desarrollador, LocalDate fechaLanzamiento, CategoriaType categoria, double precioBase, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;
         this.categoria = categoria;
         this.precioBase = precioBase;
-
+        this.estadoJuego = estadoJuego;
     }
 }

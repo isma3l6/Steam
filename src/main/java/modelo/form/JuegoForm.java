@@ -3,6 +3,7 @@ package modelo.form;
 import modelo.entidad.ClasificacionType;
 import modelo.entidad.EstadoJuegoType;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,7 @@ public class JuegoForm {
     private String titulo;
     private String descripcion;
     private String desarrollador;
-    private Date fechaLanzamiento;
+    private LocalDate fechaLanzamiento;
     private double precioBase;
     //descuento en porcentaje
     private int porcentajeDescuento;
@@ -29,7 +30,7 @@ public class JuegoForm {
         this.porcentajeDescuento = porcentajeDescuento;
     }
 
-    public JuegoForm(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
+    public JuegoForm(String titulo, String descripcion, String desarrollador, LocalDate fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.desarrollador = desarrollador;
@@ -127,7 +128,7 @@ public class JuegoForm {
         return descripcion;
     }
 
-    public Date getFechaLanzamiento() {
+    public LocalDate getFechaLanzamiento() {
         return fechaLanzamiento;
     }
 

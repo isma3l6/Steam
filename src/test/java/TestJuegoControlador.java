@@ -11,6 +11,7 @@ import modelo.form.JuegoForm;
 import org.junit.jupiter.api.Test;
 import repositorio.inmemory.JuegoRepoInMemory;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class TestJuegoControlador {
     @Test
     public void testCrearBien() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 9), 15.75, 0,
+                "MembrilloGames", LocalDate.of(12 , 4 , 9), 15.75, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
 
         var creacionbien = jc.anadirJuego(j);
@@ -50,7 +51,7 @@ public class TestJuegoControlador {
     @Test
     public void testCreaFechaFutura() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2030), 15.75, 0,
+                "MembrilloGames", LocalDate.of(2030 , 4 , 12), 15.75, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
 
         var creacionbien = jc.anadirJuego(j);
@@ -62,7 +63,7 @@ public class TestJuegoControlador {
     public void testNoCreaNombreDuplicado() {
 
         var jValido = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2030), 15.75, 0,
+                "MembrilloGames", LocalDate.of(2030 , 4 , 12), 15.75, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         var ej = repo.crear(jValido);
 
@@ -80,7 +81,7 @@ public class TestJuegoControlador {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador mimiiimiimimimimimimimimimimimimimiim mimiiimiimimimimimimimimimimimimimiim mimiiimiimimimimimimimimimimimimimiim mimiiimiimimimimimimimimimimimimimiim mimiiimiimimimimimimimimimimimimimiim",
                     "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -94,7 +95,7 @@ public class TestJuegoControlador {
     public void testNombreMuyCorto() {
         try {
             JuegoForm j = new JuegoForm(" ", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -107,7 +108,7 @@ public class TestJuegoControlador {
     public void testNombreObligatorio() {
         try {
             JuegoForm j = new JuegoForm(null, "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -122,7 +123,7 @@ public class TestJuegoControlador {
     public void testCreaSinDescripcion() throws ValidationException {
 
         JuegoForm j = new JuegoForm("Pepe el cazador", "",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
 
@@ -133,7 +134,7 @@ public class TestJuegoControlador {
     public void testNoCreaDescripcionNull() throws ValidationException {
 
         JuegoForm j = new JuegoForm("Pepe el cazador", null,
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
 
@@ -148,7 +149,7 @@ public class TestJuegoControlador {
 
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "", new Date(12 / 4 / 2015), 5, 0,
+                    "", LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -163,7 +164,7 @@ public class TestJuegoControlador {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
                     "mimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimimimimimiimimimimimimi",
-                    new Date(12 / 4 / 2015), 5, 0,
+                    LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -177,7 +178,7 @@ public class TestJuegoControlador {
     public void testPrecioNegativo() {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), -5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), -5, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -190,7 +191,7 @@ public class TestJuegoControlador {
     public void testPrecioDemasiadoAlto() {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 1000.1, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 1000.1, 0,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -202,7 +203,7 @@ public class TestJuegoControlador {
     @Test
     public void testPrecioJusto() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 0, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 0, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
 
@@ -214,7 +215,7 @@ public class TestJuegoControlador {
     @Test
     public void testDescuentoBien() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 15,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 15,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
         assertEquals(j.getTitulo(), creacionbien.getTitulo());
@@ -226,7 +227,7 @@ public class TestJuegoControlador {
 
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 120,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 120,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -240,7 +241,7 @@ public class TestJuegoControlador {
     public void testDescuentooInferiorRango() {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, -5,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, -5,
                     ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -253,7 +254,7 @@ public class TestJuegoControlador {
     public void testDescuentoLimite() throws ValidationException {
 
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 100,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 100,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoDto creacionbien = jc.anadirJuego(j);
 
@@ -265,7 +266,7 @@ public class TestJuegoControlador {
     public void testClasificacionEdad() throws ValidationException {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                     null, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
             JuegoDto creacionbien = jc.anadirJuego(j);
             assertTrue(false);
@@ -281,7 +282,7 @@ public class TestJuegoControlador {
     public void testSinIdiomas() throws ValidationException {
 
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                 ClasificacionType.PEGI_18, null, EstadoJuegoType.DISPONIBLE);
 
         JuegoDto creacionbien = jc.anadirJuego(j);
@@ -292,7 +293,7 @@ public class TestJuegoControlador {
     public void testEstado() throws ValidationException {
         try {
             JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                    "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                    "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                     ClasificacionType.PEGI_18, List.of("español", "ingles"), null);
 
             JuegoDto creacionbien = jc.anadirJuego(j);
@@ -305,7 +306,7 @@ public class TestJuegoControlador {
     @Test
     public void testAplicarDescuento() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
         JuegoEntidad juego = repo.crear(j).get();
         Double juegoDescuento = jc.aplicarDescuento(juego.getId());
@@ -315,10 +316,13 @@ public class TestJuegoControlador {
     @Test
     public void testCambiarEstado() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-                "MembrilloGames", new Date(12 / 4 / 2015), 5, 0,
+                "MembrilloGames", LocalDate.of(2015 , 4 , 12), 5, 0,
                 ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE);
+
         JuegoEntidad juego = repo.crear(j).get();
+
          var result=jc.cambiarEstado(juego.getId(), EstadoJuegoType.NO_DISPONIBLE);
+
          assertEquals(EstadoJuegoType.NO_DISPONIBLE, result.getEstado());
 
     }

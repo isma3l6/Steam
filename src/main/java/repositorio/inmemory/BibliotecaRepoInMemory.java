@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class BibliotecaRepoInMemory implements IBibliotecaRepo {
 
-    private static final List<BibliotecaEntidad> bibliotecas = new ArrayList<>();
+    private  final List<BibliotecaEntidad> bibliotecas = new ArrayList<>();
     private static Long idCounter = 1L;
 
     @Override
