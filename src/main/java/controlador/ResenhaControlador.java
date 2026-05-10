@@ -50,15 +50,15 @@ public class ResenhaControlador {
         }
 
         // 2. Usuario existe
-        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(form.getIdUsuario()).get());
+        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(form.getIdUsuario()).orElse(null));
 
-        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(form.getIdJuego()).get());
+        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(form.getIdJuego()).orElse(null));
 
         if (usuario == null) {
             errores.add(new ErrorDto("Usuario", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-        if (usuario == null) {
+        if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
@@ -85,7 +85,7 @@ public class ResenhaControlador {
 
     public boolean eliminarResenha(long idResenha, long idUsuario) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).get();
+        var resenha=resenhaRepo.obtenerTodas().stream().filter(r->r.getId()==idResenha && r.getUsuaroId()==idUsuario).findFirst().orElse(null);
         if (resenha == null) {
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
@@ -100,12 +100,26 @@ public class ResenhaControlador {
 
     public ResenhaDto ocultarResenha(long idResenha, long idUsuario) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).get();
-        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(idUsuario).get());
-        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(resenha.getNombreJuegoId()).get());
-        if (resenha == null) {
+        var resenha = resenhaRepo.obtenerPorUsuarioYJuego(idUsuario, idResenha).orElse(null);
+
+        if (resenha==null) {
 
             errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+        var usuario = UsuarioMapper.toDTO( usuarioRepo.obtenerPorId(idUsuario).orElse(null));
+
+        if(usuario==null||usuario.getId()==resenha.getUsuaroId()){
+            errores.add(new ErrorDto("Reseña", ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
+        }
+
+        var juego= JuegoMapper.toDTO(juegoRepo.obtenerPorId(resenha.getNombreJuegoId()).orElse(null));
+
+        if (juego==null) {
+
+            errores.add(new ErrorDto("Juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
         resenha.setEstadoResenhaType(EstadoResenhaType.OCULTA);
@@ -118,50 +132,66 @@ public class ResenhaControlador {
     /* =========================================
         VER RESEÑAS DE UN JUEGO
     ========================================= */
-    public List<ResenhaDto> verResenasPorJuego(long idJuego, String filtro, String orden) {
-        List<ResenhaDto> resultado = new ArrayList<>();
-        for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
-            if (r.getNombreJuegoId() == idJuego) {
+    public List<ResenhaDto> verResenasPorJuego(long idJuego, String filtro, String orden) throws ValidationException {
 
-                // Filtro: positivas o negativas
-                if ("positivas".equalsIgnoreCase(filtro) && !r.isRecomendado()) continue;
-                if ("negativas".equalsIgnoreCase(filtro) && r.isRecomendado()) continue;
+        List<ErrorDto> errores = new ArrayList<>();
+        List<ResenhaDto> resultados=new ArrayList<>();
 
-                resultado.add(ResenhaMapper.toDTO(r,
-                        UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(r.getUsuaroId()).get()),
-                        JuegoMapper.toDTO(juegoRepo.obtenerPorId(r.getNombreJuegoId()).get())
-                ));
-            }
+        if (juegoRepo.obtenerPorId(idJuego).isEmpty()){
+            errores.add(new ErrorDto("juego",ErrorType.NO_ENCONTRADO));
+            throw new ValidationException(errores);
         }
+
+        var resultado=resenhaRepo.obtenerTodas().stream().filter(r->idJuego==r.getNombreJuegoId()).toList();
+
+        for (ResenhaEntidad r:resultado){
+
+             var usuario=UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(r.getUsuaroId()).get());
+
+             var juego=JuegoMapper.toDTO(juegoRepo.obtenerPorId(r.getNombreJuegoId()).get());
+
+
+            resultados.add(ResenhaMapper.toDTO(r,usuario,juego));
+
+        }
+
+
 
         // Ordenar
         if ("recientes".equalsIgnoreCase(orden)) {
-            return resultado.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
+            return resultados.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
         }
         // Orden por "útiles" se podría agregar si existiera contador de votos
 
-        return resultado;
+        return resultados;
     }
 
     /* =========================================
        5️ VER RESEÑAS DE UN USUARIO
     ========================================= */
-    public List<ResenhaDto> verResenasPorUsuario(long idUsuario, String filtroEstado) {
-        List<ResenhaDto> resultado = new ArrayList<>();
-        for (ResenhaEntidad r : resenhaRepo.obtenerTodas()) {
-            if (r.getUsuaroId() == idUsuario) {
+    public List<ResenhaDto> verResenasPorUsuario(long idUsuario, String filtroEstado) throws ValidationException {
+        List<ErrorDto>errores=new ArrayList<>();
+
+        List<ResenhaDto>resenas=new ArrayList<>();
+        var usuario=usuarioRepo.obtenerPorId(idUsuario).orElse(null);
+        if (usuario==null){
+            throw new ValidationException(List.of(new ErrorDto("Usuario",ErrorType.NO_ENCONTRADO)));
+        }
+        var resultados=resenhaRepo.obtenerTodas().stream().filter(r ->r.getUsuaroId()==idUsuario ).toList();
+
+        for (ResenhaEntidad r : resultados) {
                 // Filtro de estado opcional: si quisiéramos oculto, eliminado, etc.
                 if (filtroEstado != null && filtroEstado.equalsIgnoreCase("oculto") &&
                         !r.getEstadoResenhaType().equals(EstadoResenhaType.PUBLICADA)) continue;
 
-                resultado.add(ResenhaMapper.toDTO(r,
-                        UsuarioMapper.toDTO(usuarioRepo.obtenerPorId(r.getUsuaroId()).get()),
+                resenas.add(ResenhaMapper.toDTO(r,
+                        UsuarioMapper.toDTO(usuario),
                         JuegoMapper.toDTO(juegoRepo.obtenerPorId(r.getNombreJuegoId()).get())));
             }
-        }
+
 
         // Orden por fecha descendente
-        return resultado.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
+        return resenas.stream().sorted(Comparator.comparing(ResenhaDto::getFechaPublicacion).reversed()).toList();
 
 
     }

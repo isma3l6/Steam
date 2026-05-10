@@ -4,17 +4,18 @@ import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.JuegoEntidad;
 import modelo.entidad.UsuarioEntidad;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ResenhaDto {
     private long id;
     private long idUsuario;
     private UsuarioDto usuaro;
-    private JuegoDto nombreJuego;
+    private JuegoDto juego;
     private boolean recomendado;
     private String texto;
-    private Date fechaPublicacion;
-    private Date fechaEdit;
+    private LocalDate fechaPublicacion;
+    private LocalDate fechaEdit;
     //Estado enum
     private int horasJugadas;
     private EstadoResenhaType estadoResenhaType;
@@ -51,12 +52,12 @@ public class ResenhaDto {
         this.usuaro = usuaro;
     }
 
-    public JuegoDto getNombreJuego() {
-        return nombreJuego;
+    public JuegoDto getJuego() {
+        return juego;
     }
 
-    public void setNombreJuego(JuegoDto nombreJuego) {
-        this.nombreJuego = nombreJuego;
+    public void setJuego(JuegoDto juego) {
+        this.juego = juego;
     }
 
     public boolean isRecomendado() {
@@ -67,11 +68,11 @@ public class ResenhaDto {
         this.recomendado = recomendado;
     }
 
-    public Date getFechaPublicacion() {
+    public LocalDate getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public void setFechaPublicacion(Date fechaPublicacion) {
+    public void setFechaPublicacion(LocalDate fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 
@@ -83,11 +84,11 @@ public class ResenhaDto {
         this.texto = texto;
     }
 
-    public Date getFechaEdit() {
+    public LocalDate getFechaEdit() {
         return fechaEdit;
     }
 
-    public void setFechaEdit(Date fechaEdit) {
+    public void setFechaEdit(LocalDate fechaEdit) {
         this.fechaEdit = fechaEdit;
     }
 
@@ -99,10 +100,9 @@ public class ResenhaDto {
         this.estadoResenhaType = estadoResenhaType;
     }
 
-    public ResenhaDto(UsuarioDto usuaro, JuegoDto nombreJuego, String texto, boolean recomendado, Date fechaPublicacion,Date fechaEdit,int horasJugadas) {
-        this.id=id;
+    public ResenhaDto(UsuarioDto usuaro, JuegoDto juego, String texto, boolean recomendado, LocalDate fechaPublicacion, LocalDate fechaEdit, int horasJugadas) {
         this.usuaro = usuaro;
-        this.nombreJuego = nombreJuego;
+        this.juego = juego;
         this.texto = texto;
         this.recomendado = recomendado;
         this.fechaPublicacion = fechaPublicacion;

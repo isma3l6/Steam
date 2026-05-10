@@ -3,6 +3,7 @@ package repositorio.interfaz;
 import modelo.entidad.ResenhaEntidad;
 import modelo.form.ResenhaForm;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IResenhaRepo {
@@ -11,7 +12,7 @@ public interface IResenhaRepo {
 
     Optional<ResenhaEntidad> obtenerPorUsuarioYJuego(long idUsuario, long idJuego);
 
-    ResenhaEntidad[] obtenerTodas();
+    List<ResenhaEntidad> obtenerTodas();
 
     Optional<ResenhaEntidad> actualizar(long id, ResenhaForm form);
 

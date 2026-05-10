@@ -2,6 +2,7 @@ import controlador.*;
 import excepciones.ValidationException;
 import modelo.dto.UsuarioDto;
 import modelo.entidad.*;
+import modelo.form.BibliotecaForm;
 import modelo.form.JuegoForm;
 import modelo.form.ResenhaForm;
 import modelo.form.UsuarioForm;
@@ -49,6 +50,7 @@ public class TestResenha {
             "MembrilloGames", LocalDate.of(2015 , 4 , 12), 15.75, 0,
             ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
 
+    BibliotecaEntidad bibliotecaValida=br.crear(new BibliotecaForm(usuarioValido.getId(),juegoValido.getId(),0)).get();
     // =====================================================
     // Crear reseña
     // =====================================================
@@ -65,8 +67,8 @@ public class TestResenha {
                 0.0));
 
         assertNotNull(resena);
-        assertEquals(usuarioValido.getId(), resena.getIdUsuario());
-        assertEquals(juegoValido.getId(), resena.getId());
+        assertEquals(usuarioValido.getNombreUsuario(), resena.getUsuaro().getNombreUsuario());
+        assertEquals(juegoValido.getTitulo(), resena.getJuego().getTitulo());
         assertTrue(resena.isRecomendado());
     }
 
@@ -218,12 +220,12 @@ public class TestResenha {
 
     @Test
     public void eliminarResena_ResenaPropiaExistente_EliminaCorrectamente() throws ValidationException {
-        var resena = resenaController.escribirResenha(new ResenhaForm(
+        var resena = rr.crear(new ResenhaForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0));
+                0.0)).get();
 
         resenaController.eliminarResenha(resena.getId(), usuarioValido.getId());
 
@@ -303,12 +305,12 @@ public class TestResenha {
 
     @Test
     public void ocultarResena_ResenaPropiaPublicada_QuedaOculta() throws ValidationException {
-        var resena = resenaController.escribirResenha(new ResenhaForm(
+        var resena = rr.crear(new ResenhaForm(
                 usuarioValido.getId(),
                 juegoValido.getId(),
                 true,
                 TEXTO_VALIDO,
-                0.0));
+                0.0)).get();
 
         resenaController.ocultarResenha(resena.getId(), usuarioValido.getId());
 
@@ -365,7 +367,7 @@ public class TestResenha {
 
         assertNotNull(resenas);
         assertFalse(resenas.isEmpty());
-        assertEquals(usuarioValido.getId(), resenas.get(0).getIdUsuario());
+        assertEquals(usuarioValido.getNombreUsuario(), resenas.getFirst().getUsuaro().getNombreUsuario());
     }
 
     @Test

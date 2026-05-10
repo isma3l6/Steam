@@ -1,19 +1,19 @@
 package repositorio.inmemory;
 
+import modelo.entidad.BibliotecaEntidad;
 import modelo.entidad.EstadoResenhaType;
 import modelo.entidad.ResenhaEntidad;
 import modelo.entidad.UsuarioEntidad;
 import modelo.form.ResenhaForm;
 import repositorio.interfaz.IResenhaRepo;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class ResenhaRepoInMemory implements IResenhaRepo {
 
-
-    private ResenhaEntidad[] resenas = new ResenhaEntidad[200];
-    private int size = 0;
-    private long idCounter = 1L;
+    private final List<ResenhaEntidad> resenhas = new ArrayList<>();
+    private static Long idCounter = 1L;
 
 
     //CREATE
@@ -21,7 +21,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     @Override
     public Optional<ResenhaEntidad> crear(ResenhaForm form) {
 
-        if (size >= resenas.length) {
+        if (200 <= resenhas.size()) {
             throw new RuntimeException("Capacidad máxima alcanzada");
         }
 
@@ -31,50 +31,48 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
                 form.getIdJuego(),
                 form.isRecomendado(),
                 form.getCuerpoResena(),
-                new Date(),// fecha de creación
-                new Date(),
+                LocalDate.now(),
+                LocalDate.now(),
                 EstadoResenhaType.PUBLICADA
 
         );
 
-        resenas[size] = nueva;
-        size++;
+        resenhas.add(nueva);
 
         return Optional.of(nueva);
     }
 
     public Optional<ResenhaEntidad> obtenerPorId(long id) {
-        for (int i = 0; i < size; i++) {
-            if (resenas[i].getId() == id) {
-                return Optional.of(resenas[i]);
+        for (ResenhaEntidad r : resenhas) {
+            if (r.getId() == id) {
+                return Optional.of(r);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     //READ BY USUARIO + JUEGO
 
     @Override
     public Optional<ResenhaEntidad> obtenerPorUsuarioYJuego(long idUsuario, long idJuego) {
-        for (ResenhaEntidad r : resenas) {
+        ResenhaEntidad resultado=null;
+        for (ResenhaEntidad r : resenhas) {
             if (r.getUsuaroId() == idUsuario &&
                     r.getNombreJuegoId() == idJuego) {
                 return Optional.of(r);
             }
+
         }
-        return null;
+        return Optional.ofNullable(resultado);
     }
 
 
     //READ ALL
 
     @Override
-    public ResenhaEntidad[] obtenerTodas() {
-        ResenhaEntidad[] copia = new ResenhaEntidad[size];
-        for (int i = 0; i < size; i++) {
-            copia[i] = resenas[i];
-        }
-        return copia;
+    public List<ResenhaEntidad> obtenerTodas() {
+
+        return resenhas.stream().toList();
     }
 
 
@@ -82,19 +80,19 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
 
     @Override
     public Optional<ResenhaEntidad> actualizar(long id, ResenhaForm form) {
-        for (int i = 0; i < size; i++) {
-            if (resenas[i].getId() == id) {
+        for (ResenhaEntidad r : resenhas) {
+            if (r.getId() == id) {
                 ResenhaEntidad actualizada = new ResenhaEntidad(
                         id,
                         form.getIdUsuario(),
                         form.getIdJuego(),
                         form.isRecomendado(),
                         form.getCuerpoResena(),
-                        resenas[i].getFechaPublicacion(), // mantener fecha original
-                        new Date(),
+                        r.getFechaPublicacion(), // mantener fecha original
+                        LocalDate.now(),
                         EstadoResenhaType.PUBLICADA
                 );
-                resenas[i] = actualizada;
+                r = actualizada;
                 return Optional.of(actualizada);
             }
         }
@@ -104,14 +102,10 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     //DELETE
     @Override
     public boolean eliminar(long id) {
-        for (int i = 0; i < size; i++) {
-            if (resenas[i].getId() == id) {
+        for (ResenhaEntidad r : resenhas) {
+            if (r.getId() == id) {
                 // desplazamiento a la izquierda
-                for (int j = i; j < size - 1; j++) {
-                    resenas[j] = resenas[j + 1];
-                }
-                resenas[size - 1] = null;
-                size--;
+                resenhas.remove(r);
                 return true;
             }
         }
@@ -121,6 +115,6 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     //EXISTE RESEÑA
     @Override
     public boolean existeResena(long idUsuario, long idJuego) {
-        return obtenerPorUsuarioYJuego(idUsuario, idJuego) != null;
+        return obtenerPorUsuarioYJuego(idUsuario, idJuego).isPresent();
     }
 }

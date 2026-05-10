@@ -2,6 +2,7 @@ package modelo.entidad;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Table(name = "resena")
@@ -19,9 +20,9 @@ public class ResenhaEntidad {
     @Column(name = "texto")
     private String texto;
     @Column(name = "fecha_publicacion")
-    private Date fechaPublicacion;
+    private LocalDate fechaPublicacion;
     @Column(name = "fecha_edit")
-    private Date fechaEdit;
+    private LocalDate fechaEdit;
     @Column(name = "estado_resenha_type")
     private EstadoResenhaType estadoResenhaType;
     @Column(name = "horas_jugadas")
@@ -75,19 +76,19 @@ public class ResenhaEntidad {
         this.texto = texto;
     }
 
-    public Date getFechaPublicacion() {
+    public LocalDate getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public void setFechaPublicacion(Date fechaPublicacion) {
+    public void setFechaPublicacion(LocalDate fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 
-    public Date getFechaEdit() {
+    public LocalDate getFechaEdit() {
         return fechaEdit;
     }
 
-    public void setFechaEdit(Date fechaEdit) {
+    public void setFechaEdit(LocalDate fechaEdit) {
         this.fechaEdit = fechaEdit;
     }
 
@@ -99,7 +100,7 @@ public class ResenhaEntidad {
         this.estadoResenhaType = estadoResenhaType;
     }
 
-    public ResenhaEntidad(long id, long usuaroId, long nombreJuegoId, boolean recomendado, String texto, Date fechaPublicacion, Date fechaEdit, EstadoResenhaType estadoResenhaType) {
+    public ResenhaEntidad(long id, long usuaroId, long nombreJuegoId, boolean recomendado, String texto, LocalDate fechaPublicacion, LocalDate fechaEdit, EstadoResenhaType estadoResenhaType) {
         this.id = id;
         this.usuaroId = usuaroId;
         this.nombreJuegoId = nombreJuegoId;
