@@ -49,7 +49,7 @@ public class TestBiblioteca {
 
         juegoValido = jr.crear(new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
                 "MembrilloGames",  LocalDate.of(12 ,4 ,9), 15.75, 0,
-                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION)).get();
     }
 
     // =====================================================

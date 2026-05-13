@@ -105,4 +105,18 @@ public class CompraEntidad {
         this.estadoCompraType = estadoCompraType;
         this.descuento = descuento;
     }
+
+    @Override
+    public String toString() {
+        return "CompraEntidad{" +
+                "id=" + id +
+                ", idUsuario=" + idUsuario +
+                ", idJuego=" + idJuego +
+                ", fechaCompra=" + fechaCompra +
+                ", metodoPagoType=" + metodoPagoType +
+                ", precio=" + precio +
+                ", descuento=" + descuento +
+                ", estadoCompraType=" + estadoCompraType +
+                '}';
+    }
 }

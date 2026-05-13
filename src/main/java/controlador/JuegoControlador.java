@@ -182,7 +182,7 @@ public class JuegoControlador {
 
     public JuegoDto cambiarEstado(Long id, EstadoJuegoType nuevoEstado) throws ValidationException {
 
-        JuegoEntidad juego = repo.obtenerPorId(id).get();
+        JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
         List<ErrorDto> errores = new ArrayList<>();
         if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));

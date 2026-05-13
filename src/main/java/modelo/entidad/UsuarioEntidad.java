@@ -145,4 +145,22 @@ public class UsuarioEntidad {
         this.saldo = saldo;
         this.estadoType = estadoType;
     }
+
+    @Override
+    public String toString() {
+        return "UsuarioEntidad{" +
+                "id=" + id +
+                ", nombreUsuario='" + nombreUsuario + '\'' +
+                ", email='" + email + '\'' +
+                ", contrasena='" + contrasena + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", fechaRegistro=" + fechaRegistro +
+                ", avatar='" + avatar + '\'' +
+                ", saldo=" + saldo +
+                ", pais='" + pais + '\'' +
+                ", estadoType=" + estadoType +
+                '}';
+    }
 }

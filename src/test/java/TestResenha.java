@@ -48,7 +48,7 @@ public class TestResenha {
 
     JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
             "MembrilloGames", LocalDate.of(2015 , 4 , 12), 15.75, 0,
-            ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+            ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION)).get();
 
     BibliotecaEntidad bibliotecaValida=br.crear(new BibliotecaForm(usuarioValido.getId(),juegoValido.getId(),0)).get();
     // =====================================================
@@ -134,7 +134,8 @@ public class TestResenha {
                 0,
                 ClasificacionType.PEGI_7,
                 List.of( "Español" ),
-                EstadoJuegoType.DISPONIBLE));
+                EstadoJuegoType.DISPONIBLE
+                , CategoriaType.ACCION));
 
         // El usuario no tiene este juego en su biblioteca
         assertThrows(ValidationException.class,

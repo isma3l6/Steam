@@ -45,7 +45,7 @@ public class TestCompra {
 
       JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
               "MembrilloGames", LocalDate.of(12 , 4 , 9), 15.75, 0,
-              ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE)).get();
+              ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION)).get();
 
       CompraEntidad compraValida=cr.crear(new CompraForm(
               usuarioValido.getId(),
@@ -147,7 +147,7 @@ public class TestCompra {
     public void realizarCompra_JuegoEnPreventa_Permitido() throws ValidationException {
         var juegoEnPreventa = jr.crear( new JuegoForm("Pepe el cazdor", "El cazador se llama Pepe",
                 "MembrilloGames", LocalDate.of(12 , 4 , 9), 15.75, 0,
-                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.PREVENTA)).get();
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.PREVENTA, CategoriaType.ACCION)).get();
 
 
         var compra = compraController.realizarCompra(new CompraForm(
@@ -164,7 +164,7 @@ public class TestCompra {
     public void realizarCompra_JuegoEnAccesoAnticipado_Permitido() throws ValidationException {
         var juegoAccesoAnticipado = jr.crear(   new JuegoForm("Pepe el cador", "El cazador se llama Pepe",
                 "MembrilloGames", LocalDate.of(12 , 4 , 9), 15.75, 0,
-                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.PREVENTA)).get();
+                ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.PREVENTA, CategoriaType.ACCION)).get();
 
 
         var compra = compraController.realizarCompra(new CompraForm(

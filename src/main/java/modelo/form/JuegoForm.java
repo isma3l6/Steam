@@ -1,5 +1,6 @@
 package modelo.form;
 
+import modelo.entidad.CategoriaType;
 import modelo.entidad.ClasificacionType;
 import modelo.entidad.EstadoJuegoType;
 
@@ -19,6 +20,7 @@ public class JuegoForm {
     private ClasificacionType clasificaionEdad;
     private List<String> idiomas;
     private EstadoJuegoType estadoJuego;
+    private CategoriaType categoria;
 
     public JuegoForm(String titulo, EstadoJuegoType estadoJuego) {
         this.titulo = titulo;
@@ -30,7 +32,7 @@ public class JuegoForm {
         this.porcentajeDescuento = porcentajeDescuento;
     }
 
-    public JuegoForm(String titulo, String descripcion, String desarrollador, LocalDate fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego) {
+    public JuegoForm(String titulo, String descripcion, String desarrollador, LocalDate fechaLanzamiento, double precioBase, int porcentajeDescuento, ClasificacionType clasificaionEdad, List<String> idiomas, EstadoJuegoType estadoJuego, CategoriaType categoria) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.desarrollador = desarrollador;
@@ -40,6 +42,7 @@ public class JuegoForm {
         this.clasificaionEdad = clasificaionEdad;
         this.idiomas = idiomas;
         this.estadoJuego = estadoJuego;
+        this.categoria=categoria;
     }
 
     public List<ErrorDto> validarJuego() {
@@ -82,7 +85,7 @@ public class JuegoForm {
         if (precioBase < 0) {
             errores.add(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_BAJO));
         }
-        if (precioBase > 1000) {
+        if (precioBase > 999.99) {
             errores.add(new ErrorDto("precio base", ErrorType.VALOR_DEMASIADO_ALTO));
         }
 
@@ -96,15 +99,18 @@ public class JuegoForm {
         if (clasificaionEdad == null) {
             errores.add(new ErrorDto("clasificacion", ErrorType.REQUERIDO));
         }
-        //que sea de la lista
+        //categoria
+        if (categoria == null) {
+            errores.add(new ErrorDto("categoria", ErrorType.REQUERIDO));
+        }
 
         //idioma
         if (idiomas == null) {
             idiomas = List.of();
         }
-        //if (idiomas.isEmpty()) {
-        //   errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
-        //}
+        if (idiomas.isEmpty()) {
+           errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
+        }
 
         if (!idiomas.isEmpty()&&idiomas.stream().toString().length() > 200) {
             errores.add(new ErrorDto("idioma", ErrorType.VALOR_DEMASIADO_ALTO));

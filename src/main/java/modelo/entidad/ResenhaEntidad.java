@@ -110,4 +110,19 @@ public class ResenhaEntidad {
         this.fechaEdit = fechaEdit;
         this.estadoResenhaType = estadoResenhaType;
     }
+
+    @Override
+    public String toString() {
+        return "ResenhaEntidad{" +
+                "id=" + id +
+                ", usuaroId=" + usuaroId +
+                ", nombreJuegoId=" + nombreJuegoId +
+                ", recomendado=" + recomendado +
+                ", texto='" + texto + '\'' +
+                ", fechaPublicacion=" + fechaPublicacion +
+                ", fechaEdit=" + fechaEdit +
+                ", estadoResenhaType=" + estadoResenhaType +
+                ", horasJugadas=" + horasJugadas +
+                '}';
+    }
 }
