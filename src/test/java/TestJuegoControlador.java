@@ -734,7 +734,7 @@ public class TestJuegoControlador {
     // =====================================================
 
     @Test
-    public void listarCatalogo_SinJuegos_RetornaListaVacia() {
+    public void listarCatalogo_SinJuegos_RetornaListaVacia() throws ValidationException {
         var catalogo = jc.catalogoCompleto(0);
 
         assertNotNull(catalogo);

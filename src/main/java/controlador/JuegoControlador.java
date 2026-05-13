@@ -1,11 +1,13 @@
 package controlador;
 
 import excepciones.ValidationException;
+import jakarta.transaction.TransactionManager;
 import mapper.JuegoMapper;
 import modelo.dto.JuegoDto;
 import modelo.entidad.*;
 import modelo.form.*;
 import repositorio.interfaz.IJuegoRepo;
+import transaction.ITransactionManager;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -15,9 +17,11 @@ import static java.util.Arrays.sort;
 public class JuegoControlador {
 
     private final IJuegoRepo repo;
+    public ITransactionManager transactionManager;
 
-    public JuegoControlador(IJuegoRepo repo) {
+    public JuegoControlador(IJuegoRepo repo, ITransactionManager transactionManager) {
         this.repo = repo;
+        this.transactionManager = transactionManager;
     }
 
 
@@ -30,23 +34,21 @@ public class JuegoControlador {
         if (!errores.isEmpty()) {
             throw new ValidationException(errores);
         }
-        if(repo.obtenerTodos().stream().anyMatch(j->j.getTitulo().equals(form.getTitulo()))) {
-            errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
-            throw new ValidationException(errores);
-        }
-        JuegoEntidad juego = repo.crear(form).get();
+        var juegoCreado = transactionManager.inTransaction(() -> {
+            if (repo.obtenerTodos().stream().anyMatch(j -> j.getTitulo().equals(form.getTitulo()))) {
+                errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
+                throw new ValidationException(errores);
+            }
+            JuegoEntidad juego = repo.crear(form).orElse(null);
+            return juego;
+        });
 
-
-        JuegoEntidad juegoAnadido = repo.obtenerPorId(juego.getId()).get();
-
-
-        return JuegoMapper.toDTO(juegoAnadido);
+        return JuegoMapper.toDTO(juegoCreado);
     }
 
 
     //BUSCAR JUEGOS
-    //todo
-    //Añadir formBusquda
+
 
     public List<JuegoDto> buscar(
             String texto,
@@ -55,87 +57,91 @@ public class JuegoControlador {
             Double precioMax,
             ClasificacionType clasificacion,
             EstadoJuegoType estado
-    ) {
+    ) throws ValidationException {
+        var resultados = transactionManager.inTransaction(() -> {
+            List<JuegoEntidad> juegos = repo.obtenerTodos();
+            List<JuegoDto> resultado = new ArrayList<>();
 
-        List<JuegoEntidad> juegos = repo.obtenerTodos();
-        List<JuegoDto> resultado = new ArrayList<>();
+            for (JuegoEntidad j : juegos) {
 
-        for (JuegoEntidad j : juegos) {
+                if (j == null) continue;
 
-            if (j == null) continue;
+                if (texto != null &&
+                        !j.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
+                    continue;
+                }
 
-            if (texto != null &&
-                    !j.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
-                continue;
+                if (categoria != null &&
+                        j.getCategoriaType() != categoria) {
+                    continue;
+                }
+
+                if (precioMin != null &&
+                        j.getPrecioBase() < precioMin) {
+                    continue;
+                }
+
+                if (precioMax != null &&
+                        j.getPrecioBase() > precioMax) {
+                    continue;
+                }
+
+                if (clasificacion != null &&
+                        j.getClasificacionType() != clasificacion) {
+                    continue;
+                }
+
+                if (estado != null &&
+                        j.getEstadoJuegoType() != estado) {
+                    continue;
+                }
+                resultado.add(JuegoMapper.toDTO(j));
             }
-
-            if (categoria != null &&
-                    j.getCategoriaType() != categoria) {
-                continue;
-            }
-
-            if (precioMin != null &&
-                    j.getPrecioBase() < precioMin) {
-                continue;
-            }
-
-            if (precioMax != null &&
-                    j.getPrecioBase() > precioMax) {
-                continue;
-            }
-
-            if (clasificacion != null &&
-                    j.getClasificacionType() != clasificacion) {
-                continue;
-            }
-
-            if (estado != null &&
-                    j.getEstadoJuegoType() != estado) {
-                continue;
-            }
-            resultado.add(JuegoMapper.toDTO(j));
-        }
-
-        return resultado;
+            return resultado;
+        });
+        return resultados;
     }
 
 
     //CONSULTAR CATÁLOGO COMPLETO (PAGINADO)
 
-    public List<JuegoDto> catalogoCompleto(int orden) {
+    public List<JuegoDto> catalogoCompleto(int orden) throws ValidationException {
 
-       List<JuegoEntidad> juegosArray = repo.obtenerTodos();
+        List<JuegoDto> resultado = transactionManager.inTransaction(() -> {
+            List<JuegoEntidad> juegosArray = repo.obtenerTodos();
 
 
-        List<JuegoDto> resultados = new ArrayList<>();
-        for (JuegoEntidad j : juegosArray) {
-            if (j != null) {
-                resultados.add(JuegoMapper.toDTO(j));
+            List<JuegoDto> resultados = new ArrayList<>();
+            for (JuegoEntidad j : juegosArray) {
+                if (j != null) {
+                    resultados.add(JuegoMapper.toDTO(j));
+                }
             }
-        }
+            return resultados;
+        });
+
 
 
         // ORDEN
-
 
 
         switch (orden) {
 
             //alfabeticamente
             case 1:
-                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getTitulo)).toList();
+                return resultado.stream().sorted(Comparator.comparing(JuegoDto::getTitulo)).toList();
 
 
             //precio
             case 2:
-                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getPrecioBase)).toList();
+                return resultado.stream().sorted(Comparator.comparing(JuegoDto::getPrecioBase)).toList();
 
 
             //fecha
             case 3:
-                return resultados.stream().sorted(Comparator.comparing(JuegoDto::getFechaLanzamiento)).toList();
+                return resultado.stream().sorted(Comparator.comparing(JuegoDto::getFechaLanzamiento)).toList();
             default:
-                return resultados;
+                return resultado;
         }
 
 
@@ -146,10 +152,10 @@ public class JuegoControlador {
 
     public JuegoDto detallesJuego(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
+        var juego = transactionManager.inTransaction(()-> repo.obtenerPorId(id).orElse(null));
 
-        JuegoEntidad juego = repo.obtenerPorId(id).get();
 
-        if (juego ==null) {
+        if (juego == null) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
@@ -171,8 +177,7 @@ public class JuegoControlador {
         }
 
 
-
-        return  juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
+        return juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
 
 
     }
@@ -194,6 +199,7 @@ public class JuegoControlador {
 
         return JuegoMapper.toDTO(actualizado);
     }
+
     public JuegoDto ActualizarPorcentajeDescuento(Long id, int nuevoPrecio) throws ValidationException {
         JuegoEntidad juego = repo.obtenerPorId(id).orElse(null);
         List<ErrorDto> errores = new ArrayList<>();
