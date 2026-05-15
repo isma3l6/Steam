@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import modelo.entidad.CategoriaType;
+import modelo.entidad.EstadoJuegoType;
 import modelo.entidad.JuegoEntidad;
 import modelo.form.JuegoForm;
 import repositorio.interfaz.IJuegoRepo;
@@ -16,7 +17,8 @@ import java.util.Optional;
 public class JuegoHibernate implements IJuegoRepo {
     private  ISesionManager sesionManager;
 
-    public void JuegoRepoHibernate (ISesionManager sesionManager) {
+
+    public JuegoHibernate (ISesionManager sesionManager) {
         this.sesionManager = sesionManager;
 
     }
@@ -24,7 +26,7 @@ public class JuegoHibernate implements IJuegoRepo {
     @Override
     public Optional<JuegoEntidad> crear(JuegoForm form) {
         var session = sesionManager.getSession();
-        JuegoEntidad nuevo = new JuegoEntidad(-1l,
+        JuegoEntidad nuevo = new JuegoEntidad(null,
                 form.getTitulo(),
                 form.getDesarrollador(),
                 form.getDescripcion(),
@@ -33,7 +35,7 @@ public class JuegoHibernate implements IJuegoRepo {
                 CategoriaType.ACCION, // puedes adaptar si viene en form
                 form.getPorcentajeDescuento(),
                 form.getClasificaionEdad(),
-                form.getEstadoJuego()
+                EstadoJuegoType.DISPONIBLE
         );
         session.persist(nuevo);
         return Optional.of(nuevo);

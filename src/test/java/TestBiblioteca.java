@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import repositorio.inmemory.BibliotecaRepoInMemory;
 import repositorio.inmemory.JuegoRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
+import transaction.ITransactionManager;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -27,13 +28,16 @@ public class TestBiblioteca {
     JuegoEntidad juegoValido;
     private BibliotecaRepoInMemory br;
     private BibliotecaControlador bibliotecaController;
+    public ITransactionManager transactionManager;
 
     @BeforeEach
     public void setUp() {
         ur = new UsuarioRepoInMemory();
         jr = new JuegoRepoInMemory();
         br = new BibliotecaRepoInMemory();
-        juegoController = new JuegoControlador(jr);
+
+
+        juegoController = new JuegoControlador(jr,transactionManager);
         usuarioController = new UsuarioControlador(ur);
         bibliotecaController = new BibliotecaControlador(br, jr, ur);
         usuarioValido = ur.crear(new UsuarioForm("nuevo",

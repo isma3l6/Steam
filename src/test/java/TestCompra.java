@@ -22,13 +22,15 @@ import org.junit.jupiter.api.Test;
 import repositorio.inmemory.CompraRepoInMemory;
 import repositorio.inmemory.JuegoRepoInMemory;
 import repositorio.inmemory.UsuarioRepoInMemory;
+import transaction.ITransactionManager;
 
 
 public class TestCompra {
  private UsuarioRepoInMemory ur=new UsuarioRepoInMemory();
     private UsuarioControlador usuarioController=new UsuarioControlador(ur);
     private JuegoRepoInMemory jr=new JuegoRepoInMemory();
-    private JuegoControlador juegoController=new JuegoControlador(jr);
+    public ITransactionManager transactionManager;
+    private JuegoControlador juegoController=new JuegoControlador(jr,transactionManager);
     private CompraRepoInMemory cr=new CompraRepoInMemory();
     private CompraControlador compraController=new CompraControlador(cr,ur,jr);
 

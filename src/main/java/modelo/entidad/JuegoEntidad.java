@@ -125,6 +125,8 @@ public class JuegoEntidad {
         this.estadoJuegoType = estadoJuegoType;
     }
 
+    public JuegoEntidad(){}
+
    /** public JuegoEntidad(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, CategoriaType categoriaType, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
         this.titulo = titulo;
         this.descripcion = descripcion;

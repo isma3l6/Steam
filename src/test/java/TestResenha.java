@@ -9,6 +9,7 @@ import modelo.form.UsuarioForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repositorio.inmemory.*;
+import transaction.ITransactionManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,7 +30,9 @@ public class TestResenha {
     private UsuarioRepoInMemory ur=new UsuarioRepoInMemory();
     private UsuarioControlador usuarioController=new UsuarioControlador(ur);
     private JuegoRepoInMemory jr=new JuegoRepoInMemory();
-    private JuegoControlador juegoController=new JuegoControlador(jr);
+    public ITransactionManager transactionManager;
+
+    private JuegoControlador juegoController=new JuegoControlador(jr, transactionManager);
     private BibliotecaRepoInMemory br=new BibliotecaRepoInMemory();
     private BibliotecaControlador bibliotecaControlador=new BibliotecaControlador(br,jr,ur);
     private ResenhaRepoInMemory rr=new ResenhaRepoInMemory();

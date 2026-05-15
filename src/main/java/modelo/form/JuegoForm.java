@@ -106,13 +106,13 @@ public class JuegoForm {
 
         //idioma
         if (idiomas == null) {
-            idiomas = List.of();
+
         }
-        if (idiomas.isEmpty()) {
+        else if (idiomas.isEmpty()) {
            errores.add(new ErrorDto("idiomas", ErrorType.FORMATO_INVALIDO));
         }
 
-        if (!idiomas.isEmpty()&&idiomas.stream().toString().length() > 200) {
+        else if (!idiomas.isEmpty()&&idiomas.stream().toString().length() > 200) {
             errores.add(new ErrorDto("idioma", ErrorType.VALOR_DEMASIADO_ALTO));
         }
         //estado
