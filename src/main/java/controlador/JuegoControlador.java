@@ -36,7 +36,7 @@ public class JuegoControlador {
                 errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
                 throw new ValidationException(errores);
             }
-            return  repo.crear(form).orElse(null);
+            return repo.crear(form).orElse(null);
         });
 
         return JuegoMapper.toDTO(juegoCreado);
@@ -119,7 +119,6 @@ public class JuegoControlador {
         });
 
 
-
         // ORDEN
 
 
@@ -150,7 +149,7 @@ public class JuegoControlador {
 
     public JuegoDto detallesJuego(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var juego = transactionManager.inTransaction(()-> repo.obtenerPorId(id).orElse(null));
+        var juego = transactionManager.inTransaction(() -> repo.obtenerPorId(id).orElse(null));
 
 
         if (juego == null) {
@@ -166,17 +165,23 @@ public class JuegoControlador {
 
     public Double aplicarDescuento(Long id) throws ValidationException {
         List<ErrorDto> errores = new ArrayList<>();
-        var juego = transactionManager.inTransaction(()-> repo.obtenerPorId(id).orElse(null));
 
-
-
-        if (juego == null) {
+        //var juego = transactionManager.inTransaction(() -> repo.obtenerPorId(id).orElse(null));
+        try {
+            var juego = transactionManager.inTransaction(() -> repo.obtenerPorId(id).orElse(null));
+            return juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
+        } catch (NullPointerException e) {
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
 
+/**
+ if (juego == null) {
+ errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+ throw new ValidationException(errores);
+ }*/
 
-        return juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
+       // return juego.getPrecioBase() * (juego.getProcentajeDescuento() / 100);
 
 
     }
@@ -185,28 +190,41 @@ public class JuegoControlador {
     //CAMBIAR ESTADO DEL JUEGO
 
     public JuegoDto cambiarEstado(Long id, EstadoJuegoType nuevoEstado) throws ValidationException {
-        var juego = transactionManager.inTransaction(()-> repo.obtenerPorId(id).orElse(null));
-
         List<ErrorDto> errores = new ArrayList<>();
-        if (juego == null) {
-            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+        try{
+
+            var juego = transactionManager.inTransaction(() -> repo.obtenerPorId(id).orElse(null));
+
+
+
+            if (juego == null) {
+                errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+                throw new ValidationException(errores);
+            }
+
+            juego.setEstadoJuegoType(nuevoEstado);
+
+            var actualizado = transactionManager.inTransaction(() -> repo.actualizar(juego.getId()
+                    , new JuegoForm(juego.getTitulo()
+                            , juego.getEstadoJuegoType())).orElse(null));
+
+
+            if (actualizado == null) {
+                errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+                throw new ValidationException(errores);
+            }
+
+
+            return JuegoMapper.toDTO(actualizado);
+        }
+        catch (NullPointerException e){
+            errores.add(new ErrorDto("juego",ErrorType.NO_ENCONTRADO));
             throw new ValidationException(errores);
         }
-
-        juego.setEstadoJuegoType(nuevoEstado);
-
-        var actualizado = transactionManager.inTransaction(()-> repo.actualizar(juego.getId()
-                , new JuegoForm(juego.getTitulo()
-                        , juego.getEstadoJuegoType())).orElse(null));
-
-
-
-
-        return JuegoMapper.toDTO(actualizado);
     }
 
     public JuegoDto ActualizarPorcentajeDescuento(Long id, int nuevoPrecio) throws ValidationException {
-        var juego = transactionManager.inTransaction(()-> repo.obtenerPorId(id).orElse(null));
+        var juego = transactionManager.inTransaction(() -> repo.obtenerPorId(id).orElse(null));
 
 
         List<ErrorDto> errores = new ArrayList<>();
@@ -216,7 +234,7 @@ public class JuegoControlador {
         }
         juego.setProcentajeDescuento(nuevoPrecio);
 
-        var actualizado =transactionManager.inTransaction(()-> repo.actualizar(juego.getId(),
+        var actualizado = transactionManager.inTransaction(() -> repo.actualizar(juego.getId(),
                 new JuegoForm(juego.getTitulo(), juego.getProcentajeDescuento())).orElse(null));
 
         return JuegoMapper.toDTO(actualizado);

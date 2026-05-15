@@ -96,4 +96,9 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return juegos.remove(juegos.stream().filter(j -> j.getId() == id).findFirst().get());
 
     }
+
+    @Override
+    public Optional<JuegoEntidad> obtenerTitulo(String titulo) {
+        return Optional.empty();
+    }
 }

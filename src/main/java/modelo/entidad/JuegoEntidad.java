@@ -127,15 +127,7 @@ public class JuegoEntidad {
 
     public JuegoEntidad(){}
 
-   /** public JuegoEntidad(String titulo, String descripcion, String desarrollador, Date fechaLanzamiento, CategoriaType categoriaType, ClasificacionType clasificacionType, EstadoJuegoType estadoJuegoType) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.desarrollador = desarrollador;
-        this.fechaLanzamiento = fechaLanzamiento;
-        this.categoriaType = categoriaType;
-        this.clasificacionType = clasificacionType;
-        this.estadoJuegoType = estadoJuegoType;
-    }*/
+
 
     @Override
     public String toString() {

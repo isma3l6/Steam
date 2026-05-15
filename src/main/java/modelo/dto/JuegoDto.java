@@ -50,7 +50,8 @@ public class JuegoDto {
     //categoria, clasificacion y Estado ponerlo como enum
     private CategoriaType categoria;
 
-    public JuegoDto(String titulo, String desarrollador, LocalDate fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria, EstadoJuegoType estadoJuego) {
+    public JuegoDto(Long id, String titulo, String desarrollador, LocalDate fechaLanzamiento, double precioBase, double procentajeDescuento, CategoriaType categoria, EstadoJuegoType estadoJuego) {
+       this.id=id;
         this.titulo = titulo;
         this.desarrollador = desarrollador;
         this.fechaLanzamiento = fechaLanzamiento;

@@ -93,6 +93,17 @@ public class JuegoHibernate implements IJuegoRepo {
         }
 
     }
+    @Override
+    public Optional<JuegoEntidad> obtenerTitulo(String titulo) {
+        var session = sesionManager.getSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<JuegoEntidad> cq = cb.createQuery(JuegoEntidad.class);
+        Root<JuegoEntidad> root = cq.from(JuegoEntidad.class);
+
+        cq.select(root).where(cb.equal(root.get("titulo"), titulo));
+
+        return session.createQuery(cq).getResultStream().findFirst();
+    }
 
 
 }

@@ -17,4 +17,6 @@ public interface IJuegoRepo {
     Optional<JuegoEntidad> actualizar(long id, JuegoForm form);
 
     boolean eliminar(long id);
+
+    Optional<JuegoEntidad> obtenerTitulo(String titulo);
 }

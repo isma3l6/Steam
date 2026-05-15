@@ -20,6 +20,7 @@ import transaction.ITransactionManager;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,10 +94,10 @@ public class TestJuegoControlador {
 
     //Nombre
     @Test
-    public void testNoCreaNombreDuplicado() {
+    public void testNoCreaNombreDuplicado() throws ValidationException {
 
         var jValido = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe", "MembrilloGames", LocalDate.of(2030, 4, 12), 15.75, 0, ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION);
-        var ej = repo.crear(jValido);
+        var ej = jc.anadirJuego(jValido);
 
         try {
 
@@ -300,8 +301,8 @@ public class TestJuegoControlador {
     @Test
     public void testAplicarDescuento() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe", "MembrilloGames", LocalDate.of(2015, 4, 12), 5, 0, ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION);
-        JuegoEntidad juego = repo.crear(j).get();
-        Double juegoDescuento = jc.aplicarDescuento(juego.getId());
+        var juego = jc.anadirJuego(j);
+        Double juegoDescuento = jc.aplicarDescuento(88L);
         assertEquals(j.getPorcentajeDescuento() * (j.getPrecioBase() / 100), juegoDescuento);
     }
 
@@ -309,9 +310,9 @@ public class TestJuegoControlador {
     public void testCambiarEstado() throws ValidationException {
         JuegoForm j = new JuegoForm("Pepe el cazador", "El cazador se llama Pepe", "MembrilloGames", LocalDate.of(2015, 4, 12), 5, 0, ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION);
 
-        JuegoEntidad juego = repo.crear(j).get();
+        var juego = jc.anadirJuego(j);
 
-        var result = jc.cambiarEstado(juego.getId(), EstadoJuegoType.NO_DISPONIBLE);
+        var result = jc.cambiarEstado(90L, EstadoJuegoType.NO_DISPONIBLE);
 
         assertEquals(EstadoJuegoType.NO_DISPONIBLE, result.getEstado());
 
@@ -582,9 +583,9 @@ public class TestJuegoControlador {
 
     @Test
     public void aplicarDescuento_IdValido_DescuentoValido_RetornaJuegoActualizado() throws ValidationException {
-        var juego = repo.crear(validForm).get();
+        var juego = jc.anadirJuego(validForm);
 
-        var actualizado = jc.aplicarDescuento(juego.getId());
+        var actualizado = jc.aplicarDescuento(85L);
 
         assertNotNull(actualizado);
         assertEquals(juego.getPrecioBase() * juego.getProcentajeDescuento() / 100, actualizado, 0.001);
@@ -599,7 +600,7 @@ public class TestJuegoControlador {
     public void aplicarDescuento_DescuentoFueraDeRango_LanzaValidationException() throws ValidationException {
         var juego = jc.anadirJuego(validForm);
 
-        assertThrows(ValidationException.class, () -> jc.aplicarDescuento(juego.getId())); // supera el máximo
+        assertThrows(ValidationException.class, () -> jc.aplicarDescuento(000L)); // supera el máximo
     }
 
     // =====================================================
@@ -608,9 +609,10 @@ public class TestJuegoControlador {
 
     @Test
     public void cambiarEstado_IdValido_EstadoValido_RetornaJuegoConNuevoEstado() throws ValidationException {
-        var juego = repo.crear(validForm).get();
+        var juego = jc.anadirJuego(validForm);
 
-        var actualizado = jc.cambiarEstado(juego.getId(), EstadoJuegoType.NO_DISPONIBLE);
+
+        var actualizado = jc.cambiarEstado(89L, EstadoJuegoType.NO_DISPONIBLE);
 
         assertNotNull(actualizado);
         assertEquals(EstadoJuegoType.NO_DISPONIBLE, actualizado.getEstado());
