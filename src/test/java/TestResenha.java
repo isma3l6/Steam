@@ -26,19 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestResenha {
 
     private static final String TEXTO_VALIDO = "Este juego es increíble, una obra maestra del género que todo aficionado debería jugar.";
-
-    private UsuarioRepoInMemory ur=new UsuarioRepoInMemory();
-    private UsuarioControlador usuarioController=new UsuarioControlador(ur);
-    private JuegoRepoInMemory jr=new JuegoRepoInMemory();
     public ITransactionManager transactionManager;
+    private UsuarioRepoInMemory ur = new UsuarioRepoInMemory();
+    private UsuarioControlador usuarioController = new UsuarioControlador(ur, transactionManager);
+    private JuegoRepoInMemory jr = new JuegoRepoInMemory();
+    private JuegoControlador juegoController = new JuegoControlador(jr, transactionManager);
+    private BibliotecaRepoInMemory br = new BibliotecaRepoInMemory();
+    private BibliotecaControlador bibliotecaControlador = new BibliotecaControlador(br, jr, ur);
+    private ResenhaRepoInMemory rr = new ResenhaRepoInMemory();
+    private ResenhaControlador resenaController = new ResenhaControlador(rr, br, ur, jr);
 
-    private JuegoControlador juegoController=new JuegoControlador(jr, transactionManager);
-    private BibliotecaRepoInMemory br=new BibliotecaRepoInMemory();
-    private BibliotecaControlador bibliotecaControlador=new BibliotecaControlador(br,jr,ur);
-    private ResenhaRepoInMemory rr=new ResenhaRepoInMemory();
-    private ResenhaControlador resenaController=new ResenhaControlador(rr,br,ur,jr);
-
-    UsuarioEntidad usuarioValido=ur.crear(new UsuarioForm("nuevo",
+    UsuarioEntidad usuarioValido = ur.crear(new UsuarioForm("nuevo",
             "mail",
             "Pass12345",
             "nom",
@@ -49,18 +47,17 @@ public class TestResenha {
             1000)).get();
 
 
-    JuegoEntidad juegoValido = jr.crear(  new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
-            "MembrilloGames", LocalDate.of(2015 , 4 , 12), 15.75, 0,
+    JuegoEntidad juegoValido = jr.crear(new JuegoForm("Pepe el cazador", "El cazador se llama Pepe",
+            "MembrilloGames", LocalDate.of(2015, 4, 12), 15.75, 0,
             ClasificacionType.PEGI_12, List.of("español", "ingles"), EstadoJuegoType.DISPONIBLE, CategoriaType.ACCION)).get();
 
-    BibliotecaEntidad bibliotecaValida=br.crear(new BibliotecaForm(usuarioValido.getId(),juegoValido.getId(),0)).get();
+    BibliotecaEntidad bibliotecaValida = br.crear(new BibliotecaForm(usuarioValido.getId(), juegoValido.getId(), 0)).get();
     // =====================================================
     // Crear reseña
     // =====================================================
 
 
-
- @Test
+    @Test
     public void crearResena_FormularioValido_RetornaResenaDTO() throws ValidationException {
         var resena = resenaController.escribirResenha(new ResenhaForm(
                 usuarioValido.getId(),
@@ -136,7 +133,7 @@ public class TestResenha {
                 19.99,
                 0,
                 ClasificacionType.PEGI_7,
-                List.of( "Español" ),
+                List.of("Español"),
                 EstadoJuegoType.DISPONIBLE
                 , CategoriaType.ACCION));
 
@@ -161,7 +158,7 @@ public class TestResenha {
                         true,
                         TEXTO_VALIDO,
                         0.0
-                        )));
+                )));
     }
 
     @Test
@@ -234,7 +231,7 @@ public class TestResenha {
         resenaController.eliminarResenha(resena.getId(), usuarioValido.getId());
 
         // Tras eliminar, la reseña no debe aparecer en el listado del juego
-        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(), "", "");
         assertTrue(resenas.stream().noneMatch(r -> r.getId() == resena.getId()));
     }
 
@@ -282,7 +279,7 @@ public class TestResenha {
                 TEXTO_VALIDO,
                 0.0));
 
-        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(), "", "");
 
         assertNotNull(resenas);
         assertFalse(resenas.isEmpty());
@@ -291,7 +288,7 @@ public class TestResenha {
 
     @Test
     public void listarResenasJuego_JuegoSinResenas_RetornaListaVacia() throws ValidationException {
-        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(), "", "");
 
         assertNotNull(resenas);
         assertTrue(resenas.isEmpty());
@@ -300,7 +297,7 @@ public class TestResenha {
     @Test
     public void listarResenasJuego_JuegoInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.verResenasPorJuego(9999L,"","")); // juego no existe
+                () -> resenaController.verResenasPorJuego(9999L, "", "")); // juego no existe
     }
 
     // =====================================================
@@ -319,7 +316,7 @@ public class TestResenha {
         resenaController.ocultarResenha(resena.getId(), usuarioValido.getId());
 
         // Una reseña oculta no debe aparecer en el listado público del juego
-        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(),"","");
+        var resenas = resenaController.verResenasPorJuego(juegoValido.getId(), "", "");
         assertTrue(resenas.stream().noneMatch(r -> r.getId() == resena.getId()));
     }
 
@@ -347,7 +344,7 @@ public class TestResenha {
                 "España",
                 LocalDate.now().minusYears(25),
                 null
-        ,0));
+                , 0));
 
         assertThrows(ValidationException.class,
                 () -> resenaController.ocultarResenha(resena.getId(), otroUsuario.getId()));
@@ -365,9 +362,9 @@ public class TestResenha {
                 true,
                 TEXTO_VALIDO,
                 0.0
-                ));
+        ));
 
-        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(),"");
+        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(), "");
 
         assertNotNull(resenas);
         assertFalse(resenas.isEmpty());
@@ -376,7 +373,7 @@ public class TestResenha {
 
     @Test
     public void listarResenasPorUsuario_UsuarioSinResenas_RetornaListaVacia() throws ValidationException {
-        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(),"");
+        var resenas = resenaController.verResenasPorUsuario(usuarioValido.getId(), "");
 
         assertNotNull(resenas);
         assertTrue(resenas.isEmpty());
@@ -385,6 +382,6 @@ public class TestResenha {
     @Test
     public void listarResenasPorUsuario_UsuarioInexistente_LanzaValidationException() {
         assertThrows(ValidationException.class,
-                () -> resenaController.verResenasPorUsuario(9999L,"")); // usuario no existe
+                () -> resenaController.verResenasPorUsuario(9999L, "")); // usuario no existe
     }
 }

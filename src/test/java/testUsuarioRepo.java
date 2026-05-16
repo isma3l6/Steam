@@ -1,9 +1,21 @@
+import controlador.JuegoControlador;
 import controlador.UsuarioControlador;
 import excepciones.ValidationException;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import modelo.entidad.JuegoEntidad;
+import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import repositorio.hibernate.JuegoHibernate;
+import repositorio.hibernate.UsuarioHibernate;
 import repositorio.inmemory.UsuarioRepoInMemory;
+import repositorio.interfaz.IJuegoRepo;
+import repositorio.interfaz.IUsuarioRepo;
+import transaction.HibernateTransactionManager;
+import transaction.ISesionManager;
+import transaction.ITransactionManager;
 
 import java.time.LocalDate;
 
@@ -11,8 +23,9 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class testUsuarioRepo {
-    private final UsuarioRepoInMemory repo = new UsuarioRepoInMemory();
-    private final UsuarioControlador uc = new UsuarioControlador(repo);
+    public IUsuarioRepo repo;
+    public ITransactionManager transactionManager;
+    private UsuarioControlador uc;
     LocalDate localDate = LocalDate.of(12, 12, 12);
 
     UsuarioForm validForm = new UsuarioForm("nuevo",
@@ -21,17 +34,37 @@ public class testUsuarioRepo {
             "nom",
             "apel",
             "pais",
-            LocalDate.of(2026, 04, 24),
+            LocalDate.of(2026, 4, 24),
             "avtydrr",
             1000);
 
-    @Test
-    public void pruebaanadir() {
-        var res = repo.crear(validForm).get();
-        var b = repo.obtenerPorId(res.getId()).get();
-        assertEquals(res, b);
+    @BeforeEach
+    void setUp() {
 
+        transactionManager = new HibernateTransactionManager();
+        repo = new UsuarioHibernate((ISesionManager) transactionManager);
+
+        uc = new UsuarioControlador(repo, transactionManager);
+
+        try {
+            transactionManager.inTransaction(() -> {
+                var session = ((ISesionManager) transactionManager).getSession();
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                var deleteUsuario = criteriaBuilder.createCriteriaDelete(UsuarioEntidad.class);
+
+                session.createMutationQuery(deleteUsuario).executeUpdate();
+
+
+                return null;
+            });
+        } catch (ValidationException e) {
+            System.out.println("No se pudo borrar");
+            e.printStackTrace();
+            throw new RuntimeException("No se pudo borrar");
+        }
     }
+
+
 
     @Test
     public void pruebaanadirdesdecontrolador() throws ValidationException {
@@ -45,30 +78,28 @@ public class testUsuarioRepo {
 
     @Test
     public void consultarPerfil() throws ValidationException {
-        var a = repo.crear(validForm);
-        repo.crear(new UsuarioForm("nu242", "mail", "Pass1234", "nom", "apel", "España", LocalDate.of(12, 11, 9), "avt", 1000));
+        var a = uc.registrar(validForm);
 
-        var res = uc.consultarPerfilPorId(a.get().getId());
+        var res = uc.consultarPerfilPorId(60l);
 
-        assertEquals(a.get().getNombreUsuario(), res.getNombreUsuario());
+        assertEquals(a.getNombreUsuario(), res.getNombreUsuario());
 
     }
 
     @Test
     void consultarPerfilPorNombre() throws ValidationException {
-        var a = repo.crear(validForm);
-        repo.crear(new UsuarioForm("nu242", "mail", "Pass1234", "nom", "apel", "España", LocalDate.of(12, 11, 9), "avt", 1000));
+        var a = uc.registrar(validForm);
 
-        var res = uc.consultarPerfilPorNombre(a.get().getNombreUsuario());
+        var res = uc.consultarPerfilPorNombre(a.getNombreUsuario());
 
-        assertEquals(a.get().getNombreUsuario(), res.getNombreUsuario());
+        assertEquals(a.getNombreUsuario(), res.getNombreUsuario());
 
     }
 
     @Test
     void actualizarSaldo() throws ValidationException {
-        var a = repo.crear(validForm).get();
-        var u = uc.anadirSaldo(a.getId(), 12);
+        var a = uc.registrar(validForm);
+        var u = uc.anadirSaldo(59L, 12);
         assertTrue(u.getSaldo() != a.getSaldo());
 
     }
@@ -117,7 +148,7 @@ public class testUsuarioRepo {
     public void consultarSaldo_IdValido_RetornaSaldo() throws ValidationException {
         var user = uc.registrar(validForm);
 
-        double saldo = uc.consultarSaldo(repo.crear(validForm).get().getId()).getSaldo();
+        double saldo = uc.consultarSaldo(61L).getSaldo();
 
         assertEquals(user.getSaldo(), saldo, 0.001); // saldo inicial es 0
     }
@@ -153,6 +184,7 @@ public class testUsuarioRepo {
         assertThrows(ValidationException.class,
                 () -> uc.registrar(nombreNoUnicoForm));
     }
+
     @Test
     public void consultarPerfil_NombreUsuarioValido_RetornaUsuarioDTO() throws ValidationException {
         var user = uc.registrar(validForm);
@@ -166,12 +198,12 @@ public class testUsuarioRepo {
     @Test
     public void aniadirSaldo_IdValido_CantidadValida_RetornaUsuarioDTOConSaldoActualizado()
             throws ValidationException {
-        var user = repo.crear(validForm).get();
+        var user = uc.registrar(validForm);
 
-        var actualizado = uc.anadirSaldo(user.getId(), 50.0);
+        var actualizado = uc.anadirSaldo(66L, 50.0);
 
         assertNotNull(actualizado);
-        assertEquals(user.getSaldo()+ actualizado.getSaldo(), uc.consultarSaldo(user.getId()).getSaldo());
+        assertEquals(actualizado.getSaldo(), uc.consultarSaldo(66L).getSaldo());
     }
 
     @Test
@@ -196,10 +228,10 @@ public class testUsuarioRepo {
 
     @Test
     public void aniadirSaldo_CantidadNoValida_LanzaValidationException() throws ValidationException {
-        var user = repo.crear(validForm).get();
+        var user = uc.registrar(validForm);
 
         assertThrows(ValidationException.class,
-                () -> uc.anadirSaldo(user.getId(), -10.0)); // cantidad negativa no válida
+                () -> uc.anadirSaldo(68L, -10.0)); // cantidad negativa no válida
     }
 
 

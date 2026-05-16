@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Date;
-@Table(name = "compra")
+@Table(name = "usuario")
 @Entity
 
 public class UsuarioEntidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name="nombre_usuario")
     private String nombreUsuario;
     @Column(name="email")
@@ -51,11 +51,11 @@ public class UsuarioEntidad {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -131,7 +131,7 @@ public class UsuarioEntidad {
         this.estadoType = estadoType;
     }
 
-    public UsuarioEntidad(long id, String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
+    public UsuarioEntidad(Long id, String nombreUsuario, String email, String contrasena, String nombre, String apellido, String pais, LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, double saldo, EstadoUserType estadoType) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -145,6 +145,7 @@ public class UsuarioEntidad {
         this.saldo = saldo;
         this.estadoType = estadoType;
     }
+    public UsuarioEntidad() {}
 
     @Override
     public String toString() {

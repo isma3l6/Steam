@@ -1,6 +1,5 @@
 package repositorio.hibernate;
 
-import excepciones.ValidationException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class JuegoHibernate implements IJuegoRepo {
-    private  ISesionManager sesionManager;
+    private final ISesionManager sesionManager;
 
 
     public JuegoHibernate (ISesionManager sesionManager) {
