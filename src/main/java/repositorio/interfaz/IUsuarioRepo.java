@@ -12,10 +12,14 @@ public interface IUsuarioRepo {
 
     Optional<UsuarioEntidad> obtenerPorId(long id);
 
+
+
     List<UsuarioEntidad> obtenerTodos();
 
     Optional<UsuarioEntidad> actualizar(long id, UsuarioForm form);
 
     boolean eliminar(long id);
     Optional<UsuarioEntidad>buscarUsuarioPorNombre(String nombreUsuario);
+
+    Optional<UsuarioEntidad> buscarUsuarioPorCorreo(String email);
 }

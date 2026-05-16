@@ -18,6 +18,7 @@ import modelo.entidad.*;
 import modelo.form.CompraForm;
 import modelo.form.JuegoForm;
 import modelo.form.UsuarioForm;
+import org.hibernate.Transaction;
 import org.junit.jupiter.api.Test;
 import repositorio.inmemory.CompraRepoInMemory;
 import repositorio.inmemory.JuegoRepoInMemory;
@@ -27,9 +28,9 @@ import transaction.ITransactionManager;
 
 public class TestCompra {
  private UsuarioRepoInMemory ur=new UsuarioRepoInMemory();
-    private UsuarioControlador usuarioController=new UsuarioControlador(ur);
+  public ITransactionManager transactionManager;
+    private UsuarioControlador usuarioController=new UsuarioControlador(ur,transactionManager);
     private JuegoRepoInMemory jr=new JuegoRepoInMemory();
-    public ITransactionManager transactionManager;
     private JuegoControlador juegoController=new JuegoControlador(jr,transactionManager);
     private CompraRepoInMemory cr=new CompraRepoInMemory();
     private CompraControlador compraController=new CompraControlador(cr,ur,jr);

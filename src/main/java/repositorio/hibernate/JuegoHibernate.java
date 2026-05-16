@@ -1,6 +1,5 @@
 package repositorio.hibernate;
 
-import excepciones.ValidationException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;

@@ -1,9 +1,21 @@
+import controlador.JuegoControlador;
 import controlador.UsuarioControlador;
 import excepciones.ValidationException;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import modelo.entidad.JuegoEntidad;
+import modelo.entidad.UsuarioEntidad;
 import modelo.form.UsuarioForm;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import repositorio.hibernate.JuegoHibernate;
+import repositorio.hibernate.UsuarioHibernate;
 import repositorio.inmemory.UsuarioRepoInMemory;
+import repositorio.interfaz.IJuegoRepo;
+import repositorio.interfaz.IUsuarioRepo;
+import transaction.HibernateTransactionManager;
+import transaction.ISesionManager;
+import transaction.ITransactionManager;
 
 import java.time.LocalDate;
 
@@ -11,8 +23,9 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class testUsuarioRepo {
-    private final UsuarioRepoInMemory repo = new UsuarioRepoInMemory();
-    private final UsuarioControlador uc = new UsuarioControlador(repo);
+    public IUsuarioRepo repo;
+    public ITransactionManager transactionManager;
+    private UsuarioControlador uc;
     LocalDate localDate = LocalDate.of(12, 12, 12);
 
     UsuarioForm validForm = new UsuarioForm("nuevo",
@@ -24,6 +37,31 @@ public class testUsuarioRepo {
             LocalDate.of(2026, 04, 24),
             "avtydrr",
             1000);
+
+    @BeforeEach
+    void setUp() {
+
+        transactionManager = new HibernateTransactionManager();
+        repo = new UsuarioHibernate((ISesionManager) transactionManager);
+
+        uc = new UsuarioControlador(repo, transactionManager);
+        try {
+            transactionManager.inTransaction(() -> {
+                var session = ((ISesionManager) transactionManager).getSession();
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                var deleteCompra = criteriaBuilder.createCriteriaDelete(UsuarioEntidad.class);
+
+                session.createMutationQuery(deleteCompra).executeUpdate();
+
+
+                return null;
+            });
+        } catch (ValidationException e) {
+            System.out.println("No se pudo borrar");
+            e.printStackTrace();
+            throw new RuntimeException("No se pudo borrar");
+        }
+    }
 
     @Test
     public void pruebaanadir() {
@@ -153,6 +191,7 @@ public class testUsuarioRepo {
         assertThrows(ValidationException.class,
                 () -> uc.registrar(nombreNoUnicoForm));
     }
+
     @Test
     public void consultarPerfil_NombreUsuarioValido_RetornaUsuarioDTO() throws ValidationException {
         var user = uc.registrar(validForm);
@@ -171,7 +210,7 @@ public class testUsuarioRepo {
         var actualizado = uc.anadirSaldo(user.getId(), 50.0);
 
         assertNotNull(actualizado);
-        assertEquals(user.getSaldo()+ actualizado.getSaldo(), uc.consultarSaldo(user.getId()).getSaldo());
+        assertEquals(user.getSaldo() + actualizado.getSaldo(), uc.consultarSaldo(user.getId()).getSaldo());
     }
 
     @Test

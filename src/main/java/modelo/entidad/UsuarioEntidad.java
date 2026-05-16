@@ -145,6 +145,7 @@ public class UsuarioEntidad {
         this.saldo = saldo;
         this.estadoType = estadoType;
     }
+    public UsuarioEntidad() {}
 
     @Override
     public String toString() {
